@@ -21,6 +21,7 @@ const isCordova = target === 'cordova';
 module.exports = {
   mode: env,
   entry: [
+    'babel-polyfill',
     './src/js/app.js',
   ],
   output: {
@@ -31,13 +32,13 @@ module.exports = {
     hotUpdateMainFilename: 'hot/hot-update.json',
   },
   resolve: {
-    extensions: ['.js', '.json'],
+    extensions: ['.js', '.jsx', '.json'],
     alias: {
 
       '@': resolvePath('src'),
     },
   },
-  devtool: env === 'production' ? 'source-map' : 'eval',
+  devtool: env === 'production' ? false : false,
   devServer: {
     hot: true,
     open: true,
@@ -62,24 +63,13 @@ module.exports = {
           resolvePath('src'),
           resolvePath('node_modules/framework7'),
 
-
+          resolvePath('node_modules/framework7-react'),
           resolvePath('node_modules/template7'),
           resolvePath('node_modules/dom7'),
           resolvePath('node_modules/ssr-window'),
         ],
       },
-      {
-        test: /\.f7.html$/,
-        use: [
-          'babel-loader',
-          {
-            loader: 'framework7-component-loader',
-            options: {
-              helpersPath: './src/template7-helpers-list.js',
-            },
-          },
-        ],
-      },
+
 
       {
         test: /\.css$/,
@@ -138,7 +128,7 @@ module.exports = {
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
-        loader: 'url-loader',
+        loader: 'file-loader',
         options: {
           limit: 10000,
           name: 'images/[name].[ext]',
@@ -147,7 +137,7 @@ module.exports = {
       },
       {
         test: /\.(mp4|webm|ogg|mp3|wav|flac|aac|m4a)(\?.*)?$/,
-        loader: 'url-loader',
+        loader: 'file-loader',
         options: {
           limit: 10000,
           name: 'media/[name].[ext]',
@@ -156,7 +146,7 @@ module.exports = {
       },
       {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-        loader: 'url-loader',
+        loader: 'file-loader',
         options: {
           limit: 10000,
           name: 'fonts/[name].[ext]',
@@ -191,7 +181,7 @@ module.exports = {
       minify: env === 'production' ? {
         collapseWhitespace: true,
         removeComments: true,
-        removeRedundantAttributes: false,
+        removeRedundantAttributes: true,
         removeScriptTypeAttributes: true,
         removeStyleLinkTypeAttributes: true,
         useShortDoctype: true

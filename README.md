@@ -1,52 +1,8 @@
-# Object b
+# My App
 
-## Framework7 CLI Options
+Процесс разворачивания локальной копии здесь будет позднее.
 
-Framework7 app created with following options:
-
-```
-{
-  "cwd": "/Users/romanvlasenko/Projects/mobileapp/javssc",
-  "type": [
-    "web",
-    "cordova"
-  ],
-  "name": "Object b",
-  "pkg": "io.mobile.trash",
-  "framework": "core",
-  "template": "tabs",
-  "bundler": "webpack",
-  "cssPreProcessor": false,
-  "cordova": {
-    "folder": "cordova",
-    "platforms": [
-      "ios",
-      "android"
-    ],
-    "plugins": [
-      "cordova-plugin-statusbar",
-      "cordova-plugin-keyboard",
-      "cordova-plugin-splashscreen",
-      "cordova-plugin-wkwebview-file-xhr"
-    ]
-  },
-  "webpack": {
-    "developmentSourceMap": true,
-    "productionSourceMap": true,
-    "hashAssets": false,
-    "preserveAssetsPaths": false,
-    "inlineAssets": true
-  },
-  "theming": {
-    "customColor": false,
-    "color": "#007aff",
-    "darkTheme": false,
-    "iconFonts": true,
-    "fillBars": false
-  },
-  "customBuild": false
-}
-```
+Стоит дать название приложению и придумать package_id.
 
 ## NPM Scripts
 
@@ -88,12 +44,6 @@ framework7 generate-assets --ui
 ## Documentation & Resources
 
 * [Framework7 Core Documentation](https://framework7.io/docs/)
-
-
+* [Framework7 React Documentation](https://framework7.io/react/)
 * [Framework7 Icons Reference](https://framework7.io/icons/)
 * [Community Forum](https://forum.framework7.io)
-
-## Support Framework7
-
-Love Framework7? Support project by donating or pledging on patreon:
-https://patreon.com/vladimirkharlampidi

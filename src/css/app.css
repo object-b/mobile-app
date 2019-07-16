@@ -1,6 +1,40 @@
 /* iOS Cordova Tweak */
 .device-cordova.device-ios {
-  height: 100vh;
+    height: 100vh;
 }
 
 /* Your app custom styles here */
+:root {
+    --f7-theme-color: #8dc947;
+    --f7-theme-color-rgb: 141, 201, 71;
+    --f7-theme-color-shade: #78b334;
+    --f7-theme-color-tint: #a1d267;
+}
+
+/* .intro-navbar {
+    --f7-navbar-bg-color: transparent;
+}
+
+.intro-headtitle {
+    --f7-navbar-title-font-size: 26px;
+    width: -webkit-fill-available;
+    color: #000;
+    padding-top: 20px;
+    --f7-navbar-title-text-align: center;
+} */
+
+.flex-align-center .navbar-inner {
+    justify-content: center;
+}
+
+.auth-block-footer {
+    margin-top: 15px;
+}
+
+.page-background-white {
+    background-color: #fff;
+}
+
+.login-screen-content .block-footer {
+    margin-top: 30px;
+}

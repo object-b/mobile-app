@@ -14,10 +14,10 @@
   <meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: gap: content:">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui, viewport-fit=cover">
 
-  <meta name="theme-color" content="#007aff">
+  <!-- <meta name="theme-color" content="#007aff"> -->
   <meta name="format-detection" content="telephone=no">
   <meta name="msapplication-tap-highlight" content="no">
-  <title>Object b</title>
+  <title>My App</title>
   <% if (process.env.TARGET === 'web') { %>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -28,89 +28,7 @@
   <!-- built styles file will be auto injected -->
 </head>
 <body>
-  <div id="app">
-    <!-- Status bar overlay for fullscreen mode-->
-    <div class="statusbar"></div>
-    
-    <!-- Views/Tabs container -->
-    <div class="views tabs safe-areas">
-      <!-- Tabbar for switching views-tabs -->
-      <div class="toolbar toolbar-bottom tabbar-labels">
-        <div class="toolbar-inner">
-          <a href="#view-home" class="tab-link tab-link-active">
-            <i class="icon f7-icons if-not-md">home_fill</i>
-            <i class="icon material-icons if-md">home</i>
-            <span class="tabbar-label">Home</span>
-          </a>
-          <a href="#view-catalog" class="tab-link">
-            <i class="icon f7-icons if-not-md">list_fill</i>
-            <i class="icon material-icons if-md">view_list</i>
-            <span class="tabbar-label">Catalog</span>
-          </a>
-          <a href="#view-settings" class="tab-link">
-            <i class="icon f7-icons if-not-md">settings_fill</i>
-            <i class="icon material-icons if-md">settings</i>
-            <span class="tabbar-label">Settings</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- Your main view/tab, should have "view-main" class. It also has "tab-active" class -->
-      <div id="view-home" class="view view-main view-init tab tab-active" data-url="/">
-        <!-- Home page will be loaded here dynamically from / route -->
-      </div>
-
-      <!-- Catalog View -->
-      <div id="view-catalog" class="view view-init tab" data-view="catalog" data-url="/catalog/">
-        <!-- Catalog page will be loaded here dynamically from /catalog/ route -->
-      </div>
-
-      <!-- Settings View -->
-      <div id="view-settings" class="view view-init tab" data-view="settings" data-url="/settings/">
-        <!-- Settings page will be loaded here dynamically from /settings/ route -->
-      </div>
-    </div>
-
-
-    <!-- Login Screen -->
-    <div class="login-screen" id="my-login-screen">
-      <div class="view">
-        <div class="page">
-          <div class="page-content login-screen-content">
-            <div class="login-screen-title">Login</div>
-            <div class="list">
-              <ul>
-                <li class="item-content item-input">
-                  <div class="item-inner">
-                    <div class="item-title item-label">Username</div>
-                    <div class="item-input-wrap">
-                      <input type="text" name="username" placeholder="Your username">
-                    </div>
-                  </div>
-                </li>
-                <li class="item-content item-input">
-                  <div class="item-inner">
-                    <div class="item-title item-label">Password</div>
-                    <div class="item-input-wrap">
-                      <input type="password" name="password" placeholder="Your password">
-                    </div>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="list">
-              <ul>
-                <li>
-                  <a href="#" class="item-link list-button login-button">Sign In</a>
-                </li>
-              </ul>
-              <div class="block-footer">Some text about login information.<br>Click "Sign In" to close Login Screen</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div id="app"></div>
   <% if (process.env.TARGET === 'cordova') { %>
   <script src="cordova.js"></script>
   <% } %>

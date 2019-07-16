@@ -1,0 +1,7 @@
+{
+    "name": "My App",
+    "version": "1.0.0",
+    "appId": "com.fresh_trash.app",
+    "authApiUrl": "https://rvlasenko.simtechdev.us/fresh_backend/public/api",
+    "appApiUrl": ""
+}

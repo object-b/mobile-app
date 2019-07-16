@@ -1,6 +1,6 @@
 {
-  "name": "io.mobile.trash",
-  "displayName": "Object b",
+  "name": "com.fresh_trash.app",
+  "displayName": "My App",
   "version": "1.0.0",
   "description": "A sample Apache Cordova application that responds to the deviceready event.",
   "main": "index.js",
@@ -15,19 +15,21 @@
   "dependencies": {
     "cordova-android": "^8.0.0",
     "cordova-ios": "^5.0.1",
+    "cordova-plugin-camera": "^4.0.3",
     "cordova-plugin-keyboard": "^1.2.0",
     "cordova-plugin-splashscreen": "^5.0.3",
     "cordova-plugin-statusbar": "^2.4.3",
-    "cordova-plugin-wkwebview-engine": "^1.2.0",
+    "cordova-plugin-wkwebview-engine": "^1.1.4",
     "cordova-plugin-wkwebview-file-xhr": "^2.1.1"
   },
   "cordova": {
     "plugins": {
-      "cordova-plugin-statusbar": {},
-      "cordova-plugin-keyboard": {},
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-wkwebview-file-xhr": {},
-      "cordova-plugin-whitelist": {}
+      "cordova-plugin-statusbar": {},
+      "cordova-plugin-keyboard": {},
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-camera": {}
     },
     "platforms": [
       "ios",

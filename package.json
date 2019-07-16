@@ -1,42 +1,21 @@
 {
-  "name": "object-b",
+  "name": "my-app",
   "private": true,
   "version": "1.0.0",
-  "description": "Object b",
+  "description": "My App",
   "repository": "",
   "license": "UNLICENSED",
   "framework7": {
-    "cwd": "/Users/romanvlasenko/Projects/mobileapp/javssc",
+    "cwd": "/Users/romanvlasenko/Projects/mobileapp/frame",
     "type": [
-      "web",
-      "cordova"
+      "cordova",
+      "web"
     ],
-    "name": "Object b",
-    "pkg": "io.mobile.trash",
-    "framework": "core",
+    "name": "My App",
+    "framework": "react",
     "template": "tabs",
     "bundler": "webpack",
     "cssPreProcessor": false,
-    "cordova": {
-      "folder": "cordova",
-      "platforms": [
-        "ios",
-        "android"
-      ],
-      "plugins": [
-        "cordova-plugin-statusbar",
-        "cordova-plugin-keyboard",
-        "cordova-plugin-splashscreen",
-        "cordova-plugin-wkwebview-engine"
-      ]
-    },
-    "webpack": {
-      "developmentSourceMap": true,
-      "productionSourceMap": true,
-      "hashAssets": false,
-      "preserveAssetsPaths": false,
-      "inlineAssets": true
-    },
     "theming": {
       "customColor": false,
       "color": "#007aff",
@@ -44,7 +23,28 @@
       "iconFonts": true,
       "fillBars": false
     },
-    "customBuild": false
+    "customBuild": false,
+    "webpack": {
+      "developmentSourceMap": false,
+      "productionSourceMap": false,
+      "hashAssets": false,
+      "preserveAssetsPaths": false,
+      "inlineAssets": false
+    },
+    "pkg": "com.fresh_trash.app",
+    "cordova": {
+      "folder": "cordova",
+      "platforms": [
+        "ios",
+        "android"
+      ],
+      "plugins": [
+        "cordova-plugin-splashscreen",
+        "cordova-plugin-wkwebview-engine",
+        "cordova-plugin-statusbar",
+        "cordova-plugin-keyboard"
+      ]
+    }
   },
   "scripts": {
     "build-dev": "cross-env NODE_ENV=development node ./build/build.js",
@@ -69,37 +69,50 @@
     "Samsung >= 5"
   ],
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.19",
+    "@fortawesome/free-solid-svg-icons": "^5.9.0",
+    "@fortawesome/react-fontawesome": "^0.1.4",
+    "@uifabric/merge-styles": "^7.1.1",
+    "axios": "^0.19.0",
     "dom7": "^2.1.3",
     "framework7": "^4.4.6",
     "framework7-icons": "^2.3.1",
+    "framework7-react": "^4.4.6",
+    "idb-keyval": "^3.2.0",
+    "leaflet": "^1.5.1",
+    "prop-types": "^15.7.2",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-leaflet": "^2.4.0",
     "template7": "^1.4.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.5.4",
+    "@babel/core": "^7.5.0",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/plugin-transform-runtime": "^7.5.0",
-    "@babel/preset-env": "^7.5.4",
-    "@babel/runtime": "^7.5.4",
+    "@babel/preset-env": "^7.5.0",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/runtime": "^7.5.0",
     "babel-loader": "^8.0.6",
+    "babel-polyfill": "^6.26.0",
     "chalk": "^2.4.2",
     "copy-webpack-plugin": "^5.0.3",
     "cpy-cli": "^2.0.0",
     "cross-env": "^5.2.0",
     "css-loader": "^3.0.0",
     "file-loader": "^4.0.0",
-    "framework7-component-loader": "^1.3.0",
     "html-webpack-plugin": "^3.2.0",
     "mini-css-extract-plugin": "^0.7.0",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "ora": "^3.4.0",
     "postcss-loader": "^3.0.0",
-    "postcss-preset-env": "^6.7.0",
+    "postcss-preset-env": "^6.6.0",
     "rimraf": "^2.6.3",
     "style-loader": "^0.23.1",
     "terser-webpack-plugin": "^1.3.0",
     "url-loader": "^2.0.1",
-    "webpack": "^4.35.3",
-    "webpack-cli": "^3.3.6",
+    "webpack": "^4.35.2",
+    "webpack-cli": "^3.3.5",
     "webpack-dev-server": "^3.7.2"
   }
 }

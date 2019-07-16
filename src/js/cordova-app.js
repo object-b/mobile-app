@@ -1,14 +1,14 @@
 var cordovaApp = {
   f7: null,
   /*
-  This method hides splashscreen after 2 seconds
+  This method hides splashscreen after 1 second
   */
   handleSplashscreen: function() {
     var f7 = cordovaApp.f7;
     if (!window.navigator.splashscreen || f7.device.electron) return;
     setTimeout(() => {
       window.navigator.splashscreen.hide();
-    }, 2000);
+    }, 1000);
   },
   /*
   This method prevents back button tap to exit from app on android.
