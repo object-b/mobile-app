@@ -20,6 +20,7 @@ var app = new Framework7({
   id: 'io.mobile.trash', // App bundle ID
   name: 'Object b', // App name
   theme: 'auto', // Automatic theme detection
+  
   // App root data
   data: function () {
     return {
@@ -55,8 +56,6 @@ var app = new Framework7({
   },
   // App routes
   routes: routes,
-
-
 
   // Input settings
   input: {

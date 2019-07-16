@@ -1,52 +1,6 @@
-# Object b
+# Object B mobile app
 
-## Framework7 CLI Options
-
-Framework7 app created with following options:
-
-```
-{
-  "cwd": "/Users/romanvlasenko/Projects/mobileapp/javssc",
-  "type": [
-    "web",
-    "cordova"
-  ],
-  "name": "Object b",
-  "pkg": "io.mobile.trash",
-  "framework": "core",
-  "template": "tabs",
-  "bundler": "webpack",
-  "cssPreProcessor": false,
-  "cordova": {
-    "folder": "cordova",
-    "platforms": [
-      "ios",
-      "android"
-    ],
-    "plugins": [
-      "cordova-plugin-statusbar",
-      "cordova-plugin-keyboard",
-      "cordova-plugin-splashscreen",
-      "cordova-plugin-wkwebview-file-xhr"
-    ]
-  },
-  "webpack": {
-    "developmentSourceMap": true,
-    "productionSourceMap": true,
-    "hashAssets": false,
-    "preserveAssetsPaths": false,
-    "inlineAssets": true
-  },
-  "theming": {
-    "customColor": false,
-    "color": "#007aff",
-    "darkTheme": false,
-    "iconFonts": true,
-    "fillBars": false
-  },
-  "customBuild": false
-}
-```
+В мастере код на JS es2015. В одноименной ветке то же самое на реакте.
 
 ## NPM Scripts
 

@@ -37,37 +37,27 @@
       <!-- Tabbar for switching views-tabs -->
       <div class="toolbar toolbar-bottom tabbar-labels">
         <div class="toolbar-inner">
-          <a href="#view-home" class="tab-link tab-link-active">
+          <a href="#view-list" class="tab-link tab-link-active">
             <i class="icon f7-icons if-not-md">home_fill</i>
             <i class="icon material-icons if-md">home</i>
             <span class="tabbar-label">Home</span>
           </a>
-          <a href="#view-catalog" class="tab-link">
+          <a href="#view-map" class="tab-link">
             <i class="icon f7-icons if-not-md">list_fill</i>
             <i class="icon material-icons if-md">view_list</i>
             <span class="tabbar-label">Catalog</span>
-          </a>
-          <a href="#view-settings" class="tab-link">
-            <i class="icon f7-icons if-not-md">settings_fill</i>
-            <i class="icon material-icons if-md">settings</i>
-            <span class="tabbar-label">Settings</span>
           </a>
         </div>
       </div>
 
       <!-- Your main view/tab, should have "view-main" class. It also has "tab-active" class -->
-      <div id="view-home" class="view view-main view-init tab tab-active" data-url="/">
+      <div id="view-list" class="view view-main view-init tab tab-active" data-url="/objects-list">
         <!-- Home page will be loaded here dynamically from / route -->
       </div>
 
       <!-- Catalog View -->
-      <div id="view-catalog" class="view view-init tab" data-view="catalog" data-url="/catalog/">
+      <div id="view-map" class="view view-init tab" data-view="catalog" data-url="/objects-map">
         <!-- Catalog page will be loaded here dynamically from /catalog/ route -->
-      </div>
-
-      <!-- Settings View -->
-      <div id="view-settings" class="view view-init tab" data-view="settings" data-url="/settings/">
-        <!-- Settings page will be loaded here dynamically from /settings/ route -->
       </div>
     </div>
 
