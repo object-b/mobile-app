@@ -5,6 +5,8 @@ import RegisterPage from '../pages/app/register.f7.html';
 import LoginPage from '../pages/app/login.f7.html';
 import NotFoundPage from '../pages/404.f7.html';
 
+import { get, set } from 'idb-keyval';
+
 var routes = [
   {
     path: '/intro',
@@ -13,11 +15,14 @@ var routes = [
   {
     path: '/objects-list',
     async(routeTo, routeFrom, resolve, reject) {
-      if (0) {
-        resolve({ component: ObjectsListPage });
-      } else {
-        resolve({ component: IntroPage });
-      }
+      get('AUTH_TOKEN').then(token => {
+        // Токен юзера есть, скорее всего, авторизован :)
+        if (typeof token !== 'undefined') {
+          resolve({ component: ObjectsListPage });
+        } else {
+          resolve({ component: IntroPage });
+        }
+      });
     }
   },
   {

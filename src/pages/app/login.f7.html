@@ -1,0 +1,116 @@
+<template>
+    <div class="page" data-name="login">
+        <div class="navbar">
+            <div class="navbar-inner sliding">
+                <div class="left">
+                    <a href="#" class="link back">
+                        <i class="icon icon-back"></i>
+                        <span class="if-not-md">Назад</span>
+                    </a>
+                </div>
+                <div class="title">Вход</div>
+            </div>
+        </div>
+        <div class="page-content login-screen-content">
+            <div class="list">
+                <form id="login-form">
+                <ul>
+                    <li class="item-content item-input">
+                        <div class="item-inner">
+                            <div class="item-title item-label">Электронная почта</div>
+                            <div class="item-input-wrap">
+                                <input type="email" name="email" placeholder="Адрес вашей почты" required validate data-vaildate-on-blur="true">
+                            </div>
+                        </div>
+                    </li>
+                    <li class="item-content item-input">
+                        <div class="item-inner">
+                            <div class="item-title item-label">Пароль</div>
+                            <div class="item-input-wrap">
+                                <input type="password" name="password" placeholder="Введите пароль" required validate data-vaildate-on-blur="true" minlength="6">
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                </form>
+            </div>
+            <div class="list">
+                <div class="row" style="margin-bottom: 24px; justify-content: center;">
+                    <div class="col-50">
+                        <button class="button button-fill login-button" @click="signIn">Войти</button>
+                    </div>
+                </div>
+                <div class="block-footer">или через социальные сети</div>
+                <div class="block">
+                    <div class="row">
+                        <div class="col-33">
+                            <button class="button button-fill icon-inside" style="background-color: #4c75a3;">
+                                <i class="fab fa-vk size-22"></i>
+                            </button>
+                        </div>
+                        <div class="col-33">
+                            <button class="button button-fill icon-inside" style="background-color: #ed812b;">
+                                <i class="fab fa-odnoklassniki size-22"></i>
+                            </button>
+                        </div>
+                        <div class="col-33">
+                            <button class="button button-fill icon-inside" style="background-color: #3b5999;">
+                                <i class="fab fa-facebook size-22"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<script>
+    import { get, set } from 'idb-keyval';
+
+    export default {
+        methods: {
+            signIn: function () {
+                var app = this.$f7;
+                var router = this.$f7router;
+                var $$ = this.$$;
+                var self = this;
+
+                // Test
+                // var temp = {
+                //     'email': '1@1.com',
+                //     'password': 'qwerty',
+                // }
+                // app.form.fillFromData('#login-form', temp);
+
+                if ($$('#login-form')[0].checkValidity()) {
+                    app.preloader.show();
+
+                    var formData = app.form.convertToData('#login-form');
+
+                    app.request.postJSON(self.$root.apiUrl + '/login', formData, function(success, status) {
+                        console.log(status, success.data.access_token);
+
+                        // Авторизационный токен найденный laravel
+                        set('AUTH_TOKEN', success.data.access_token)
+                            .then(function() {
+                                router.navigate('/objects-list');
+                                app.preloader.hide();
+                            })
+                            .catch(function(error) {
+                                self.$root.openAuthToast(error);
+                            });
+                    }, function(error, status) {
+                        if (status === 401) {
+                            var msg = JSON.parse(error.response).message;
+                            self.$root.openAuthToast(msg);
+                        } else {
+                            self.$root.openAuthToast('Login error. Code ' + status);
+                        }
+
+                        app.preloader.hide();
+                    });
+                }
+            },
+        },
+    };
+</script>

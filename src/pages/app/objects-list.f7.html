@@ -1,0 +1,22 @@
+<template>
+    <div class="page" data-name="objects-list">
+        <div class="navbar">
+            <div class="navbar-inner sliding">
+                <div class="title">About</div>
+            </div>
+        </div>
+        <div class="page-content">
+            <div class="block-title">About My App</div>
+        </div>
+    </div>
+</template>
+<script>
+    export default {
+        // Page Events
+        on: {
+            pageBeforeIn: function (e, page) {
+                this.$app.$('.toolbar').show();
+            },
+        }
+    }
+</script>

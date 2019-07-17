@@ -1,0 +1,42 @@
+<template>
+    <div class="page" data-name="intro">
+        <!-- Top Navbar -->
+        <div class="navbar">
+            <div class="navbar-inner">
+                <div class="title">Object b</div>
+            </div>
+        </div>
+
+        <!-- Scrollable page content-->
+        <div class="page-content">
+            <div class="block block-strong">
+                <p>This is an example of tabs-layout application. The main point of such tabbed layout is that each tab
+                    contains independent view with its own routing and navigation.</p>
+
+                <p>Each tab/view may have different layout, different navbar type (dynamic, fixed or static) or without
+                    navbar like this tab.</p>
+            </div>
+
+            <div class="block">
+                <div class="row">
+                    <div class="col-50">
+                        <a href="/login" class="button button-raised button-fill">Вход</a>
+                    </div>
+                    <div class="col-50">
+                        <a href="/register" class="button button-raised button-fill">Регистрация</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<script>
+    export default {
+        // Page Events
+        on: {
+            pageBeforeIn: function (e, page) {
+                this.$app.$('.toolbar').hide();
+            },
+        }
+    }
+</script>

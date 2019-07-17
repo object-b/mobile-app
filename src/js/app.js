@@ -24,10 +24,8 @@ var app = new Framework7({
   // App root data
   data: function () {
     return {
-      user: {
-        firstName: 'John',
-        lastName: 'Doe',
-      },
+      apiUrl: 'https://rvlasenko.simtechdev.us/fresh_backend/public/api',
+
       // Demo products for Catalog section
       products: [
         {
@@ -50,9 +48,13 @@ var app = new Framework7({
   },
   // App root methods
   methods: {
-    helloWorld: function () {
-      app.dialog.alert('Hello World!');
-    },
+    openAuthToast: function(message) {
+      app.toast.create({
+        text: message,
+        position: 'bottom',
+        closeTimeout: 4500,
+      }).open();
+    }
   },
   // App routes
   routes: routes,
@@ -79,14 +81,14 @@ var app = new Framework7({
   },
 });
 
-// Login Screen Demo
-$$('#my-login-screen .login-button').on('click', function () {
-  var username = $$('#my-login-screen [name="username"]').val();
-  var password = $$('#my-login-screen [name="password"]').val();
+// Register
+// $$('.register-button').on('click', function () {
+//   var username = $$('#my-login-screen [name="username"]').val();
+//   var password = $$('#my-login-screen [name="password"]').val();
 
-  // Close login screen
-  app.loginScreen.close('#my-login-screen');
+//   // Close login screen
+//   app.loginScreen.close('#my-login-screen');
 
-  // Alert username and password
-  app.dialog.alert('Username: ' + username + '<br>Password: ' + password);
-});
+//   // Alert username and password
+//   app.dialog.alert('Username: ' + username + '<br>Password: ' + password);
+// });

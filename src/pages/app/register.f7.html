@@ -1,0 +1,128 @@
+<template>
+    <div class="page" data-name="register">
+        <div class="navbar">
+            <div class="navbar-inner sliding">
+                <div class="left">
+                    <a href="#" class="link back">
+                        <i class="icon icon-back"></i>
+                        <span class="if-not-md">Назад</span>
+                    </a>
+                </div>
+                <div class="title">Регистрация</div>
+            </div>
+        </div>
+        <div class="page-content login-screen-content">
+            <div class="list">
+                <form id="register-form">
+                    <ul>
+                        <li class="item-content item-input">
+                            <div class="item-inner">
+                                <div class="item-title item-label">Имя</div>
+                                <div class="item-input-wrap">
+                                    <input type="text" name="name" placeholder="Ваше имя" required validate
+                                        data-vaildate-on-blur="true">
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content item-input">
+                            <div class="item-inner">
+                                <div class="item-title item-label">Электронная почта</div>
+                                <div class="item-input-wrap">
+                                    <input type="email" name="email" placeholder="Адрес вашей почты" required validate
+                                        data-vaildate-on-blur="true">
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content item-input">
+                            <div class="item-inner">
+                                <div class="item-title item-label">Пароль</div>
+                                <div class="item-input-wrap">
+                                    <input type="password" name="password" placeholder="Придумайте пароль" required
+                                        validate data-vaildate-on-blur="true" minlength="6">
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </form>
+            </div>
+            <div class="list">
+                <div class="row" style="margin-bottom: 24px; justify-content: center;">
+                    <div class="col-70">
+                        <button class="button button-fill register-button" @click="signUp">Зарегистрироваться</button>
+                    </div>
+                </div>
+                <div class="block-footer">или через социальные сети</div>
+                <div class="block">
+                    <div class="row">
+                        <div class="col-33">
+                            <button class="button button-fill icon-inside" style="background-color: #4c75a3;">
+                                <i class="fab fa-vk size-22"></i>
+                            </button>
+                        </div>
+                        <div class="col-33">
+                            <button class="button button-fill icon-inside" style="background-color: #ed812b;">
+                                <i class="fab fa-odnoklassniki size-22"></i>
+                            </button>
+                        </div>
+                        <div class="col-33">
+                            <button class="button button-fill icon-inside" style="background-color: #3b5999;">
+                                <i class="fab fa-facebook size-22"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<script>
+    import { get, set } from 'idb-keyval';
+
+    export default {
+        methods: {
+            signUp: function () {
+                var app = this.$f7;
+                var router = this.$f7router;
+                var $$ = this.$$;
+                var self = this;
+
+                // REMOVE ME
+                // var temp = {
+                //     'name': 'John',
+                //     'email': 'john@doe.com',
+                //     'password': 'qwerty',
+                // }
+                // app.form.fillFromData('#register-form', temp);
+
+                if ($$('#register-form')[0].checkValidity()) {
+                    app.preloader.show();
+
+                    var formData = app.form.convertToData('#register-form');
+
+                    app.request.postJSON(this.$root.apiUrl + '/register', formData, function(success, status) {
+                        console.log(status, success.data.access_token);
+
+                        // Авторизационный токен сгенерированный laravel
+                        set('AUTH_TOKEN', success.data.access_token)
+                            .then(function() {
+                                router.navigate('/objects-list');
+                                app.preloader.hide();
+                            })
+                            .catch(function(error) {
+                                self.$root.openAuthToast(error);
+                            });
+                    }, function(error, status) {
+                        if (status === 401) {
+                            var msg = JSON.parse(error.response).message;
+                            self.$root.openAuthToast(msg);
+                        } else {
+                            self.$root.openAuthToast('Register error. Code ' + status);
+                        }
+
+                        app.preloader.hide();
+                    });
+                }
+            },
+        },
+    };
+</script>
