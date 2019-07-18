@@ -2,18 +2,148 @@
     <div class="page" data-name="objects-list">
         <div class="navbar">
             <div class="navbar-inner sliding">
-                <div class="title">About</div>
+                <div class="title">Список объектов</div>
+                <div class="right">
+                    <a href="/objects-filters" class="link">
+                        <i class="f7-icons if-not-md">filter</i>
+                        <i class="material-icons md-only">tune</i>
+                        <span>Фильтры</span>
+                    </a>
+                </div>
             </div>
         </div>
         <div class="page-content">
-            <div class="block-title">About My App</div>
+            {{#if objects}}
+            <!-- Show list when it is loaded -->
+            <div class="list media-list">
+                <ul>
+                    {{#each objects}}
+                    <li>
+                        <a href="/object/{{this.id}}" class="item-link item-content">
+                            <div class="item-media">
+                                <img src="{{this.image}}" width="120" />
+                            </div>
+                            <div class="item-inner">
+                                <div class="item-title-row">
+                                    <div class="item-title trash-status-header">{{this.status}}</div>
+                                </div>
+                                <div class="item-subtitle">{{this.author}}</div>
+                                <div class="item-text">{{this.text}}</div>
+                                <div class="trash-card-footer">
+                                    <div class="chip chip-outline trash-transport">
+                                        <div class="chip-label">{{this.size}}</div>
+                                    </div>
+                                    <div class="item-after">{{this.humanDate}}</div>
+                                </div>
+                                <!-- <div class="chip trash-transport trash-transport-package">
+                                    <div class="chip-media bg-color-blue">
+                                        <i class="icon f7-icons if-not-md">shopping_cart</i>
+                                        <i class="icon material-icons md-only">shopping_cart</i>
+                                    </div>
+                                    <div class="chip-label">Тележка</div>
+                                </div>
+                                <div class="chip trash-transport trash-transport-truck">
+                                    <div class="chip-media bg-color-green">
+                                        <i class="icon f7-icons if-not-md">briefcase</i>
+                                        <i class="icon material-icons md-only">work</i>
+                                    </div>
+                                    <div class="chip-label">Пакет</div>
+                                </div> -->
+                            </div>
+                        </a>
+                    </li>
+                    {{/each}}
+                </ul>
+            </div>
+            {{/if}}
+        </div>
+
+        <div class="fab fab-right-bottom">
+            <a href="/create-object">
+                <i class="icon f7-icons">add</i>
+            </a>
         </div>
     </div>
 </template>
 <script>
     export default {
+        data: function () {
+            return {
+                // empty initial data
+                objects: null,
+            }
+        },
         // Page Events
         on: {
+            pageInit: function () {
+                var self = this;
+                var app = self.$app;
+
+                app.preloader.show();
+
+                // request data on page init
+                // app.request.get(this.$root.mainApiUrl + '/get-all-objects', (objects) => {
+                // update component state with new state
+                    setTimeout(function () {
+                        // Test
+                        var objects = [{
+                            id: 23,
+                            status: 'Ожидает уборки',
+                            image: 'https://cdn.framework7.io/placeholder/people-160x160-1.jpg',
+                            author: 'Роман Власенко',
+                            text: 'Бытовые отходы, стекло, пластик, продукты',
+                            size: 'Машина',
+                            humanDate: '7 сентября 2019',
+                        }, {
+                            id: 13,
+                            status: 'Ждет подтверждения',
+                            image: 'https://cdn.framework7.io/placeholder/people-160x160-2.jpg',
+                            author: 'Даниил Баженов',
+                            text: 'Строительный мусор',
+                            size: 'Тележка',
+                            humanDate: '1 октября 2019',
+                        },{
+                            id: 23,
+                            status: 'Ожидает уборки',
+                            image: 'https://cdn.framework7.io/placeholder/people-160x160-1.jpg',
+                            author: 'Роман Власенко',
+                            text: 'Бытовые отходы, стекло, пластик, продукты',
+                            size: 'Машина',
+                            humanDate: '7 сентября 2019',
+                        }, {
+                            id: 13,
+                            status: 'Ждет подтверждения',
+                            image: 'https://cdn.framework7.io/placeholder/people-160x160-2.jpg',
+                            author: 'Даниил Баженов',
+                            text: 'Строительный мусор',
+                            size: 'Тележка',
+                            humanDate: '1 октября 2019',
+                        }, {
+                            id: 23,
+                            status: 'Ожидает уборки',
+                            image: 'https://cdn.framework7.io/placeholder/people-160x160-1.jpg',
+                            author: 'Роман Власенко',
+                            text: 'Бытовые отходы, стекло, пластик, продукты',
+                            size: 'Машина',
+                            humanDate: '7 сентября 2019',
+                        }, {
+                            id: 13,
+                            status: 'Ждет подтверждения',
+                            image: 'https://cdn.framework7.io/placeholder/people-160x160-2.jpg',
+                            author: 'Даниил Баженов',
+                            text: 'Строительный мусор',
+                            size: 'Тележка',
+                            humanDate: '1 октября 2019',
+                        }];
+
+                        app.preloader.hide();
+
+                        self.$setState({
+                            objects: objects,
+                        });
+                    }, 1000);
+                // });
+            },
             pageBeforeIn: function (e, page) {
                 this.$app.$('.toolbar').show();
             },

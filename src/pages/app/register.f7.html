@@ -86,7 +86,7 @@
                 var $$ = this.$$;
                 var self = this;
 
-                // REMOVE ME
+                // Test
                 // var temp = {
                 //     'name': 'John',
                 //     'email': 'john@doe.com',
@@ -99,7 +99,7 @@
 
                     var formData = app.form.convertToData('#register-form');
 
-                    app.request.postJSON(this.$root.apiUrl + '/register', formData, function(success, status) {
+                    app.request.postJSON(this.$root.authApiUrl + '/register', formData, function(success, status) {
                         console.log(status, success.data.access_token);
 
                         // Авторизационный токен сгенерированный laravel

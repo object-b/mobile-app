@@ -87,7 +87,7 @@
 
                     var formData = app.form.convertToData('#login-form');
 
-                    app.request.postJSON(self.$root.apiUrl + '/login', formData, function(success, status) {
+                    app.request.postJSON(self.$root.authApiUrl + '/login', formData, function(success, status) {
                         console.log(status, success.data.access_token);
 
                         // Авторизационный токен найденный laravel

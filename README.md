@@ -1,6 +1,6 @@
 # Mobile app
 
-master branch - es2015
+master branch - es2015  
 react branch - react js
 
 Остальная информация будет позже.

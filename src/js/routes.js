@@ -4,6 +4,10 @@ import ObjectsMapPage from '../pages/app/objects-map.f7.html';
 import RegisterPage from '../pages/app/register.f7.html';
 import LoginPage from '../pages/app/login.f7.html';
 import NotFoundPage from '../pages/404.f7.html';
+import ObjectPage from '../pages/app/object.f7.html';
+import ObjectsFiltersPage from '../pages/app/object-filters.f7.html';
+import CreateObjectPage from '../pages/app/create-object.f7.html';
+import UserProfile from '../pages/app/profile.f7.html';
 
 import { get, set } from 'idb-keyval';
 
@@ -16,7 +20,7 @@ var routes = [
     path: '/objects-list',
     async(routeTo, routeFrom, resolve, reject) {
       get('AUTH_TOKEN').then(token => {
-        // Токен юзера есть, скорее всего, авторизован :)
+        // Authentication check :)
         if (typeof token !== 'undefined') {
           resolve({ component: ObjectsListPage });
         } else {
@@ -26,8 +30,24 @@ var routes = [
     }
   },
   {
+    path: '/object/:objectId',
+    component: ObjectPage,
+  },
+  {
+    path: '/objects-filters',
+    component: ObjectsFiltersPage,
+  },
+  {
+    path: '/create-object',
+    component: CreateObjectPage,
+  },
+  {
     path: '/objects-map',
     component: ObjectsMapPage,
+  },
+  {
+    path: '/profile',
+    component: UserProfile,
   },
   {
     path: '/login',
@@ -37,6 +57,7 @@ var routes = [
     path: '/register',
     component: RegisterPage,
   },
+  // Default route (404 page). MUST BE THE LAST
   {
     path: '(.*)',
     component: NotFoundPage,

@@ -40,12 +40,17 @@
           <a href="#view-list" class="tab-link tab-link-active">
             <i class="icon f7-icons if-not-md">list</i>
             <i class="icon material-icons if-md">list</i>
-            <span class="tabbar-label">Список объектов</span>
+            <span class="tabbar-label">Список</span>
           </a>
           <a href="#view-map" class="tab-link">
             <i class="icon f7-icons if-not-md">world</i>
             <i class="icon material-icons if-md">language</i>
-            <span class="tabbar-label">Карта объектов</span>
+            <span class="tabbar-label">Карта</span>
+          </a>
+          <a href="#view-profile" class="tab-link">
+            <i class="icon f7-icons if-not-md">person</i>
+            <i class="icon material-icons if-md">person</i>
+            <span class="tabbar-label">Профиль</span>
           </a>
         </div>
       </div>
@@ -58,6 +63,11 @@
       <!-- Catalog View -->
       <div id="view-map" class="view view-init tab" data-view="catalog" data-url="/objects-map">
         <!-- Catalog page will be loaded here dynamically from /catalog/ route -->
+      </div>
+
+      <!-- Profile View -->
+      <div id="view-profile" class="view view-init tab" data-view="profile" data-url="/profile">
+        <!-- Profile page will be loaded here dynamically from /profile/ route -->
       </div>
     </div>
   </div>

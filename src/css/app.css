@@ -1,18 +1,48 @@
 /* iOS Cordova Tweak */
+
 .device-cordova.device-ios {
-  height: 100vh;
+    height: 100vh;
 }
 
 /* Your app custom styles here */
-.size-22 { font-size: 22px }
-.size-25 { font-size: 25px }
-.size-29 { font-size: 29px }
-.size-50 { font-size: 50px }
 
-.button.icon-inside {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-top: 1px;
+.size-22 {
+    font-size: 22px
 }
 
+.size-25 {
+    font-size: 25px
+}
+
+.button.icon-inside {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 1px;
+}
+
+.button.icon-inside i {
+    position: static;
+}
+
+.trash-status-header {
+    margin-bottom: 3px;
+    font-weight: 500 !important;
+}
+
+.trash-card-footer {
+    margin-top: 9px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+
+.chip.trash-transport {
+    height: 26px;
+    margin-right: 7px;
+}
+
+.trash-card-footer .item-after {
+    align-self: center;
+}

@@ -1,0 +1,62 @@
+<template>
+    <div class="page" data-name="object">
+        <div class="navbar">
+            <div class="navbar-inner sliding">
+                <div class="left">
+                    <a href="#" class="link back">
+                        <i class="icon icon-back"></i>
+                        <span class="ios-only">Назад</span>
+                    </a>
+                </div>
+                <div class="title">Объект</div>
+            </div>
+        </div>
+        <div class="page-content">
+            {{#if object}}
+                {{object.status}}
+            {{/if}}
+        </div>
+    </div>
+</template>
+<script>
+    export default {
+        data: function () {
+            return {
+                // empty initial data
+                object: null,
+            }
+        },
+        // Page Events
+        on: {
+            pageInit: function () {
+                var self = this;
+                var app = self.$app;
+                var id = self.$route.params.objectId;
+
+                app.preloader.show();
+
+                // request data on page init
+                // app.request.get(this.$root.mainApiUrl + '/get-object' + id, (object) => {
+                    // update component state with new state
+                    setTimeout(function () {
+                        // Test
+                        var object = {
+                            status: 'Ожидает уборки',
+                            image: 'https://cdn.framework7.io/placeholder/people-160x160-1.jpg',
+                            author: 'Роман Власенко',
+                            text: 'Бытовые отходы, стекло, пластик, продукты',
+                            size: 'Машина',
+                            humanDate: '7 сентября 2019',
+                        };
+
+                        app.preloader.hide();
+
+                        self.$setState({
+                            object: object,
+                        });
+                    }, 500);
+                // });
+            },
+        }
+    }
+</script>
