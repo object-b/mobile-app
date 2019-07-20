@@ -58,7 +58,7 @@
             {{/if}}
         </div>
 
-        <div class="fab fab-right-bottom">
+        <div class="fab fab-right-bottom fab-hidden">
             <a href="/create-object">
                 <i class="icon f7-icons">add</i>
             </a>
@@ -73,11 +73,56 @@
                 objects: null,
             }
         },
+        methods: {
+            
+        },
         // Page Events
         on: {
-            pageInit: function () {
+            pageInit: function(e, page) {
                 var self = this;
                 var app = self.$app;
+                var $$ = self.$$;
+
+                var previousScrollTop;
+                var currentScrollTop;
+
+                var scrollHeight;
+                var offsetHeight;
+                var reachEnd;
+                var action;
+
+                function handleScroll() {
+                    const scrollContent = this;
+
+                    currentScrollTop = scrollContent.scrollTop;
+                    scrollHeight = scrollContent.scrollHeight;
+                    offsetHeight = scrollContent.offsetHeight;
+                    reachEnd = currentScrollTop + offsetHeight >= scrollHeight;
+
+                    if (reachEnd) {
+                        action = 'hide';
+                    } else if (previousScrollTop > currentScrollTop) {
+                        if (currentScrollTop <= 34) {
+                            action = 'hide';
+                        } else {
+                            action = 'show';
+                        }
+                    } else if (currentScrollTop > 34) {
+                        action = 'show';
+                    } else {
+                        action = 'hide';
+                    }
+
+                    if (action === 'show') {
+                        $$('.fab').removeClass('fab-hidden');
+                        // console.log('show');
+                    } else if (action === 'hide') {
+                        $$('.fab').addClass('fab-hidden');
+                        // console.log('hide');
+                    }
+
+                    previousScrollTop = currentScrollTop;
+                }
 
                 app.preloader.show();
 
@@ -110,15 +155,7 @@
                             text: 'Бытовые отходы, стекло, пластик, продукты',
                             size: 'Машина',
                             humanDate: '7 сентября 2019',
-                        }, {
-                            id: 13,
-                            status: 'Ждет подтверждения',
-                            image: 'https://cdn.framework7.io/placeholder/people-160x160-2.jpg',
-                            author: 'Даниил Баженов',
-                            text: 'Строительный мусор',
-                            size: 'Тележка',
-                            humanDate: '1 октября 2019',
-                        }, {
+                        },{
                             id: 23,
                             status: 'Ожидает уборки',
                             image: 'https://cdn.framework7.io/placeholder/people-160x160-1.jpg',
@@ -126,21 +163,22 @@
                             text: 'Бытовые отходы, стекло, пластик, продукты',
                             size: 'Машина',
                             humanDate: '7 сентября 2019',
-                        }, {
-                            id: 13,
-                            status: 'Ждет подтверждения',
-                            image: 'https://cdn.framework7.io/placeholder/people-160x160-2.jpg',
-                            author: 'Даниил Баженов',
-                            text: 'Строительный мусор',
-                            size: 'Тележка',
-                            humanDate: '1 октября 2019',
-                        }];
+                        },];
 
                         app.preloader.hide();
 
                         self.$setState({
                             objects: objects,
                         });
+
+                        // Remove me someday
+                        // if (self.objects.length > 3) {
+                        //     $$('.page-content').on('scroll', handleScroll);
+                        // } else {
+                        //     $$('.fab').removeClass('fab-hidden');
+                        // }
+
+                        $$('.fab').removeClass('fab-hidden');
                     }, 1000);
                 // });
             },

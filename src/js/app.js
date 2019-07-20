@@ -25,6 +25,7 @@ var app = new Framework7({
   data: function () {
     return {
       authApiUrl: 'https://rvlasenko.simtechdev.us/fresh_backend/public/api',
+      authSocialApiUrl: 'https://rvlasenko.simtechdev.us/fresh_backend/public/oauth/token',
       mainApiUrl: '',
     };
   },

@@ -5,7 +5,7 @@ import RegisterPage from '../pages/app/register.f7.html';
 import LoginPage from '../pages/app/login.f7.html';
 import NotFoundPage from '../pages/404.f7.html';
 import ObjectPage from '../pages/app/object.f7.html';
-import ObjectsFiltersPage from '../pages/app/object-filters.f7.html';
+import ObjectFiltersPage from '../pages/app/object-filters.f7.html';
 import CreateObjectPage from '../pages/app/create-object.f7.html';
 import UserProfile from '../pages/app/profile.f7.html';
 
@@ -35,7 +35,7 @@ var routes = [
   },
   {
     path: '/objects-filters',
-    component: ObjectsFiltersPage,
+    component: ObjectFiltersPage,
   },
   {
     path: '/create-object',

@@ -98,6 +98,7 @@
                     app.preloader.show();
 
                     var formData = app.form.convertToData('#register-form');
+                    formData['user_type'] = 2;
 
                     app.request.postJSON(this.$root.authApiUrl + '/register', formData, function(success, status) {
                         console.log(status, success.data.access_token);

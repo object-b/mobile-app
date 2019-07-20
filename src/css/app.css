@@ -46,3 +46,13 @@
 .trash-card-footer .item-after {
     align-self: center;
 }
+
+.fab.fab-hidden {
+    transform: scale(0);
+    transition: transform .2s linear;
+}
+
+.fab {
+    transform: scale(1);
+    transition: transform .2s linear;
+}
