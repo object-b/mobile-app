@@ -30,9 +30,13 @@ node_modules/
 # dotenv environment variables file
 .env
 
+# Simple config
+src/config.json
+
 # Misc
 .DS_Store
 Thumbs.db
+.vscode
 
 # Cordova
 cordova/platforms/

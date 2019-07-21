@@ -55,17 +55,20 @@
                 <div class="block">
                     <div class="row">
                         <div class="col-33">
-                            <button class="button button-fill icon-inside" style="background-color: #4c75a3;">
+                            <button @click="$root.socialLoginVkontakte()" class="button button-fill icon-inside"
+                                style="background-color: #4c75a3;">
                                 <i class="fab fa-vk size-22"></i>
                             </button>
                         </div>
-                        <div class="col-33">
-                            <button class="button button-fill icon-inside" style="background-color: #ed812b;">
+                        <!-- <div class="col-33">
+                            <button class="button button-fill icon-inside"
+                                style="background-color: #ed812b;">
                                 <i class="fab fa-odnoklassniki size-22"></i>
                             </button>
-                        </div>
+                        </div> -->
                         <div class="col-33">
-                            <button class="button button-fill icon-inside" style="background-color: #3b5999;">
+                            <button @click="$root.socialLoginFacebook()" class="button button-fill icon-inside"
+                                style="background-color: #3b5999;">
                                 <i class="fab fa-facebook size-22"></i>
                             </button>
                         </div>
@@ -77,6 +80,7 @@
 </template>
 <script>
     import { get, set } from 'idb-keyval';
+    import * as config from '../../config';
 
     export default {
         methods: {
@@ -100,19 +104,19 @@
                     var formData = app.form.convertToData('#register-form');
                     formData['user_type'] = 2;
 
-                    app.request.postJSON(this.$root.authApiUrl + '/register', formData, function(success, status) {
+                    app.request.postJSON(config.backendPublicUrl + '/api/register', formData, function (success, status) {
                         console.log(status, success.data.access_token);
 
                         // Авторизационный токен сгенерированный laravel
                         set('AUTH_TOKEN', success.data.access_token)
-                            .then(function() {
+                            .then(function () {
                                 router.navigate('/objects-list');
                                 app.preloader.hide();
                             })
-                            .catch(function(error) {
+                            .catch(function (error) {
                                 self.$root.openAuthToast(error);
                             });
-                    }, function(error, status) {
+                    }, function (error, status) {
                         if (status === 401) {
                             var msg = JSON.parse(error.response).message;
                             self.$root.openAuthToast(msg);
