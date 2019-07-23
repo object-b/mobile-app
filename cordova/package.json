@@ -17,6 +17,7 @@
     "cordova-ios": "^5.0.1",
     "cordova-plugin-facebook4": "5.0.0",
     "cordova-plugin-keyboard": "^1.2.0",
+    "cordova-plugin-network-information": "^2.0.2",
     "cordova-plugin-splashscreen": "^5.0.3",
     "cordova-plugin-statusbar": "^2.4.3",
     "cordova-plugin-wkwebview-engine": "^1.2.0",
@@ -38,7 +39,8 @@
       },
       "cordova-vk-auth": {
         "VK_APP_ID": "7064627"
-      }
+      },
+      "cordova-plugin-network-information": {}
     },
     "platforms": [
       "ios",

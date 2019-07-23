@@ -33,6 +33,12 @@ var app = new Framework7({
     },
     // App root methods
     methods: {
+        // https://github.com/apache/cordova-plugin-network-information
+        deviceIsOffline: function() {
+            var networkState = navigator.connection.type;
+
+            return networkState === Connection.NONE;
+        },
         openAuthToast: function (message) {
             app.toast.create({
                 text: message,

@@ -1,6 +1,6 @@
 # Mobile app
 
-## Notes
+## Заметки
 
 master branch - es2015  
 react branch - react js
@@ -11,19 +11,20 @@ react branch - react js
 
 Для vkontakte была зашита переменная `--variable VK_APP_ID=**` которая дублирована в app.js.
 
-## Local deploy
+## Деплой
 
 ```
+cd mobile-app
 npm i
+cp src/config.json.example src/config.json
+nano src/config.json
 ```
 
 Информация будет дополняться.
 
-## NPM Scripts
-
-* `npm start` - run development server
-* `npm run build-prod` - build web app for production
-* `npm run build-dev` - build web app using development mode (faster build without minification and optimization)
+## NPM комманды
+* `npm run build-cordova-android-dev && cd cordova && cordova run android` - билд .apk и запуск его на эмуляторе с помощью Android Studio AVD
+* `npm start` - запустить локальный сервер на localhost с live reload
 * `npm run build-cordova-prod` - build cordova's `www` folder from and build cordova app
 * `npm run build-cordova-dev` - build cordova's `www` folder from and build cordova app using development mode (faster build without minification and optimization)
 * `npm run build-cordova-ios-prod` - build cordova's `www` folder from and build cordova iOS app

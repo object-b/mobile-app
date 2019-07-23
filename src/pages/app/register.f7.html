@@ -19,8 +19,7 @@
                             <div class="item-inner">
                                 <div class="item-title item-label">Имя</div>
                                 <div class="item-input-wrap">
-                                    <input type="text" name="name" placeholder="Ваше имя" required validate
-                                        data-vaildate-on-blur="true">
+                                    <input type="text" name="name" placeholder="Ваше имя" required>
                                 </div>
                             </div>
                         </li>
@@ -28,8 +27,7 @@
                             <div class="item-inner">
                                 <div class="item-title item-label">Электронная почта</div>
                                 <div class="item-input-wrap">
-                                    <input type="email" name="email" placeholder="Адрес вашей почты" required validate
-                                        data-vaildate-on-blur="true">
+                                    <input type="email" name="email" placeholder="Адрес вашей почты" required>
                                 </div>
                             </div>
                         </li>
@@ -37,8 +35,7 @@
                             <div class="item-inner">
                                 <div class="item-title item-label">Пароль</div>
                                 <div class="item-input-wrap">
-                                    <input type="password" name="password" placeholder="Придумайте пароль" required
-                                        validate data-vaildate-on-blur="true" minlength="6">
+                                    <input type="password" name="password" placeholder="Придумайте пароль" required minlength="6">
                                 </div>
                             </div>
                         </li>
@@ -92,11 +89,14 @@
 
                 // Test
                 // var temp = {
-                //     'name': 'John',
-                //     'email': 'john@doe.com',
+                //     'name': 'Roman',
+                //     'email': 'rvlasenko@simtechdev.com',
                 //     'password': 'qwerty',
                 // }
                 // app.form.fillFromData('#register-form', temp);
+
+                // Проверить все поля ввода с помощью f7
+                app.input.validateInputs($$('#register-form'));
 
                 if ($$('#register-form')[0].checkValidity()) {
                     app.preloader.show();
@@ -104,8 +104,15 @@
                     var formData = app.form.convertToData('#register-form');
                     formData['user_type'] = 2;
 
+                    // Проверка на наличие интернета
+                    if (self.$root.deviceIsOffline()) {
+                        self.$root.openAuthToast('Пожалуйста, подключитесь к интернету, чтобы продолжить');
+                        app.preloader.hide();
+                        return;
+                    }
+
                     app.request.postJSON(config.backendPublicUrl + '/api/register', formData, function (success, status) {
-                        console.log(status, success.data.access_token);
+                        // console.log(status, success.data.access_token);
 
                         // Авторизационный токен сгенерированный laravel
                         set('AUTH_TOKEN', success.data.access_token)
@@ -129,5 +136,15 @@
                 }
             },
         },
+        on: {
+            pageInit: function(e, page) {
+                var $$ = this.$$;
+                var app = this.$f7;
+
+                $$(document).on('blur', 'input', function() {
+                    app.input.validate($$(this));
+                }, true);
+            }
+        }
     };
 </script>
