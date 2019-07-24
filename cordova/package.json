@@ -15,7 +15,9 @@
   "dependencies": {
     "cordova-android": "^8.0.0",
     "cordova-ios": "^5.0.1",
+    "cordova-plugin-camera-with-exif": "^1.2.7",
     "cordova-plugin-facebook4": "5.0.0",
+    "cordova-plugin-geolocation": "4.0.2",
     "cordova-plugin-keyboard": "^1.2.0",
     "cordova-plugin-network-information": "^2.0.2",
     "cordova-plugin-splashscreen": "^5.0.3",
@@ -40,7 +42,11 @@
       "cordova-vk-auth": {
         "VK_APP_ID": "7064627"
       },
-      "cordova-plugin-network-information": {}
+      "cordova-plugin-network-information": {},
+      "cordova-plugin-camera-with-exif": {
+        "ANDROID_SUPPORT_V4_VERSION": "27.+"
+      },
+      "cordova-plugin-geolocation": {}
     },
     "platforms": [
       "ios",

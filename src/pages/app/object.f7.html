@@ -13,7 +13,22 @@
         </div>
         <div class="page-content">
             {{#if object}}
-                {{object.status}}
+                <div class="block">
+                    <div data-pagination='{"el": ".swiper-pagination"}' data-space-between="10" data-slides-per-view="2" class="swiper-container swiper-init demo-swiper">
+                        <div class="swiper-pagination"></div>
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                <img src="https://via.placeholder.com/150C/" width="200">
+                            </div>
+                            <div class="swiper-slide">
+                                <img src="https://via.placeholder.com/750C/" width="200">
+                            </div>
+                            <div class="swiper-slide">
+                                <img src="https://via.placeholder.com/350C/" width="200">
+                            </div>
+                        </div>
+                    </div>
+                </div>
             {{/if}}
         </div>
     </div>
@@ -24,6 +39,10 @@
             return {
                 // empty initial data
                 object: null,
+                // object photos here
+                photos: [
+                    'https://cdn.framework7.io/placeholder/sports-1024x1024-1.jpg',
+                ],
             }
         },
         // Page Events
@@ -31,6 +50,7 @@
             pageInit: function () {
                 var self = this;
                 var app = self.$app;
+                var $$ = self.$$;
                 var id = self.$route.params.objectId;
 
                 app.preloader.show();
@@ -56,6 +76,16 @@
                         });
                     }, 500);
                 // });
+
+                var myPhotoBrowserStandalone = app.photoBrowser.create({
+                    photos: this.photos,
+                    type: 'popup'
+                });
+
+                // Open photo browser on click
+                $$(document).on('click', '.swiper-slide', function() {
+                    myPhotoBrowserStandalone.open();
+                });
             },
         }
     }

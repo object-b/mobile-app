@@ -93,7 +93,7 @@
 
                     // Проверка на наличие интернета
                     if (self.$root.deviceIsOffline()) {
-                        self.$root.openAuthToast('Пожалуйста, подключитесь к интернету, чтобы продолжить');
+                        self.$root.openTimeoutToast('Пожалуйста, подключитесь к интернету, чтобы продолжить');
                         app.preloader.hide();
                         return;
                     }
@@ -108,14 +108,14 @@
                                 app.preloader.hide();
                             })
                             .catch(function(error) {
-                                self.$root.openAuthToast(error);
+                                self.$root.openTimeoutToast(error);
                             });
                     }, function(error, status) {
                         if (status === 401) {
                             var msg = JSON.parse(error.response).message;
-                            self.$root.openAuthToast(msg);
+                            self.$root.openTimeoutToast(msg);
                         } else {
-                            self.$root.openAuthToast('Login error. Code ' + status);
+                            self.$root.openTimeoutToast('Login error. Code ' + status);
                         }
 
                         app.preloader.hide();

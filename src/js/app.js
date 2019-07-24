@@ -35,11 +35,15 @@ var app = new Framework7({
     methods: {
         // https://github.com/apache/cordova-plugin-network-information
         deviceIsOffline: function() {
-            var networkState = navigator.connection.type;
+            // if (app.device.cordova) {
+            //     var networkState = navigator.connection.type;
 
-            return networkState === Connection.NONE;
+            //     return networkState === Connection.NONE;
+            // }
+
+            return !navigator.onLine;
         },
-        openAuthToast: function (message) {
+        openTimeoutToast: function (message) {
             app.toast.create({
                 text: message,
                 position: 'bottom',

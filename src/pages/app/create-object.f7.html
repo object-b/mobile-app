@@ -8,11 +8,35 @@
                         <span class="ios-only">Назад</span>
                     </a>
                 </div>
-                <div class="title">Создание</div>
+                {{#if photos}}
+                    <div class="right">
+                        <a href="#" class="link">
+                            <span>Создать</span>
+                        </a>
+                    </div>
+                {{/if}}
+                <!-- <div class="title">Создание</div> -->
             </div>
         </div>
         <div class="page-content">
-            1234
+            <div data-pagination='{"el": ".swiper-pagination"}' data-space-between="50" data-observer="true" class="swiper-container swiper-init demo-swiper object-photo-slider object-create-slider-hidden">
+                <div class="swiper-pagination"></div>
+                <div class="swiper-wrapper">
+                    {{#each photos}}
+                        <div class="swiper-slide">
+                            <img src="{{this}}" class="uploaded-camera-image">
+                        </div>
+                    {{/each}}
+                </div>
+            </div>
+            <div class="demo-swiper object-photo-slider-empty">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        Вы должны сделать хотя бы одну фотографию
+                    </div>
+                </div>
+            </div>
+            <div class="block-title block-title-medium object-header" @click="updateSliderAfterAdding('https://via.placeholder.com/1000/')">Адрес</div>
         </div>
     </div>
 </template>
@@ -20,14 +44,133 @@
     export default {
         data: function () {
             return {
-                // empty initial data
+                // empty initial object
                 object: null,
+                // created photos here
+                photos: null,
+                // instance of photo browser
+                myPhotoBrowserPopup: null,
+                // user geolocation here
+                userLocation: null
             }
+        },
+        methods: {
+            updateSliderAfterAdding: function(photoLink) {
+                var self = this;
+                var app = self.$app;
+                var $$ = self.$$;
+                // Because it's null, define array
+                var currentPhotos = self.photos || [];
+                var photoBrowserSettings = {
+                    photos: null,
+                    type: 'popup',
+                    navbarOfText: 'из',
+                    backLinkText: 'Закрыть',
+                    renderToolbar: function() {
+                        const toolbarHtml = `
+                            <div class="toolbar toolbar-bottom tabbar">
+                                <div class="toolbar-inner">
+                                <a class="link photo-browser-prev">
+                                    <i class="icon icon-back"></i>
+                                </a>
+                                <a tabindex="0" role="button" class="link">
+                                    <i class="f7-icons if-not-md">trash_fill</i>
+                                    <i class="material-icons md-only">delete_forever</i>
+                                </a>
+                                <a class="link photo-browser-next">
+                                    <i class="icon icon-forward"></i>
+                                </a>
+                                </div>
+                            </div>
+                        `.trim();
+                        
+                        return toolbarHtml;
+                    }
+                };
+
+                currentPhotos.push(photoLink);
+
+                // Set virtual DOM state
+                self.$setState({
+                    photos: currentPhotos
+                });
+
+                // Load photos to slider
+                photoBrowserSettings.photos = currentPhotos;
+                self.myPhotoBrowserPopup = app.photoBrowser.create(photoBrowserSettings);
+
+                // Show hidden photo slider after first adding
+                $$('.object-photo-slider').removeClass('object-create-slider-hidden');
+                $$('.object-photo-slider-empty').hide();
+
+                // Get current location after photo
+                if (!self.userLocation) {
+                    self.getMapLocation();
+                }
+            },
+            // Get geo coordinates
+            getMapLocation: function () {
+                navigator.geolocation.getCurrentPosition(this.onMapSuccess, this.onMapError, {
+                    enableHighAccuracy: true
+                });
+            },
+            // Success callback for get geo coordinates
+            onMapSuccess: function (position) {
+                this.userLocation = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                };
+
+                alert(JSON.stringify(this.userLocation));
+            },
+            // Error callback
+            onMapError: function (error) {
+                this.$root.openTimeoutToast('code: ' + error.code + '\n' + 'message: ' + error.message + '\n');
+            },
+            getOptions: function (srcType) {
+                return {
+                    // Some common settings are 20, 50, and 100
+                    quality: 80,
+                    destinationType: Camera.DestinationType.FILE_URI,
+                    // In this app, dynamically set the picture source, Camera or photo gallery
+                    sourceType: srcType,
+                    encodingType: Camera.EncodingType.JPEG,
+                    mediaType: Camera.MediaType.PICTURE,
+                    targetWidth: 600, // do we need this?
+                    targetHeight: 600,
+                    correctOrientation: true, // Corrects Android orientation quirks
+                };
+            },
+            cameraSuccess: function (result) {
+                var self = this;
+                var app = self.$app;
+                var $$ = self.$$;
+                // convert JSON string to JSON Object
+                var jsonObject = JSON.parse(result);
+
+                self.updateSliderAfterAdding(jsonObject.filename);
+            },
+            cameraError: function (message) {
+                this.$root.openTimeoutToast("Unable to obtain picture: " + message);
+            },
         },
         // Page Events
         on: {
             pageInit: function () {
-                
+                var self = this;
+                var app = self.$app;
+                var $$ = self.$$;
+
+                // Open camera on page init
+                if (app.device.cordova) {
+                    var cameraOptions = self.getOptions(Camera.PictureSourceType.CAMERA);
+                    navigator.camera.getPicture(self.cameraSuccess, self.cameraError, cameraOptions);
+                }
+
+                // Open photo browser on click
+                $$(document).on('click', '.uploaded-camera-image', function() {
+                    self.myPhotoBrowserPopup.open();
+                });
             },
         }
     }

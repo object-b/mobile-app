@@ -6,12 +6,16 @@
 
 /* Your app custom styles here */
 
+.size-20 {
+    font-size: 20px;
+}
+
 .size-22 {
-    font-size: 22px
+    font-size: 22px;
 }
 
 .size-25 {
-    font-size: 25px
+    font-size: 25px;
 }
 
 .button.icon-inside {
@@ -45,6 +49,7 @@
 
 .trash-card-footer .item-after {
     align-self: center;
+    font-size: 14px;
 }
 
 .fab.fab-hidden {
@@ -55,4 +60,124 @@
 .fab {
     transform: scale(1);
     transition: transform .2s linear;
+}
+
+.object-images-content {
+    display: flex;
+    justify-content: space-between;
+    box-sizing: border-box;
+    align-items: center;
+    min-height: var(--f7-list-item-min-height);
+    margin: 1em 0;
+}
+
+.object-images-content .item-media {
+    align-self: flex-start;
+    position: relative;
+}
+
+.object-images-content.item-media {
+    display: flex;
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+    align-items: center;
+    box-sizing: border-box;
+    padding-bottom: var(--f7-list-item-padding-vertical);
+    padding-top: var(--f7-list-item-padding-vertical);
+}
+
+.object-images-content .item-inner {
+    display: block;
+    align-self: stretch;
+}
+
+.object-images-content .item-inner {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    justify-content: space-around;
+    box-sizing: border-box;
+    align-items: center;
+    align-self: stretch;
+    padding-top: var(--f7-list-item-padding-vertical);
+    padding-bottom: var(--f7-list-item-padding-vertical);
+    min-height: var(--f7-list-item-min-height);
+    padding-right: calc(var(--f7-list-item-padding-horizontal) + var(--f7-safe-area-right));
+    padding-left: calc(var(--f7-list-item-padding-horizontal) + var(--f7-safe-area-right));
+}
+
+.object-images-content .badge.object-count {
+    position: absolute;
+    right: -9px;
+    top: -9px;
+    height: 22px;
+    min-width: 22px;
+}
+
+.media-list .item-media img, .object-images-content .item-media img {
+    border-radius: 2px;
+}
+
+.object-add-photo, .object-attach-photo {
+    font-size: 40px;
+}
+
+.demo-swiper .swiper-slide {
+    font-size: 25px;
+    font-weight: 300;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fff;
+    color: #000;
+}
+
+.demo-swiper .swiper-slide {
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    background: #fff;
+}
+
+.object-photo-slider .swiper-slide {
+    border: none;
+}
+
+.object-photo-slider-empty .swiper-slide {
+    border: none;
+    border-bottom: 1px solid #ddd;
+}
+
+.object-header {
+    margin-top: 16px;
+    font-size: 20px;
+}
+
+.demo-swiper {
+    font-size: 18px;
+    height: 150px;
+}
+
+.demo-swiper.demo-swiper-auto .swiper-slide {
+    width: 85%;
+}
+
+.demo-swiper.demo-swiper-auto .swiper-slide:nth-child(2n) {
+    width: 70%;
+}
+
+.demo-swiper.demo-swiper-auto .swiper-slide:nth-child(3n) {
+    width: 30%;
+}
+
+.demo-swiper.object-photo-slider-empty .swiper-slide {
+    font-size: 20px;
+    font-weight: 300;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.object-create-slider-hidden {
+    visibility: hidden;
+    height: 0;
 }
