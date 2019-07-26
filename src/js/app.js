@@ -43,7 +43,7 @@ var app = new Framework7({
 
             return !navigator.onLine;
         },
-        openTimeoutToast: function (message) {
+        openNotification: function (message) {
             app.toast.create({
                 text: message,
                 position: 'bottom',

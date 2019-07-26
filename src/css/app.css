@@ -6,6 +6,14 @@
 
 /* Your app custom styles here */
 
+.size-16 {
+    font-size: 16px;
+}
+
+.size-18 {
+    font-size: 18px;
+}
+
 .size-20 {
     font-size: 20px;
 }
@@ -119,10 +127,6 @@
     border-radius: 2px;
 }
 
-.object-add-photo, .object-attach-photo {
-    font-size: 40px;
-}
-
 .demo-swiper .swiper-slide {
     font-size: 25px;
     font-weight: 300;
@@ -149,13 +153,18 @@
 }
 
 .object-header {
-    margin-top: 16px;
+    /* margin-top: 16px; */
     font-size: 20px;
 }
 
 .demo-swiper {
     font-size: 18px;
     height: 150px;
+}
+
+.object-photo-slider.demo-swiper {
+    height: 200px;
+    overflow: initial;
 }
 
 .demo-swiper.demo-swiper-auto .swiper-slide {
@@ -177,7 +186,36 @@
     line-height: 1.4;
 }
 
-.object-create-slider-hidden {
+.demo-swiper.object-create-slider-hidden {
     visibility: hidden;
     height: 0;
+}
+
+.fab.object-add-photo, .fab.object-attach-photo {
+    position: absolute;
+    bottom: -25px;
+}
+
+.fab.object-add-photo {
+    right: 91px;
+}
+
+.fab.object-attach-photo {
+    right: 21px;
+}
+
+.fab.object-add-photo>a, .fab.object-attach-photo>a {
+    width: 50px;
+    height: 50px;
+}
+
+.uploaded-camera-image {
+    max-width: 100%;
+    object-fit: cover;
+}
+
+.header-address {
+    margin-top: 45px;
+    display: flex;
+    justify-content: space-between;
 }

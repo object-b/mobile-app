@@ -9,34 +9,188 @@
                     </a>
                 </div>
                 {{#if photos}}
-                    <div class="right">
-                        <a href="#" class="link">
-                            <span>Создать</span>
-                        </a>
-                    </div>
+                <div class="right">
+                    <a href="#" class="link" @click="submitCreateForm">
+                        <span>Создать</span>
+                    </a>
+                </div>
                 {{/if}}
                 <!-- <div class="title">Создание</div> -->
             </div>
         </div>
         <div class="page-content">
-            <div data-pagination='{"el": ".swiper-pagination"}' data-space-between="50" data-observer="true" class="swiper-container swiper-init demo-swiper object-photo-slider object-create-slider-hidden">
+            <form id="object-create-form">
+            <div data-pagination='{"el": ".swiper-pagination"}' data-space-between="50" data-observer="true"
+                class="swiper-container swiper-init demo-swiper object-photo-slider object-create-slider-hidden">
                 <div class="swiper-pagination"></div>
                 <div class="swiper-wrapper">
                     {{#each photos}}
-                        <div class="swiper-slide">
-                            <img src="{{this}}" class="uploaded-camera-image">
-                        </div>
+                    <div class="swiper-slide">
+                        <img src="{{this}}" class="uploaded-camera-image" width="1000" height="200">
+                    </div>
                     {{/each}}
                 </div>
-            </div>
-            <div class="demo-swiper object-photo-slider-empty">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide">
-                        Вы должны сделать хотя бы одну фотографию
-                    </div>
+                <div class="fab object-add-photo" @click="launchCamera">
+                    <a href="#">
+                        <i class="f7-icons if-not-md">camera_fill</i>
+                        <i class="material-icons md-only">add_a_photo</i>
+                    </a>
+                </div>
+                <div class="fab object-attach-photo">
+                    <a href="#">
+                        <i class="f7-icons if-not-md">attachment</i>
+                        <i class="material-icons md-only">attach_file</i>
+                    </a>
                 </div>
             </div>
-            <div class="block-title block-title-medium object-header" @click="updateSliderAfterAdding('https://via.placeholder.com/1000/')">Адрес</div>
+
+            <div class="demo-swiper object-photo-slider-empty" style="position: relative;">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        Вы должны внести хотя бы одну фотографию
+                    </div>
+                </div>
+                <div class="fab object-add-photo" @click="launchCamera">
+                    <a href="#">
+                        <i class="f7-icons if-not-md">camera_fill</i>
+                        <i class="material-icons md-only">add_a_photo</i>
+                    </a>
+                </div>
+                <div class="fab object-attach-photo" @click="selectFromGallery">
+                    <a href="#">
+                        <i class="f7-icons if-not-md">attachment</i>
+                        <i class="material-icons md-only">attach_file</i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="block-title block-title-medium object-header header-address">
+                <span @click="updateSliderAfterAdding('https://placekitten.com/500/500')">Адрес</span>
+                <a class="link size-16" href="#" @click="changeMapPosition">
+                    <span>Изменить точку на карте</span>
+                </a>
+            </div>
+            <div class="block">
+                <p>Here comes paragraph within content block. Donec et nulla auctor massa pharetra adipiscing ut sit
+                    amet sem. Suspendisse molestie velit vitae mattis tincidunt. Ut sit amet quam mollis, vulputate
+                    turpis vel, sagittis felis. </p>
+            </div>
+
+            <div class="block-title block-title-medium object-header">Количество мусора</div>
+            <div class="list">
+                <ul>
+                    <li>
+                        <label class="item-radio item-content">
+                            <input type="radio" name="trash_size" value="Мешок" checked>
+                            <i class="icon icon-radio"></i>
+                            <div class="item-inner">
+                                <div class="item-title">Мешок</div>
+                            </div>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="item-radio item-content">
+                            <input type="radio" name="trash_size" value="Тачка">
+                            <i class="icon icon-radio"></i>
+                            <div class="item-inner">
+                                <div class="item-title">Тачка</div>
+                            </div>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="item-radio item-content">
+                            <input type="radio" name="trash_size" value="Машина">
+                            <i class="icon icon-radio"></i>
+                            <div class="item-inner">
+                                <div class="item-title">Машина</div>
+                            </div>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="block-title block-title-medium object-header">Тип мусора</div>
+            <div class="list">
+                <ul>
+                    <li>
+                        <label class="item-checkbox item-content">
+                            <input type="checkbox" name="trash_type" value="Бычки" />
+                            <i class="icon icon-checkbox"></i>
+                            <div class="item-inner">
+                                <div class="item-title">Бычки</div>
+                            </div>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="item-checkbox item-content">
+                            <input type="checkbox" name="trash_type" value="Бумага" />
+                            <i class="icon icon-checkbox"></i>
+                            <div class="item-inner">
+                                <div class="item-title">Бумага</div>
+                            </div>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="item-checkbox item-content">
+                            <input type="checkbox" name="trash_type" value="Продукты" />
+                            <i class="icon icon-checkbox"></i>
+                            <div class="item-inner">
+                                <div class="item-title">Продукты</div>
+                            </div>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="item-checkbox item-content">
+                            <input type="checkbox" name="trash_type" value="Экскременты" />
+                            <i class="icon icon-checkbox"></i>
+                            <div class="item-inner">
+                                <div class="item-title">Экскременты</div>
+                            </div>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="item-checkbox item-content">
+                            <input type="checkbox" name="trash_type" value="Стекло" />
+                            <i class="icon icon-checkbox"></i>
+                            <div class="item-inner">
+                                <div class="item-title">Стекло</div>
+                            </div>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="item-checkbox item-content">
+                            <input type="checkbox" name="trash_type" value="Металл" />
+                            <i class="icon icon-checkbox"></i>
+                            <div class="item-inner">
+                                <div class="item-title">Металл</div>
+                            </div>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="item-checkbox item-content">
+                            <input type="checkbox" name="trash_type" value="Строительный" />
+                            <i class="icon icon-checkbox"></i>
+                            <div class="item-inner">
+                                <div class="item-title">Строительный</div>
+                            </div>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="block-title block-title-medium object-header">Дополнительная информация</div>
+            <div class="list no-hairlines-md">
+                <ul>
+                    <li class="item-content item-input">
+                        <div class="item-inner no-padding-top">
+                            <div class="item-input-wrap">
+                                <textarea placeholder="Рядом остановка морг; это около шаурмечной; оно мешает моей собаке..." name="trash_description"></textarea>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            </form>
         </div>
     </div>
 </template>
@@ -55,10 +209,38 @@
             }
         },
         methods: {
-            updateSliderAfterAdding: function(photoLink) {
+            submitCreateForm: function () {
                 var self = this;
                 var app = self.$app;
                 var $$ = self.$$;
+
+                var formData = app.form.convertToData('#object-create-form');
+                console.log(formData)
+
+                if (!formData.trash_type.length) {
+                    self.$root.openNotification('Укажите как минимум один тип мусора.');
+                    return;
+                }
+
+                if (self.$root.deviceIsOffline()) {
+                    // Положить в очередь?
+                } else {
+
+                }
+            },
+            changeMapPosition: function () {
+                alert()
+            },
+            updateSliderAfterAdding: function (photoLink) {
+                var self = this;
+                var app = self.$app;
+                var $$ = self.$$;
+
+                if (self.photos && self.photos.length >= 4) {
+                    self.$root.openNotification('Вы не можете внести более 4 фотографий.');
+                    return;
+                }
+
                 // Because it's null, define array
                 var currentPhotos = self.photos || [];
                 var photoBrowserSettings = {
@@ -66,7 +248,7 @@
                     type: 'popup',
                     navbarOfText: 'из',
                     backLinkText: 'Закрыть',
-                    renderToolbar: function() {
+                    renderToolbar: function () {
                         const toolbarHtml = `
                             <div class="toolbar toolbar-bottom tabbar">
                                 <div class="toolbar-inner">
@@ -83,7 +265,7 @@
                                 </div>
                             </div>
                         `.trim();
-                        
+
                         return toolbarHtml;
                     }
                 };
@@ -102,11 +284,6 @@
                 // Show hidden photo slider after first adding
                 $$('.object-photo-slider').removeClass('object-create-slider-hidden');
                 $$('.object-photo-slider-empty').hide();
-
-                // Get current location after photo
-                if (!self.userLocation) {
-                    self.getMapLocation();
-                }
             },
             // Get geo coordinates
             getMapLocation: function () {
@@ -125,7 +302,7 @@
             },
             // Error callback
             onMapError: function (error) {
-                this.$root.openTimeoutToast('code: ' + error.code + '\n' + 'message: ' + error.message + '\n');
+                this.$root.openNotification('code: ' + error.code + '\n' + 'message: ' + error.message + '\n');
             },
             getOptions: function (srcType) {
                 return {
@@ -146,12 +323,21 @@
                 var app = self.$app;
                 var $$ = self.$$;
                 // convert JSON string to JSON Object
-                var jsonObject = JSON.parse(result);
+                var fileURL = JSON.parse(result).filename;
 
-                self.updateSliderAfterAdding(jsonObject.filename);
+                self.updateSliderAfterAdding(fileURL);
             },
             cameraError: function (message) {
-                this.$root.openTimeoutToast("Unable to obtain picture: " + message);
+                // Сюда скорее всего прилетит ошибка что юзер вышел из режима камеры
+                // this.$root.openNotification("Unable to obtain picture: " + message);
+            },
+            launchCamera: function () {
+                var cameraOptions = this.getOptions(Camera.PictureSourceType.CAMERA);
+                navigator.camera.getPicture(this.cameraSuccess, this.cameraError, cameraOptions);
+            },
+            selectFromGallery: function () {
+                var cameraOptions = this.getOptions(Camera.PictureSourceType.SAVEDPHOTOALBUM);
+                navigator.camera.getPicture(this.cameraSuccess, this.cameraError, cameraOptions);
             },
         },
         // Page Events
@@ -163,14 +349,18 @@
 
                 // Open camera on page init
                 if (app.device.cordova) {
-                    var cameraOptions = self.getOptions(Camera.PictureSourceType.CAMERA);
-                    navigator.camera.getPicture(self.cameraSuccess, self.cameraError, cameraOptions);
+                    self.launchCamera();
                 }
 
                 // Open photo browser on click
-                $$(document).on('click', '.uploaded-camera-image', function() {
+                $$(document).on('click', '.uploaded-camera-image', function () {
                     self.myPhotoBrowserPopup.open();
                 });
+
+                // Get current location after init
+                if (!self.userLocation) {
+                    self.getMapLocation();
+                }
             },
         }
     }
