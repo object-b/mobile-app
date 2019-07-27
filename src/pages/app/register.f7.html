@@ -86,6 +86,7 @@
                 var router = this.$f7router;
                 var $$ = this.$$;
                 var self = this;
+                var url = config.backendPublicUrl + '/api/register';
 
                 // Test
                 // var temp = {
@@ -102,7 +103,7 @@
                     app.preloader.show();
 
                     var formData = app.form.convertToData('#register-form');
-                    formData['user_type'] = 2;
+                    // formData['user_role_id'] = 2;
 
                     // Проверка на наличие интернета
                     if (self.$root.deviceIsOffline()) {
@@ -111,14 +112,16 @@
                         return;
                     }
 
-                    app.request.postJSON(config.backendPublicUrl + '/api/register', formData, function (success, status) {
+                    app.request.postJSON(url, formData, function (success, status) {
                         // console.log(status, success.data.access_token);
 
-                        // Авторизационный токен сгенерированный laravel
                         set('AUTH_TOKEN', success.data.access_token)
                             .then(function () {
+                                app.request.setup({
+                                    headers: {'Authorization': success.data.access_token}
+                                });
+
                                 router.navigate('/objects-list');
-                                app.preloader.hide();
                             })
                             .catch(function (error) {
                                 self.$root.openNotification(error);

@@ -28,27 +28,13 @@
                                     <div class="item-title trash-status-header">{{this.status}}</div>
                                 </div>
                                 <div class="item-subtitle">{{this.author}}</div>
-                                <div class="item-text">{{this.text}}</div>
+                                <!-- <div class="item-text">{{this.type}}</div> -->
                                 <div class="trash-card-footer">
-                                    <div class="chip chip-outline trash-transport">
-                                        <div class="chip-label">{{this.size}}</div>
-                                    </div>
+                                    <!-- <div class="chip chip-outline trash-transport"> -->
+                                        <!-- <div class="chip-label">{{this.size}}</div> -->
+                                    <!-- </div> -->
                                     <div class="item-after">{{this.humanDate}}</div>
                                 </div>
-                                <!-- <div class="chip trash-transport trash-transport-package">
-                                    <div class="chip-media bg-color-blue">
-                                        <i class="icon f7-icons if-not-md">shopping_cart</i>
-                                        <i class="icon material-icons md-only">shopping_cart</i>
-                                    </div>
-                                    <div class="chip-label">Тележка</div>
-                                </div>
-                                <div class="chip trash-transport trash-transport-truck">
-                                    <div class="chip-media bg-color-green">
-                                        <i class="icon f7-icons if-not-md">briefcase</i>
-                                        <i class="icon material-icons md-only">work</i>
-                                    </div>
-                                    <div class="chip-label">Пакет</div>
-                                </div> -->
                             </div>
                         </a>
                     </li>
@@ -66,6 +52,9 @@
     </div>
 </template>
 <script>
+    import { get, set } from 'idb-keyval';
+    import * as config from '../../config';
+
     export default {
         data: function () {
             return {
@@ -85,11 +74,38 @@
 
                 var previousScrollTop;
                 var currentScrollTop;
-
                 var scrollHeight;
                 var offsetHeight;
                 var reachEnd;
                 var action;
+
+                app.request.setup({
+                    headers: {
+                        'Authorization': localStorage.getItem('AUTH_TOKEN')
+                    }
+                });
+
+                app.preloader.show();
+
+                // request objects on page init
+                app.request.json(config.slimApiUrl + '/objects', (objects) => {
+                    // setTimeout(function () {
+                    app.preloader.hide();
+
+                    self.$setState({
+                        objects: objects,
+                    });
+
+                    // Remove me someday. Android FAB hiding.
+                    // if (self.objects.length > 3) {
+                    //     $$('.page-content').on('scroll', handleScroll);
+                    // } else {
+                    //     $$('.fab').removeClass('fab-hidden');
+                    // }
+
+                    $$('.fab').removeClass('fab-hidden');
+                    // }, 1000);
+                });
 
                 function handleScroll() {
                     const scrollContent = this;
@@ -121,64 +137,6 @@
 
                     previousScrollTop = currentScrollTop;
                 }
-
-                app.preloader.show();
-
-                // request data on page init
-                // app.request.get(config.slimApiUrl + '/get-all-objects', (objects) => {
-                // update component state with new state
-                    setTimeout(function () {
-                        // Test
-                        var objects = [{
-                            id: 23,
-                            status: 'Ожидает уборки',
-                            image: 'https://placekitten.com/300/300',
-                            author: 'Роман Власенко',
-                            text: 'Серый мир пропитан серыми приложениями',
-                            size: 'Машина',
-                            humanDate: '7 сентября 2019',
-                        }, {
-                            id: 13,
-                            status: 'Ждет подтверждения',
-                            image: 'https://placekitten.com/400/400',
-                            author: 'Даниил Баженов',
-                            text: 'Строительный мусор атакует свалки',
-                            size: 'Тележка',
-                            humanDate: '1 октября 2019',
-                        },{
-                            id: 23,
-                            status: 'Ожидает уборки',
-                            image: 'https://placekitten.com/500/500',
-                            author: 'Роман Власенко',
-                            text: 'Бытовые отходы не желают жить в мире со стеклом',
-                            size: 'Машина',
-                            humanDate: '7 сентября 2019',
-                        },{
-                            id: 23,
-                            status: 'Ожидает уборки',
-                            image: 'https://placekitten.com/600/600',
-                            author: 'Роман Власенко',
-                            text: 'Бытовые отходы, стекло, пластик, продукты',
-                            size: 'Машина',
-                            humanDate: '7 сентября 2019',
-                        },];
-
-                        app.preloader.hide();
-
-                        self.$setState({
-                            objects: objects,
-                        });
-
-                        // Remove me someday. Android FAB hiding.
-                        // if (self.objects.length > 3) {
-                        //     $$('.page-content').on('scroll', handleScroll);
-                        // } else {
-                        //     $$('.fab').removeClass('fab-hidden');
-                        // }
-
-                        $$('.fab').removeClass('fab-hidden');
-                    }, 1000);
-                // });
             },
             pageBeforeIn: function (e, page) {
                 this.$app.$('.toolbar').show();

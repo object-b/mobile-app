@@ -25,7 +25,7 @@ var app = new Framework7({
     name: 'Object b', // App name
     theme: 'auto', // Automatic theme detection
 
-    // App root data, can be used for config
+    // App root data, can be used for dummy data
     data: function () {
         return {
 
@@ -52,26 +52,24 @@ var app = new Framework7({
         },
         socialLoginFacebook: function () {
             var router = app.views.main.router;
-            var url = config.backendPublicUrl + '/oauth/token';
-            var authData = {
-                grant_type: 'social', // static 'social' value
-                client_id: config.backendOauthPasswordClientId, // client id
-                client_secret: config.backendOauthPasswordClientSecret, // client secret
-                provider: 'facebook', // name of provider (e.g., 'facebook', 'google' etc.)
-                access_token: '', // access token issued by specified provider
-            };
+            var url = config.backendPublicUrl + '/api/social';
 
             facebookConnectPlugin.login(['public_profile', 'email'], function (result) {
                 if (typeof result.authResponse.accessToken !== 'undefined') {
                     app.preloader.show();
 
                     // Добавляем токен, полученный от провайдера
-                    authData.access_token = result.authResponse.accessToken;
-
-                    app.request.postJSON(url, authData, function (success, status) {
+                    app.request.postJSON(url, {
+                        provider: 'facebook',
+                        access_token: result.authResponse.accessToken
+                    }, function (success, status) {
                         // console.log(status, success.access_token);
                         // Авторизационный токен сгенерированный laravel
                         set('AUTH_TOKEN', success.access_token).then(function () {
+                            app.request.setup({
+                                headers: {'Authorization': success.access_token}
+                            });
+
                             router.navigate('/objects-list');
                             app.preloader.hide();
                         }).catch(function (error) {
@@ -96,14 +94,7 @@ var app = new Framework7({
         },
         socialLoginVkontakte: function () {
             var router = app.views.main.router;
-            var url = config.backendPublicUrl + '/oauth/token';
-            var authData = {
-                grant_type: 'social',
-                client_id: config.backendOauthPasswordClientId,
-                client_secret: config.backendOauthPasswordClientSecret,
-                provider: 'vkontakte',
-                access_token: '',
-            };
+            var url = config.backendPublicUrl + '/api/social';
 
             SocialVk.init(config.vkontakteClientId);
             SocialVk.login(['email'], function (result) {
@@ -112,14 +103,18 @@ var app = new Framework7({
                 if (typeof jsonObject.token !== 'undefined') {
                     app.preloader.show();
 
-                    // Добавляем токен, полученный от провайдера
-                    authData.access_token = jsonObject.token;
-                    // TODO отправлять email вручную из jsonObject.email
-
-                    app.request.postJSON(url, authData, function (success, status) {
-                        // console.log(status, success.access_token);
+                    app.request.postJSON(url, {
+                        provider: 'vkontakte',
+                        access_token: jsonObject.token,
+                        email: jsonObject.email
+                    }, function (success, status) {
+                        console.log(status, success.access_token);
                         // Авторизационный токен сгенерированный laravel
                         set('AUTH_TOKEN', success.access_token).then(function () {
+                            app.request.setup({
+                                headers: {'Authorization': success.access_token}
+                            });
+
                             router.navigate('/objects-list');
                             app.preloader.hide();
                         }).catch(function (error) {
@@ -156,6 +151,10 @@ var app = new Framework7({
         overlay: Framework7.device.cordova && Framework7.device.ios || 'auto',
         iosOverlaysWebView: true,
         androidOverlaysWebView: false,
+    },
+    dialog: {
+        buttonOk: 'Да',
+        buttonCancel: 'Отмена',
     },
     // Global events
     on: {

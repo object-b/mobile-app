@@ -32,10 +32,13 @@
         methods: {
             logout: function () {
                 var router = this.$f7router;
+                var app = this.$f7;
                 
-                del('AUTH_TOKEN').then(function () {
-                    router.navigate('/intro');
-                })
+                app.dialog.confirm('Вы действительно хотите выйти из учетной записи?', function () {
+                    del('AUTH_TOKEN').then(function () {
+                        location.reload();
+                    });
+                });
             },
         },
     }

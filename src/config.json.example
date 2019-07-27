@@ -1,7 +1,5 @@
 {
     "backendPublicUrl": "",
     "slimApiUrl": "",
-    "backendOauthPasswordClientId": "",
-    "backendOauthPasswordClientSecret": "",
     "vkontakteClientId": ""
 }

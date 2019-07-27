@@ -75,6 +75,7 @@
                 var router = this.$f7router;
                 var $$ = this.$$;
                 var self = this;
+                var url = config.backendPublicUrl + '/api/login';
 
                 // Test
                 // var temp = {
@@ -98,14 +99,17 @@
                         return;
                     }
 
-                    app.request.postJSON(config.backendPublicUrl + '/api/login', formData, function(success, status) {
+                    app.request.postJSON(url, formData, function(success, status) {
                         // console.log(status, success.data.access_token);
 
                         // Авторизационный токен найденный laravel
                         set('AUTH_TOKEN', success.data.access_token)
                             .then(function() {
+                                app.request.setup({
+                                    headers: {'Authorization': success.data.access_token}
+                                });
+                                
                                 router.navigate('/objects-list');
-                                app.preloader.hide();
                             })
                             .catch(function(error) {
                                 self.$root.openNotification(error);

@@ -12,56 +12,58 @@ import UserProfile from '../pages/app/profile.f7.html';
 import { get, set } from 'idb-keyval';
 
 var routes = [
-  {
-    path: '/intro',
-    component: IntroPage,
-  },
-  {
-    path: '/objects-list',
-    async(routeTo, routeFrom, resolve, reject) {
-      get('AUTH_TOKEN').then(token => {
-        // Authentication check :)
-        if (typeof token !== 'undefined') {
-          resolve({ component: ObjectsListPage });
-        } else {
-          resolve({ component: IntroPage });
+    {
+        path: '/intro',
+        component: IntroPage,
+    },
+    {
+        path: '/objects-list',
+        async(routeTo, routeFrom, resolve, reject) {
+            get('AUTH_TOKEN').then(token => {
+                // Authentication check :)
+                if (typeof token !== 'undefined') {
+                    localStorage.setItem('AUTH_TOKEN', token);
+
+                    resolve({ component: ObjectsListPage });
+                } else {
+                    resolve({ component: IntroPage });
+                }
+            });
         }
-      });
-    }
-  },
-  {
-    path: '/object/:objectId',
-    component: ObjectPage,
-  },
-  {
-    path: '/objects-filters',
-    component: ObjectFiltersPage,
-  },
-  {
-    path: '/create-object',
-    component: CreateObjectPage,
-  },
-  {
-    path: '/objects-map',
-    component: ObjectsMapPage,
-  },
-  {
-    path: '/profile',
-    component: UserProfile,
-  },
-  {
-    path: '/login',
-    component: LoginPage,
-  },
-  {
-    path: '/register',
-    component: RegisterPage,
-  },
-  // Default route (404 page). MUST BE THE LAST
-  {
-    path: '(.*)',
-    component: NotFoundPage,
-  },
+    },
+    {
+        path: '/object/:objectId',
+        component: ObjectPage,
+    },
+    {
+        path: '/objects-filters',
+        component: ObjectFiltersPage,
+    },
+    {
+        path: '/create-object',
+        component: CreateObjectPage,
+    },
+    {
+        path: '/objects-map',
+        component: ObjectsMapPage,
+    },
+    {
+        path: '/profile',
+        component: UserProfile,
+    },
+    {
+        path: '/login',
+        component: LoginPage,
+    },
+    {
+        path: '/register',
+        component: RegisterPage,
+    },
+    // Default route (404 page). MUST BE THE LAST
+    {
+        path: '(.*)',
+        component: NotFoundPage,
+    },
 ];
 
 export default routes;
