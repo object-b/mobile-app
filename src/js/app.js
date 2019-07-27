@@ -1,5 +1,5 @@
 import $$ from 'dom7';
-import { get, set } from 'idb-keyval';
+import { get, set, del } from 'idb-keyval';
 import Framework7 from 'framework7/framework7.esm.bundle.js';
 
 // Import F7 Styles
@@ -43,6 +43,25 @@ var app = new Framework7({
 
             return !navigator.onLine;
         },
+        setAccessTokenInRequest: function (token) {
+            app.request.setup({
+                // Custom header because https://github.com/slimphp/Slim/issues/831
+                headers: {'X-Authorization': token}
+            });
+        },
+        errorRequestHandler: function(xhr, status) {
+            // Log maybe in slim?
+            var message = JSON.parse(xhr.response).message || 'Something strange';
+
+            console.log(status);
+
+            app.preloader.hide();
+            app.dialog.alert(message, function () {
+                del('AUTH_TOKEN').then(function () {
+                    location.reload();
+                });
+            });
+        },
         openNotification: function (message) {
             app.toast.create({
                 text: message,
@@ -67,7 +86,9 @@ var app = new Framework7({
                         // Авторизационный токен сгенерированный laravel
                         set('AUTH_TOKEN', success.access_token).then(function () {
                             app.request.setup({
-                                headers: {'Authorization': success.access_token}
+                                headers: {
+                                    'Authorization': 'Bearer '+success.access_token
+                                }
                             });
 
                             router.navigate('/objects-list');
@@ -112,7 +133,9 @@ var app = new Framework7({
                         // Авторизационный токен сгенерированный laravel
                         set('AUTH_TOKEN', success.access_token).then(function () {
                             app.request.setup({
-                                headers: {'Authorization': success.access_token}
+                                headers: {
+                                    'Authorization': 'Bearer '+success.access_token
+                                }
                             });
 
                             router.navigate('/objects-list');
@@ -153,7 +176,7 @@ var app = new Framework7({
         androidOverlaysWebView: false,
     },
     dialog: {
-        buttonOk: 'Да',
+        buttonOk: 'Ок',
         buttonCancel: 'Отмена',
     },
     // Global events

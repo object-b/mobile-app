@@ -117,9 +117,7 @@
 
                         set('AUTH_TOKEN', success.data.access_token)
                             .then(function () {
-                                app.request.setup({
-                                    headers: {'Authorization': success.data.access_token}
-                                });
+                                self.$root.setAccessTokenInRequest(success.data.access_token);
 
                                 router.navigate('/objects-list');
                             })

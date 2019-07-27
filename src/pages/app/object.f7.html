@@ -56,25 +56,22 @@
                 app.preloader.show();
 
                 // request data on page init
-                // app.request.get(this.$root.mainApiUrl + '/objects/' + id, (object) => {
-                    // update component state with new state
-                    setTimeout(function () {
-                        // Test
-                        var object = {
-                            status: 'Ожидает уборки',
-                            image: 'https://cdn.framework7.io/placeholder/people-160x160-1.jpg',
-                            author: 'Роман Власенко',
-                            text: 'Бытовые отходы, стекло, пластик, продукты',
-                            size: 'Машина',
-                            humanDate: '7 сентября 2019',
-                        };
+                // app.request.json(config.slimApiUrl + '/api/object/' + id, (objects) => {
+                    // Test
+                    var object = {
+                        status: 'Ожидает уборки',
+                        image: 'https://cdn.framework7.io/placeholder/people-160x160-1.jpg',
+                        author: 'Роман Власенко',
+                        text: 'Бытовые отходы, стекло, пластик, продукты',
+                        size: 'Машина',
+                        humanDate: '7 сентября 2019',
+                    };
 
-                        app.preloader.hide();
+                    app.preloader.hide();
 
-                        self.$setState({
-                            object: object,
-                        });
-                    }, 500);
+                    self.$setState({
+                        object: object,
+                    });
                 // });
 
                 var myPhotoBrowserStandalone = app.photoBrowser.create({

@@ -72,24 +72,12 @@
                 var app = self.$app;
                 var $$ = self.$$;
 
-                var previousScrollTop;
-                var currentScrollTop;
-                var scrollHeight;
-                var offsetHeight;
-                var reachEnd;
-                var action;
-
-                app.request.setup({
-                    headers: {
-                        'Authorization': localStorage.getItem('AUTH_TOKEN')
-                    }
-                });
+                self.$root.setAccessTokenInRequest(localStorage.getItem('AUTH_TOKEN'));
 
                 app.preloader.show();
 
                 // request objects on page init
-                app.request.json(config.slimApiUrl + '/objects', (objects) => {
-                    // setTimeout(function () {
+                app.request.json(config.slimApiUrl + '/api/objects', (objects) => {
                     app.preloader.hide();
 
                     self.$setState({
@@ -104,8 +92,14 @@
                     // }
 
                     $$('.fab').removeClass('fab-hidden');
-                    // }, 1000);
-                });
+                }, self.$root.errorRequestHandler);
+
+                var previousScrollTop;
+                var currentScrollTop;
+                var scrollHeight;
+                var offsetHeight;
+                var reachEnd;
+                var action;
 
                 function handleScroll() {
                     const scrollContent = this;
