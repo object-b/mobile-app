@@ -8,14 +8,11 @@
                         <span class="ios-only">Назад</span>
                     </a>
                 </div>
-                {{#if photos}}
                 <div class="right">
                     <a href="#" class="link" @click="submitCreateForm">
                         <span>Создать</span>
                     </a>
                 </div>
-                {{/if}}
-                <!-- <div class="title">Создание</div> -->
             </div>
         </div>
         <div class="page-content">
@@ -24,7 +21,7 @@
                 class="swiper-container swiper-init demo-swiper object-photo-slider object-create-slider-hidden">
                 <div class="swiper-pagination"></div>
                 <div class="swiper-wrapper">
-                    {{#each photos}}
+                    {{#each photosUrl}}
                     <div class="swiper-slide">
                         <img src="{{this}}" class="uploaded-camera-image" width="1000" height="200">
                     </div>
@@ -36,7 +33,7 @@
                         <i class="material-icons md-only">add_a_photo</i>
                     </a>
                 </div>
-                <div class="fab object-attach-photo">
+                <div class="fab object-attach-photo" @click="selectFromGallery">
                     <a href="#">
                         <i class="f7-icons if-not-md">attachment</i>
                         <i class="material-icons md-only">attach_file</i>
@@ -46,7 +43,7 @@
 
             <div class="demo-swiper object-photo-slider-empty" style="position: relative;">
                 <div class="swiper-wrapper">
-                    <div class="swiper-slide">
+                    <div class="swiper-slide hairline-bottom">
                         Вы должны внести хотя бы одну фотографию
                     </div>
                 </div>
@@ -70,10 +67,9 @@
                     <span>Изменить точку на карте</span>
                 </a>
             </div>
-            <div class="block">
-                <p>Here comes paragraph within content block. Donec et nulla auctor massa pharetra adipiscing ut sit
-                    amet sem. Suspendisse molestie velit vitae mattis tincidunt. Ut sit amet quam mollis, vulputate
-                    turpis vel, sagittis felis. </p>
+            
+            <div id="user-location" class="create-object-map">
+                <!-- Ваша локация здесь. Придумай текст -->
             </div>
 
             <div class="block-title block-title-medium object-header">Количество мусора</div>
@@ -191,12 +187,19 @@
             return {
                 // empty initial object
                 object: null,
-                // created photos here
-                photos: null,
+                // created photos here (fileUri://)
+                photosUrl: null,
                 // instance of photo browser
                 myPhotoBrowserPopup: null,
                 // user geolocation here
-                userLocation: null
+                userLocation: null,
+                // map html object
+                map: null,
+                // options for gps locate
+                gpsOptions: {
+                    enableHighAccuracy: true,
+                    maximumAge: 300000
+                }
             }
         },
         methods: {
@@ -204,19 +207,32 @@
                 var self = this;
                 var app = self.$app;
                 var $$ = self.$$;
-
                 var formData = app.form.convertToData('#object-create-form');
-                console.log(formData)
+                var objectData = {};
 
                 if (!formData.trash_type.length) {
                     self.$root.openNotification('Укажите как минимум один тип мусора.');
                     return;
                 }
 
+                console.log(formData, self.photosUrl, self.userLocation);
+
                 if (self.$root.deviceIsOffline()) {
                     // Положить в очередь?
                 } else {
-
+                    objectData = {
+                        "description": {
+                            "title": "",
+                            "description": formData.trash_description
+                        },
+                        "address": {
+                            "region": "ALA",
+                            "city": "Олатырь",
+                            "full_address": "улица не твое собачье дело дом 0",
+                            "latitude": self.userLocation.latitude,
+                            "longitude": self.userLocation.longitude
+                        }
+                    };
                 }
             },
             changeMapPosition: function () {
@@ -227,13 +243,13 @@
                 var app = self.$app;
                 var $$ = self.$$;
 
-                if (self.photos && self.photos.length >= 4) {
+                if (self.photosUrl && self.photosUrl.length >= 4) {
                     self.$root.openNotification('Вы не можете внести более 4 фотографий.');
                     return;
                 }
 
                 // Because it's null, define array
-                var currentPhotos = self.photos || [];
+                var currentPhotos = self.photosUrl || [];
                 var photoBrowserSettings = {
                     photos: null,
                     type: 'popup',
@@ -265,7 +281,7 @@
 
                 // Set virtual DOM state
                 self.$setState({
-                    photos: currentPhotos
+                    photosUrl: currentPhotos
                 });
 
                 // Load photos to slider
@@ -276,24 +292,53 @@
                 $$('.object-photo-slider').removeClass('object-create-slider-hidden');
                 $$('.object-photo-slider-empty').hide();
             },
-            // Get geo coordinates
             getMapLocation: function () {
-                navigator.geolocation.getCurrentPosition(this.onMapSuccess, this.onMapError, {
-                    enableHighAccuracy: true
+                var self = this;
+
+                self.map.locate({
+                    setView: true,
+                    maxZoom: 16,
+                    locateOptions: self.gpsOptions
                 });
+
+                self.map.on('locationfound', this.onLocationFound);
+                self.map.on('locationerror', this.onLocationError);
             },
-            // Success callback for get geo coordinates
-            onMapSuccess: function (position) {
-                this.userLocation = {
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude
+            onLocationFound: function (e) {
+                var self = this;
+                var radius = e.accuracy;
+                var msg = 'Приблизительное расположение в метрах - ' + radius + '.';
+
+                // Записать локацию для отправки на сервер
+                self.userLocation = {
+                    latitude: e.latitude,
+                    longitude: e.longitude,
                 };
 
-                alert(JSON.stringify(this.userLocation));
+                // Показать маркер и иконку
+                L.marker(e.latlng).addTo(self.map).bindPopup(msg, {
+                    maxWidth: 230
+                }).openPopup();
+
+                L.circle(e.latlng, radius, {
+                    weight: 1,
+                    color: '#136AEC'
+                }).addTo(self.map);
             },
-            // Error callback
-            onMapError: function (error) {
-                this.$root.openNotification('code: ' + error.code + '\n' + 'message: ' + error.message + '\n');
+            // Ошибка в определении локации
+            onLocationError: function (e) {
+                var self = this;
+                var app = self.$app;
+                var msg = 'Определить локацию автоматически не удалось. Попробуйте включить GPS, проверить права приложения или укажите вручную. Ошибка: ' + e.message;
+
+                app.dialog.alert(msg);
+
+                // console.log(e)
+                // Попробовать получить локацию еще раз?
+                // self.gpsOptions.enableHighAccuracy = false;
+                // if (!self.userLocation && app.device.cordova) {
+                //     self.getMapLocation();
+                // }
             },
             getOptions: function (srcType) {
                 return {
@@ -317,10 +362,23 @@
                 var fileURL = JSON.parse(result).filename;
 
                 self.updateSliderAfterAdding(fileURL);
+
+                // Получить локацию если её еще нет
+                if (!self.userLocation && app.device.cordova) {
+                    self.getMapLocation();
+                }
             },
             cameraError: function (message) {
-                // Сюда скорее всего прилетит ошибка что юзер вышел из режима камеры
+                var self = this;
+                var app = self.$app;
+
+                // Сюда скорее всего прилетит ошибка, что юзер вышел из режима камеры
                 // this.$root.openNotification("Unable to obtain picture: " + message);
+
+                // Получить локацию если её еще нет
+                if (!self.userLocation && app.device.cordova) {
+                    self.getMapLocation();
+                }
             },
             launchCamera: function () {
                 var cameraOptions = this.getOptions(Camera.PictureSourceType.CAMERA);
@@ -348,8 +406,20 @@
                     self.myPhotoBrowserPopup.open();
                 });
 
-                // Get current location after init
-                if (!self.userLocation) {
+                if (!self.map) {
+                    self.map = L.map('user-location', {
+                        loadingControl: true,
+                        gestureHandling: true,
+                        // zoom: 10,
+                    }).fitWorld();
+
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    }).addTo(self.map);
+                }
+
+                // Get current location after init for web
+                if (!app.device.cordova) {
                     self.getMapLocation();
                 }
             },

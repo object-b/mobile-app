@@ -6,10 +6,105 @@
             </div>
         </div>
         <div class="page-content">
-            <div class="block-title">About My App</div>
+            <div id="global-map" class="global-object-map"></div>
+        </div>
+
+        <div class="fab fab-right-bottom">
+            <a href="/create-object">
+                <i class="icon f7-icons">add</i>
+            </a>
         </div>
     </div>
 </template>
 <script>
-    export default {};
+    export default {
+        data: function () {
+            return {
+                // user geolocation here
+                userLocation: null,
+                // map html object
+                map: null,
+                // options for gps locate
+                gpsOptions: {
+                    enableHighAccuracy: true,
+                    maximumAge: 300000
+                }
+            }
+        },
+        methods: {
+            // Get geo coordinates
+            getMapLocation: function () {
+                var self = this;
+
+                self.map.locate({
+                    setView: true,
+                    maxZoom: 16,
+                    locateOptions: self.gpsOptions
+                });
+
+                self.map.on('locationfound', this.onLocationFound);
+                self.map.on('locationerror', this.onLocationError);
+            },
+            // Success callback
+            onLocationFound: function (e) {
+                var self = this;
+                var radius = e.accuracy;
+
+                self.userLocation = {
+                    latitude: e.latitude,
+                    longitude: e.longitude,
+                };
+
+                L.marker(e.latlng).addTo(self.map);
+
+                L.circle(e.latlng, radius, {
+                    weight: 1,
+                    color: '#136AEC'
+                }).addTo(self.map);
+            },
+            onLocationError: function (e) {
+                var self = this;
+                var app = self.$app;
+                var msg = 'Определить локацию автоматически не удалось. Попробуйте включить GPS или проверьте права приложения. Ошибка: ' + e.message;
+
+                app.dialog.alert(msg);
+
+                // Попробовать получить локацию еще раз?
+                // self.gpsOptions.enableHighAccuracy = false;
+                // if (!self.userLocation && app.device.cordova) {
+                //     self.getMapLocation();
+                // }
+            },
+        },
+        on: {
+            pageInit: function () {
+                var self = this;
+                var app = self.$app;
+                var $$ = self.$$;
+
+                if (!self.map) {
+                    self.map = L.map('global-map', {
+                        loadingControl: true,
+                        gestureHandling: false
+                    }).fitWorld();
+
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    }).addTo(self.map);
+
+                    // Иконка на карте для определения локации
+                    // L.control.locate({
+                    //     icon: 'fas fa-map-marker',
+                    //     drawCircle: false,
+                    //     drawMarker: false,
+                    //     strings: {
+                    //         title: ''
+                    //     }
+                    // }).addTo(self.map);
+                }
+
+                self.getMapLocation();
+            },
+        }
+    };
 </script>

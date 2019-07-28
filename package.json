@@ -73,6 +73,10 @@
     "framework7": "^4.4.6",
     "framework7-icons": "^2.3.1",
     "idb-keyval": "^3.2.0",
+    "leaflet": "^1.5.1",
+    "leaflet-gesture-handling": "^1.1.8",
+    "leaflet-loading": "^0.1.24",
+    "leaflet.locatecontrol": "^0.67.0",
     "template7": "^1.4.2"
   },
   "devDependencies": {

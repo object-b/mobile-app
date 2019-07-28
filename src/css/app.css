@@ -149,7 +149,7 @@
 
 .object-photo-slider-empty .swiper-slide {
     border: none;
-    border-bottom: 1px solid #ddd;
+    /* border-bottom: 1px solid #ddd; */
 }
 
 .object-header {
@@ -180,8 +180,8 @@
 }
 
 .demo-swiper.object-photo-slider-empty .swiper-slide {
-    font-size: 20px;
-    font-weight: 300;
+    font-size: 16px;
+    font-weight: 400;
     text-align: center;
     line-height: 1.4;
 }
@@ -197,7 +197,7 @@
 }
 
 .fab.object-add-photo {
-    right: 91px;
+    right: 95px;
 }
 
 .fab.object-attach-photo {
@@ -218,4 +218,62 @@
     margin-top: 45px;
     display: flex;
     justify-content: space-between;
+}
+
+.global-object-map {
+    height: 100%;
+}
+
+.create-object-map {
+    height: 320px;
+}
+
+.hairline-bottom::after {
+    content: '';
+    position: absolute;
+    background-color: var(--f7-list-border-color);
+    display: block;
+    z-index: 15;
+    top: auto;
+    right: auto;
+    bottom: 0;
+    left: 0;
+    height: 1px;
+    width: 100%;
+    transform-origin: 50% 100%;
+    transform: scaleY(calc(1 / 1));
+    transform: scaleY(calc(1 / var(--f7-device-pixel-ratio)));
+}
+
+.hairline-top::before {
+    content: '';
+    position: absolute;
+    background-color: var(--f7-list-border-color);
+    display: block;
+    z-index: 15;
+    top: 0;
+    right: auto;
+    bottom: auto;
+    left: 0;
+    height: 1px;
+    width: 100%;
+    transform-origin: 50% 0%;
+    transform: scaleY(calc(1 / 1));
+    transform: scaleY(calc(1 / var(--f7-device-pixel-ratio)));
+}
+
+.create-object-map-empty {
+    height: 150px;
+    font-size: 16px;
+    font-weight: 400;
+    text-align: center;
+    line-height: 1.4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.leaflet-container::after {
+    text-align: center;
 }

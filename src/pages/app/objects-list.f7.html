@@ -21,7 +21,7 @@
                     <li>
                         <a href="/object/{{this.id}}" class="item-link item-content">
                             <div class="item-media">
-                                <img src="{{this.image}}" width="120" />
+                                <img src="{{this.firstImage}}" width="120" />
                             </div>
                             <div class="item-inner">
                                 <div class="item-title-row">
@@ -33,7 +33,7 @@
                                     <!-- <div class="chip chip-outline trash-transport"> -->
                                         <!-- <div class="chip-label">{{this.size}}</div> -->
                                     <!-- </div> -->
-                                    <div class="item-after">{{this.humanDate}}</div>
+                                    <div class="item-after">{{this.date}}</div>
                                 </div>
                             </div>
                         </a>
@@ -44,7 +44,7 @@
             {{/if}}
         </div>
 
-        <div class="fab fab-right-bottom fab-hidden">
+        <div class="fab fab-right-bottom">
             <a href="/create-object">
                 <i class="icon f7-icons">add</i>
             </a>

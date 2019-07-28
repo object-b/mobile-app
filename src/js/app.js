@@ -16,6 +16,31 @@ import cordovaApp from './cordova-app.js';
 // Import Routes
 import routes from './routes.js';
 
+// Import leaflet JS
+import * as L from "leaflet";
+delete L.Icon.Default.prototype._getIconUrl;
+
+// Workaround for default marker icon
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+    iconUrl: require('leaflet/dist/images/marker-icon.png'),
+    shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+});
+
+// Import leaflet JS preloader
+import 'leaflet-loading/src/Control.Loading.js';
+import 'leaflet-loading/src/Control.Loading.css';
+
+// Import leaflet JS gestures for scrolling on object create
+import "leaflet/dist/leaflet.css";
+import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
+import { GestureHandling } from "leaflet-gesture-handling";
+L.Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
+
+// Import leaflet JS icon on global map
+// import "leaflet.locatecontrol/dist/L.Control.Locate.min.js";
+// import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
+
 // Simple app config
 import * as config from '../config';
 
@@ -191,5 +216,17 @@ var app = new Framework7({
     },
     navbar: {
         iosCenterTitle: false
+    }
+});
+
+$$('.tab').on('tab:show', function() {
+    var $tabEl = $$(this);
+    var tabId = $tabEl.attr('id');
+    
+    if (tabId === 'view-map') {
+        var viewEl = $$('#view-map');
+        var viewParams = $$(viewEl).dataset();
+
+        app.views.create(viewEl, viewParams);
     }
 });
