@@ -21,10 +21,10 @@
                 class="swiper-container swiper-init demo-swiper object-photo-slider object-create-slider-hidden">
                 <div class="swiper-pagination"></div>
                 <div class="swiper-wrapper">
-                    {{#each photosUrl}}
-                    <div class="swiper-slide">
-                        <img src="{{this}}" class="uploaded-camera-image" width="1000" height="200">
-                    </div>
+                    {{#each photoUrls}}
+                        <div class="swiper-slide">
+                            <img src="{{this}}" class="uploaded-camera-image" width="1000" height="200">
+                        </div>
                     {{/each}}
                 </div>
                 <div class="fab object-add-photo" @click="launchCamera">
@@ -68,9 +68,8 @@
                 </a>
             </div>
             
-            <div id="user-location" class="create-object-map">
-                <!-- Ваша локация здесь. Придумай текст -->
-            </div>
+            <div id="user-location" class="create-object-map"></div>
+            <span id="user-location-display-name"></span>
 
             <div class="block-title block-title-medium object-header">Количество мусора</div>
             <div class="list">
@@ -188,7 +187,7 @@
                 // empty initial object
                 object: null,
                 // created photos here (fileUri://)
-                photosUrl: null,
+                photoUrls: null,
                 // instance of photo browser
                 myPhotoBrowserPopup: null,
                 // user geolocation here
@@ -215,24 +214,19 @@
                     return;
                 }
 
-                console.log(formData, self.photosUrl, self.userLocation);
+                objectData = {
+                    "description": {
+                        "title": "",
+                        "description": formData.trash_description
+                    },
+                    "address": self.userLocation
+                };
+                console.log(objectData, self.photoUrls, self.userLocation);
 
                 if (self.$root.deviceIsOffline()) {
                     // Положить в очередь?
                 } else {
-                    objectData = {
-                        "description": {
-                            "title": "",
-                            "description": formData.trash_description
-                        },
-                        "address": {
-                            "region": "ALA",
-                            "city": "Олатырь",
-                            "full_address": "улица не твое собачье дело дом 0",
-                            "latitude": self.userLocation.latitude,
-                            "longitude": self.userLocation.longitude
-                        }
-                    };
+                    
                 }
             },
             changeMapPosition: function () {
@@ -243,13 +237,13 @@
                 var app = self.$app;
                 var $$ = self.$$;
 
-                if (self.photosUrl && self.photosUrl.length >= 4) {
+                if (self.photoUrls && self.photoUrls.length >= 4) {
                     self.$root.openNotification('Вы не можете внести более 4 фотографий.');
                     return;
                 }
 
                 // Because it's null, define array
-                var currentPhotos = self.photosUrl || [];
+                var currentPhotos = self.photoUrls || [];
                 var photoBrowserSettings = {
                     photos: null,
                     type: 'popup',
@@ -281,7 +275,7 @@
 
                 // Set virtual DOM state
                 self.$setState({
-                    photosUrl: currentPhotos
+                    photoUrls: currentPhotos
                 });
 
                 // Load photos to slider
@@ -306,14 +300,30 @@
             },
             onLocationFound: function (e) {
                 var self = this;
+                var app = self.$app;
+                var $$ = self.$$;
                 var radius = e.accuracy;
                 var msg = 'Приблизительное расположение в метрах - ' + radius + '.';
+                var nominatim = 'https://nominatim.openstreetmap.org/reverse?lat='+e.latitude+'&lon='+e.longitude+'&format=json';
 
-                // Записать локацию для отправки на сервер
-                self.userLocation = {
-                    latitude: e.latitude,
-                    longitude: e.longitude,
-                };
+                // Запросим название локации с помощью open street map
+                app.request.json(nominatim, (response) => {
+                    console.log(response);
+
+                    // Записать локацию для отправки на сервер
+                    self.userLocation = {
+                        "display_name": response.display_name,
+                        "city": response.address.city,
+                        "city_district": response.address.city_district || '',
+                        "county": response.address.county || '',
+                        "state": response.address.state || '',
+                        "country": response.address.country || '',
+                        "latitude": e.latitude,
+                        "longitude": e.longitude
+                    };
+
+                    $$('#user-location-display-name').text(response.display_name);
+                });
 
                 // Показать маркер и иконку
                 L.marker(e.latlng).addTo(self.map).bindPopup(msg, {
@@ -416,6 +426,8 @@
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     }).addTo(self.map);
+
+                    L.Control.geocoder().addTo(self.map);
                 }
 
                 // Get current location after init for web

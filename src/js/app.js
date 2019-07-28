@@ -41,6 +41,10 @@ L.Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
 // import "leaflet.locatecontrol/dist/L.Control.Locate.min.js";
 // import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
 
+// Import leaflet JS geocoding
+import "leaflet-control-geocoder/dist/Control.Geocoder.css";
+import "leaflet-control-geocoder/dist/Control.Geocoder.min.js";
+
 // Simple app config
 import * as config from '../config';
 
