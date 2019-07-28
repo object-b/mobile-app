@@ -133,7 +133,10 @@
                 }
             },
             pageBeforeIn: function (e, page) {
-                this.$app.$('.toolbar').show();
+                var self = this;
+                var $$ = self.$$;
+
+                $$('.toolbar').show();
             },
         }
     }

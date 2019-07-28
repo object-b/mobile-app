@@ -50,16 +50,20 @@ var app = new Framework7({
     name: 'Object b', // App name
     theme: 'auto', // Automatic theme detection
 
+    // App routes
+    routes: routes,
+
     // App root data, can be used for dummy data
     data: function () {
         return {
 
         };
     },
+
     // App root methods
     methods: {
         // https://github.com/apache/cordova-plugin-network-information
-        deviceIsOffline: function() {
+        deviceIsOffline: function () {
             // if (app.device.cordova) {
             //     var networkState = navigator.connection.type;
 
@@ -71,10 +75,10 @@ var app = new Framework7({
         setAccessTokenInRequest: function (token) {
             app.request.setup({
                 // Custom header because https://github.com/slimphp/Slim/issues/831
-                headers: {'X-Authorization': token}
+                headers: { 'X-Authorization': token }
             });
         },
-        errorRequestHandler: function(xhr, status) {
+        errorRequestHandler: function (xhr, status) {
             // Log maybe in slim?
             var message = JSON.parse(xhr.response).message || 'Something strange';
 
@@ -112,7 +116,7 @@ var app = new Framework7({
                         set('AUTH_TOKEN', success.access_token).then(function () {
                             app.request.setup({
                                 headers: {
-                                    'Authorization': 'Bearer '+success.access_token
+                                    'Authorization': 'Bearer ' + success.access_token
                                 }
                             });
 
@@ -159,7 +163,7 @@ var app = new Framework7({
                         set('AUTH_TOKEN', success.access_token).then(function () {
                             app.request.setup({
                                 headers: {
-                                    'Authorization': 'Bearer '+success.access_token
+                                    'Authorization': 'Bearer ' + success.access_token
                                 }
                             });
 
@@ -184,11 +188,39 @@ var app = new Framework7({
                 // Authenication error callback
                 // alert(JSON.stringify(error));
             });
+        },
+        onBackKeyDown: function () {
+            if (typeof app.popup.get('.popup') === 'undefined' && typeof app.dialog.get() === 'undefined') {
+                app.views.current.router.back();
+            } else {
+                if (typeof app.popup.get('.popup') !== 'undefined') {
+                    app.popup.get('.popup').close();
+                }
+
+                if (typeof app.dialog.get() !== 'undefined') {
+                    app.dialog.close();
+                }
+            }
+
+            return false;
+        },
+    },
+
+    // Global events
+    on: {
+        init: function () {
+            var f7 = this;
+            if (f7.device.cordova) {
+                // Init cordova APIs (see cordova-app.js)
+                cordovaApp.init(f7);
+            }
+        },
+        pageMounted: function (page) {
+            page.app.$('#app').show();
         }
     },
-    // App routes
-    routes: routes,
 
+    // Global settings
     // Input settings
     input: {
         scrollIntoViewOnFocus: Framework7.device.cordova && !Framework7.device.electron,
@@ -204,25 +236,15 @@ var app = new Framework7({
         buttonOk: 'Ок',
         buttonCancel: 'Отмена',
     },
-    // Global events
-    on: {
-        init: function () {
-            var f7 = this;
-            if (f7.device.cordova) {
-                // Init cordova APIs (see cordova-app.js)
-                cordovaApp.init(f7);
-            }
-        },
-    },
     navbar: {
         iosCenterTitle: false
-    }
+    },
 });
 
-$$('.tab').on('tab:show', function() {
+$$('.tab').on('tab:show', function () {
     var $tabEl = $$(this);
     var tabId = $tabEl.attr('id');
-    
+
     if (tabId === 'view-map') {
         var viewEl = $$('#view-map');
         var viewParams = $$(viewEl).dataset();
@@ -230,3 +252,9 @@ $$('.tab').on('tab:show', function() {
         app.views.create(viewEl, viewParams);
     }
 });
+
+function onDeviceReady() {
+    document.addEventListener("backbutton", app.methods.onBackKeyDown, false);
+}
+
+document.addEventListener('deviceready', onDeviceReady, false);
