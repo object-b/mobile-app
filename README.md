@@ -1,15 +1,26 @@
 # Mobile app
 
-## Заметки
+## Android
+## iOS
 
-master branch - es2015  
-react branch - react js
+# Social auth
+При установке facebook плагина были добавлены девелопмент значения **APP_ID** и **APP_NAME**, а для vkontakte **VK_APP_ID**. Надо придумать смену этих переменных для релиза.
 
-Для social auth используются аккаунты rvlasenko.
+## Facebook
 
-При установке facebook плагина использовались client_id и client_secret разработчика `--variable APP_ID="**" --variable APP_NAME="**"`, а для vkontakte app_id `--variable VK_APP_ID=**`. Для смены этих переменных (в релизе) плагин надо скорее всего переустановить с новыми переменными.
+Сгенерировать хэш адрес
+```
+keytool -exportcert -alias androiddebugkey -keystore ~/.android/debug.keystore | openssl sha1 -binary | openssl base64
+```
 
-## Деплой
+## Vkontakte
+
+Сгенерировать SHA1 "Отпечаток сертификата для Android" в котором потом удалить двоеточия
+```
+keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey
+```
+
+# Деплой
 
 ```
 cd mobile-app
@@ -18,9 +29,7 @@ cp src/config.json.example src/config.json
 nano src/config.json
 ```
 
-Информация будет дополняться.
-
-## NPM комманды
+## NPM команды
 * `npm run build-cordova-android-dev && cd cordova && cordova run android` - создание .apk, установка и запуск в эмуляторе Android Studio AVD
 * `npm start` - запуск локального сервера localhost:8080
 * `npm run build-cordova-prod` - build cordova's `www` folder from and build cordova app
