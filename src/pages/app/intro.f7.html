@@ -1,13 +1,11 @@
 <template>
     <div class="page" data-name="intro">
-        <!-- Top Navbar -->
         <div class="navbar">
             <div class="navbar-inner">
                 <div class="title">Object b</div>
             </div>
         </div>
 
-        <!-- Scrollable page content-->
         <div class="page-content">
             <div class="block block-strong">
                 <p>This is an example of tabs-layout application. The main point of such tabbed layout is that each tab
@@ -32,7 +30,6 @@
 </template>
 <script>
     export default {
-        // Page Events
         on: {
             pageBeforeIn: function (e, page) {
                 this.$app.$('.toolbar').hide();

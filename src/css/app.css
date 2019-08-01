@@ -164,7 +164,10 @@
 
 .object-photo-slider.demo-swiper {
     height: 200px;
-    overflow: initial;
+}
+
+.swiper-add-wrap {
+    position: relative;
 }
 
 .demo-swiper.demo-swiper-auto .swiper-slide {
@@ -296,4 +299,17 @@
     z-index: 461;
     pointer-events: none;
     content: 'Локация неизвестна';
+}
+
+.object-coordinates {
+    justify-content: inherit;
+    display: none;
+}
+
+#user-location-coordinates {
+    margin-left: 5px;
+}
+
+.create-object-map {
+    border-radius: var(--f7-card-border-radius) var(--f7-card-border-radius) 0 0;
 }

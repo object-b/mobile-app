@@ -14,30 +14,29 @@
         </div>
         <div class="page-content">
             {{#if objects}}
-            <!-- Show list when it is loaded -->
             <div class="list media-list">
                 <ul>
                     {{#each objects}}
-                    <li>
-                        <a href="/object/{{this.id}}" class="item-link item-content">
-                            <div class="item-media">
-                                <img src="{{this.firstImage}}" width="120" />
-                            </div>
-                            <div class="item-inner">
-                                <div class="item-title-row">
-                                    <div class="item-title trash-status-header">{{this.status}}</div>
+                        <li>
+                            <a href="/object/{{id}}" class="item-link item-content">
+                                <div class="item-media">
+                                    <img src="{{firstImage}}" width="120" />
                                 </div>
-                                <div class="item-subtitle">{{this.author}}</div>
-                                <!-- <div class="item-text">{{this.type}}</div> -->
-                                <div class="trash-card-footer">
-                                    <!-- <div class="chip chip-outline trash-transport"> -->
-                                        <!-- <div class="chip-label">{{this.size}}</div> -->
-                                    <!-- </div> -->
-                                    <div class="item-after">{{this.date}}</div>
+                                <div class="item-inner">
+                                    <div class="item-title-row">
+                                        <div class="item-title trash-status-header">{{status}}</div>
+                                    </div>
+                                    <div class="item-subtitle">{{author}}</div>
+                                    <div class="item-text">{{type}}</div>
+                                    <div class="trash-card-footer">
+                                        <div class="chip chip-outline trash-transport">
+                                            <div class="chip-label">{{size}}</div>
+                                        </div>
+                                        <div class="item-after">{{date}}</div>
+                                    </div>
                                 </div>
-                            </div>
-                        </a>
-                    </li>
+                            </a>
+                        </li>
                     {{/each}}
                 </ul>
             </div>
@@ -65,18 +64,15 @@
         methods: {
             
         },
-        // Page Events
         on: {
             pageInit: function(e, page) {
                 var self = this;
                 var app = self.$app;
                 var $$ = self.$$;
 
-                self.$root.setAccessTokenInRequest(localStorage.getItem('AUTH_TOKEN'));
-
                 app.preloader.show();
 
-                // request objects on page init
+                // Запросить список объектов при инициализации страницы
                 app.request.json(config.slimApiUrl + '/api/objects', (objects) => {
                     app.preloader.hide();
 
@@ -84,7 +80,7 @@
                         objects: objects,
                     });
 
-                    // Remove me someday. Android FAB hiding.
+                    // Android FAB hiding.
                     // if (self.objects.length > 3) {
                     //     $$('.page-content').on('scroll', handleScroll);
                     // } else {

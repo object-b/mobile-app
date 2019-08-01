@@ -57,10 +57,12 @@ var app = new Framework7({
     // App routes
     routes: routes,
 
-    // App root data, can be used for dummy data
+    // App root data, can be used for global variables
     data: function () {
         return {
-
+            iconSettings: {
+                mapIconUrl: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" version="1.1" viewBox="-12 -12 24 24"><circle r="9" style="stroke:#fff;stroke-width:3;fill:#2A93EE;fill-opacity:1;opacity:1;"></circle></svg>',
+            }
         };
     },
 
@@ -76,15 +78,14 @@ var app = new Framework7({
 
             return !navigator.onLine;
         },
-        setAccessTokenInRequest: function (token) {
+        setApiKeyAsRequestHeader: function (token) {
             app.request.setup({
-                // Custom header because https://github.com/slimphp/Slim/issues/831
+                // Кастомный заголовок https://github.com/slimphp/Slim/issues/831
                 headers: { 'X-Authorization': token }
             });
         },
         errorRequestHandler: function (xhr, status) {
-            // Log maybe in slim?
-            var message = JSON.parse(xhr.response).message || 'Something strange';
+            var message = JSON.parse(xhr.response).error || 'Что-то пошло не так :(';
 
             console.log(status);
 
@@ -115,17 +116,12 @@ var app = new Framework7({
                         provider: 'facebook',
                         access_token: result.authResponse.accessToken
                     }, function (success, status) {
-                        // console.log(status, success.access_token);
-                        // Авторизационный токен сгенерированный laravel
-                        set('AUTH_TOKEN', success.access_token).then(function () {
-                            app.request.setup({
-                                headers: {
-                                    'Authorization': 'Bearer ' + success.access_token
-                                }
-                            });
+                        console.log(status, success.api_key);
 
+                        set('AUTH_TOKEN', success.api_key).then(function () {
+                            app.methods.setApiKeyAsRequestHeader(success.api_key);
+                            
                             router.navigate('/objects-list');
-                            app.preloader.hide();
                         }).catch(function (error) {
                             app.toast.create({
                                 text: error,
@@ -162,17 +158,12 @@ var app = new Framework7({
                         access_token: jsonObject.token,
                         email: jsonObject.email
                     }, function (success, status) {
-                        console.log(status, success.access_token);
-                        // Авторизационный токен сгенерированный laravel
-                        set('AUTH_TOKEN', success.access_token).then(function () {
-                            app.request.setup({
-                                headers: {
-                                    'Authorization': 'Bearer ' + success.access_token
-                                }
-                            });
+                        console.log(status, success.api_key);
 
+                        set('AUTH_TOKEN', success.api_key).then(function () {
+                            app.methods.setApiKeyAsRequestHeader(success.api_key);
+                            
                             router.navigate('/objects-list');
-                            app.preloader.hide();
                         }).catch(function (error) {
                             app.toast.create({
                                 text: error,

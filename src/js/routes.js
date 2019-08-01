@@ -19,10 +19,9 @@ var routes = [
     {
         path: '/objects-list',
         async(routeTo, routeFrom, resolve, reject) {
-            get('AUTH_TOKEN').then(token => {
-                // Authentication check :)
-                if (typeof token !== 'undefined') {
-                    localStorage.setItem('AUTH_TOKEN', token);
+            get('AUTH_TOKEN').then(value => {
+                if (typeof value !== 'undefined') {
+                    this.view.app.methods.setApiKeyAsRequestHeader(value);
 
                     resolve({ component: ObjectsListPage });
                 } else {

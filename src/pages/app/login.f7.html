@@ -77,7 +77,7 @@
                 var self = this;
                 var url = config.backendPublicUrl + '/api/login';
 
-                // Test
+                // Тест
                 // var temp = {
                 //     'email': '1@1.com',
                 //     'password': 'qwerty',
@@ -100,12 +100,11 @@
                     }
 
                     app.request.postJSON(url, formData, function(success, status) {
-                        // console.log(status, success.data.access_token);
+                        // console.log(status, success.api_key);
 
-                        // Авторизационный токен найденный laravel
-                        set('AUTH_TOKEN', success.data.access_token)
+                        set('AUTH_TOKEN', success.api_key)
                             .then(function() {
-                                self.$root.setAccessTokenInRequest(success.data.access_token);
+                                self.$root.setApiKeyAsRequestHeader(success.api_key);
                                 
                                 router.navigate('/objects-list');
                             })

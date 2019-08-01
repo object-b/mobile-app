@@ -16,37 +16,27 @@
             </div>
         </div>
         <div class="page-content">
-            <form id="object-create-form">
-            <div data-pagination='{"el": ".swiper-pagination"}' data-space-between="50" data-observer="true"
-                class="swiper-container swiper-init demo-swiper object-photo-slider object-create-slider-hidden">
-                <div class="swiper-pagination"></div>
-                <div class="swiper-wrapper">
-                    {{#each photoUrls}}
-                        <div class="swiper-slide">
-                            <img src="{{this}}" class="uploaded-camera-image" width="1000" height="200">
-                        </div>
-                    {{/each}}
-                </div>
-                <div class="fab object-add-photo" @click="launchCamera">
-                    <a href="#">
-                        <i class="f7-icons if-not-md">camera_fill</i>
-                        <i class="material-icons md-only">add_a_photo</i>
-                    </a>
-                </div>
-                <div class="fab object-attach-photo" @click="selectFromGallery">
-                    <a href="#">
-                        <i class="f7-icons if-not-md">attachment</i>
-                        <i class="material-icons md-only">attach_file</i>
-                    </a>
-                </div>
-            </div>
-
-            <div class="demo-swiper object-photo-slider-empty" style="position: relative;">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide hairline-bottom">
-                        Вы должны внести хотя бы одну фотографию
+        <form id="object-create-form">
+            <div class="swiper-add-wrap">
+                <div data-pagination='{"el": ".swiper-pagination"}' data-space-between="50" data-observer="true"
+                    class="swiper-container swiper-init demo-swiper object-photo-slider object-create-slider-hidden">
+                    <div class="swiper-pagination"></div>
+                    <div class="swiper-wrapper">
+                        {{#each photoUrls}}
+                            <div class="swiper-slide">
+                                <img src="{{this}}" class="uploaded-camera-image" width="1000" height="200">
+                            </div>
+                        {{/each}}
                     </div>
                 </div>
+                <div class="demo-swiper object-photo-slider-empty" style="position: relative;">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide hairline-bottom">
+                            Вы должны добавить<br>как минимум одну фотографию
+                        </div>
+                    </div>
+                </div>
+
                 <div class="fab object-add-photo" @click="launchCamera">
                     <a href="#">
                         <i class="f7-icons if-not-md">camera_fill</i>
@@ -62,14 +52,23 @@
             </div>
 
             <div class="block-title block-title-medium object-header header-address">
-                <span @click="updateSliderAfterAdding('https://placekitten.com/500/500')">Адрес</span>
+                <span @click="updateSliderAfterAdding('https://placekitten.com/500/500', false)">Адрес</span>
                 <a class="link size-16" href="#" @click="changeMapPosition">
                     <span>Изменить точку на карте</span>
                 </a>
             </div>
             
-            <div id="user-location" class="create-object-map"></div>
-            <span id="user-location-display-name"></span>
+            <div class="card">
+                <div id="user-location" class="create-object-map"></div>
+                <div class="card-content card-content-padding">
+                    <span id="user-location-display-name">Выберите локацию и адрес появится здесь</span>
+                </div>
+                <div class="card-footer object-coordinates">
+                    <i class="f7-icons if-not-md size-20">home</i>
+                    <i class="material-icons md-only size-20">place</i>
+                    <span id="user-location-coordinates"></span>
+                </div>
+            </div>
 
             <div class="block-title block-title-medium object-header">Количество мусора</div>
             <div class="list">
@@ -176,11 +175,13 @@
                     </li>
                 </ul>
             </div>
-            </form>
+        </form>
         </div>
     </div>
 </template>
 <script>
+    import * as config from '../../config';
+
     export default {
         data: function () {
             return {
@@ -194,10 +195,32 @@
                 userLocation: null,
                 // map html object
                 map: null,
-                // options for gps locate
-                gpsOptions: {
-                    enableHighAccuracy: true,
-                    maximumAge: 300000
+                // photo browser gallery
+                photoBrowserSettings: {
+                    photos: null,
+                    type: 'popup',
+                    navbarOfText: 'из',
+                    backLinkText: 'Закрыть',
+                    renderToolbar: function () {
+                        const toolbarHtml = `
+                            <div class="toolbar toolbar-bottom tabbar">
+                                <div class="toolbar-inner">
+                                    <a class="link photo-browser-prev">
+                                        <i class="icon icon-back"></i>
+                                    </a>
+                                    <a tabindex="0" role="button" class="link object-delete-photo">
+                                        <i class="f7-icons if-not-md">trash_fill</i>
+                                        <i class="material-icons md-only">delete_forever</i>
+                                    </a>
+                                    <a class="link photo-browser-next">
+                                        <i class="icon icon-forward"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        `.trim();
+
+                        return toolbarHtml;
+                    }
                 }
             }
         },
@@ -206,6 +229,7 @@
                 var self = this;
                 var app = self.$app;
                 var $$ = self.$$;
+                var router = app.views.main.router;
                 var formData = app.form.convertToData('#object-create-form');
                 var objectData = {};
 
@@ -226,65 +250,63 @@
                 if (self.$root.deviceIsOffline()) {
                     // Положить в очередь?
                 } else {
-                    
+                    app.preloader.show();
+
+                    app.request.postJSON(config.slimApiUrl + '/api/objects', objectData, function (success, status) {
+                        app.preloader.hide();
+
+                        if (status === 201) {
+                            app.dialog.alert('Красаучег', function() {
+                                router.navigate('/objects-list');
+                            });
+                        }
+                    }, function (error, status) {
+                        app.preloader.hide();
+                        
+                        self.$root.openNotification('Create object error. Code ' + status);
+                    });
                 }
             },
             changeMapPosition: function () {
                 alert()
             },
-            updateSliderAfterAdding: function (photoLink) {
+            updateSliderAfterAdding: function (photoLink, deleteByIndex) {
                 var self = this;
                 var app = self.$app;
                 var $$ = self.$$;
+                var isAdding = typeof deleteByIndex === "boolean" && !deleteByIndex;
+                // Так как по умолчанию self.photoUrls null то положить в него []
+                var currentPhotos = self.photoUrls || [];
 
-                if (self.photoUrls && self.photoUrls.length >= 4) {
+                if (isAdding && self.photoUrls && self.photoUrls.length >= 4) {
                     self.$root.openNotification('Вы не можете внести более 4 фотографий.');
                     return;
                 }
 
-                // Because it's null, define array
-                var currentPhotos = self.photoUrls || [];
-                var photoBrowserSettings = {
-                    photos: null,
-                    type: 'popup',
-                    navbarOfText: 'из',
-                    backLinkText: 'Закрыть',
-                    renderToolbar: function () {
-                        const toolbarHtml = `
-                            <div class="toolbar toolbar-bottom tabbar">
-                                <div class="toolbar-inner">
-                                <a class="link photo-browser-prev">
-                                    <i class="icon icon-back"></i>
-                                </a>
-                                <a tabindex="0" role="button" class="link">
-                                    <i class="f7-icons if-not-md">trash_fill</i>
-                                    <i class="material-icons md-only">delete_forever</i>
-                                </a>
-                                <a class="link photo-browser-next">
-                                    <i class="icon icon-forward"></i>
-                                </a>
-                                </div>
-                            </div>
-                        `.trim();
+                // Добавить или удалить?
+                if (isAdding) {
+                    currentPhotos.push(photoLink);
+                } else {
+                    currentPhotos.splice(deleteByIndex, 1);
+                }
 
-                        return toolbarHtml;
-                    }
-                };
-
-                currentPhotos.push(photoLink);
-
-                // Set virtual DOM state
+                // Virtual DOM state
                 self.$setState({
                     photoUrls: currentPhotos
                 });
 
-                // Load photos to slider
-                photoBrowserSettings.photos = currentPhotos;
-                self.myPhotoBrowserPopup = app.photoBrowser.create(photoBrowserSettings);
+                // Добавить фото в слайдер
+                self.photoBrowserSettings.photos = currentPhotos;
+                self.myPhotoBrowserPopup = app.photoBrowser.create(self.photoBrowserSettings);
 
-                // Show hidden photo slider after first adding
-                $$('.object-photo-slider').removeClass('object-create-slider-hidden');
-                $$('.object-photo-slider-empty').hide();
+                // Показать скрытый слайдер после добавления
+                if (currentPhotos.length > 0) {
+                    $$('.object-photo-slider').removeClass('object-create-slider-hidden');
+                    $$('.object-photo-slider-empty').hide();
+                } else {
+                    $$('.object-photo-slider').addClass('object-create-slider-hidden');
+                    $$('.object-photo-slider-empty').show();
+                }
             },
             getMapLocation: function () {
                 var self = this;
@@ -292,7 +314,8 @@
                 self.map.locate({
                     setView: true,
                     maxZoom: 16,
-                    locateOptions: self.gpsOptions
+                    enableHighAccuracy: true,
+                    maximumAge: 300000
                 });
 
                 self.map.on('locationfound', this.onLocationFound);
@@ -303,17 +326,36 @@
                 var app = self.$app;
                 var $$ = self.$$;
                 var radius = e.accuracy;
-                var msg = 'Приблизительное расположение в метрах - ' + radius + '.';
-                var nominatim = 'https://nominatim.openstreetmap.org/reverse?lat='+e.latitude+'&lon='+e.longitude+'&format=json';
+                var msg = 'Приблизительное расположение в метрах - ' + radius.toFixed(1);
+                var nominatimUrl = 'https://nominatim.openstreetmap.org/reverse?lat='+e.latitude+'&lon='+e.longitude+'&format=json';
+                var divIcon = L.divIcon({
+                    className: "leaflet-data-marker",
+                    html: L.Util.template(self.$root.iconSettings.mapIconUrl, self.$root.iconSettings),
+                    iconAnchor  : [12, 12],
+                    iconSize    : [24, 24],
+                    popupAnchor : [0, -24]
+                });
 
                 // Запросим название локации с помощью open street map
-                app.request.json(nominatim, (response) => {
+                app.request.json(nominatimUrl, (response) => {
                     console.log(response);
+                    var formattedLatLng = e.latitude.toFixed(8) + ', ' + e.longitude.toFixed(8);
+                    var addressString = [
+                        // От высшего
+                        response.address.state,
+                        response.address.county,
+                        response.address.city,
+                        response.address.city_district,
+                        response.address.road,
+                        // До низшего
+                        response.address.house_number,
+                    ]
+                    var displayName = addressString.filter(function(n) { return n; }).join(', ');
 
                     // Записать локацию для отправки на сервер
                     self.userLocation = {
-                        "display_name": response.display_name,
-                        "city": response.address.city,
+                        "display_name": displayName,
+                        "city": response.address.city || '',
                         "city_district": response.address.city_district || '',
                         "county": response.address.county || '',
                         "state": response.address.state || '',
@@ -322,16 +364,20 @@
                         "longitude": e.longitude
                     };
 
-                    $$('#user-location-display-name').text(response.display_name);
+                    $$('#user-location-display-name').text(displayName);
+                    $$('.object-coordinates').css('display', 'flex');
+                    $$('#user-location-coordinates').text(formattedLatLng);
                 });
 
                 // Показать маркер и иконку
-                L.marker(e.latlng).addTo(self.map).bindPopup(msg, {
+                L.marker(e.latlng, {
+                    icon: divIcon,
+                }).addTo(self.map).bindPopup(msg, {
                     maxWidth: 230
                 }).openPopup();
 
                 L.circle(e.latlng, radius, {
-                    weight: 1,
+                    weight: 0,
                     color: '#136AEC'
                 }).addTo(self.map);
             },
@@ -342,24 +388,15 @@
                 var msg = 'Определить локацию автоматически не удалось. Попробуйте включить GPS, проверить права приложения или укажите вручную. Ошибка: ' + e.message;
 
                 app.dialog.alert(msg);
-
-                // console.log(e)
-                // Попробовать получить локацию еще раз?
-                // self.gpsOptions.enableHighAccuracy = false;
-                // if (!self.userLocation && app.device.cordova) {
-                //     self.getMapLocation();
-                // }
             },
             getOptions: function (srcType) {
                 return {
-                    // Some common settings are 20, 50, and 100
                     quality: 80,
                     destinationType: Camera.DestinationType.FILE_URI,
-                    // In this app, dynamically set the picture source, Camera or photo gallery
                     sourceType: srcType,
                     encodingType: Camera.EncodingType.JPEG,
                     mediaType: Camera.MediaType.PICTURE,
-                    targetWidth: 600, // do we need this?
+                    targetWidth: 600,
                     targetHeight: 600,
                     correctOrientation: true, // Corrects Android orientation quirks
                 };
@@ -368,12 +405,11 @@
                 var self = this;
                 var app = self.$app;
                 var $$ = self.$$;
-                // convert JSON string to JSON Object
                 var fileURL = JSON.parse(result).filename;
 
-                self.updateSliderAfterAdding(fileURL);
+                self.updateSliderAfterAdding(fileURL, false);
 
-                // Получить локацию если её еще нет
+                // Получить локацию на мобилке если её еще нет
                 if (!self.userLocation && app.device.cordova) {
                     self.getMapLocation();
                 }
@@ -385,7 +421,7 @@
                 // Сюда скорее всего прилетит ошибка, что юзер вышел из режима камеры
                 // this.$root.openNotification("Unable to obtain picture: " + message);
 
-                // Получить локацию если её еще нет
+                // Получить локацию на мобилке если её еще нет
                 if (!self.userLocation && app.device.cordova) {
                     self.getMapLocation();
                 }
@@ -399,7 +435,6 @@
                 navigator.camera.getPicture(this.cameraSuccess, this.cameraError, cameraOptions);
             },
         },
-        // Page Events
         on: {
             pageInit: function () {
                 var self = this;
@@ -414,6 +449,16 @@
                 // Open photo browser on click
                 $$(document).on('click', '.uploaded-camera-image', function () {
                     self.myPhotoBrowserPopup.open();
+                });
+
+                // Delete photo in gallery
+                $$(document).on('click', '.object-delete-photo', function () {
+                    app.dialog.confirm('Вы действительно хотите удалить это фото?', function () {
+                        var index = self.myPhotoBrowserPopup.activeIndex;
+                        
+                        self.myPhotoBrowserPopup.close();
+                        self.updateSliderAfterAdding('', index);
+                    });
                 });
 
                 if (!self.map) {

@@ -5,11 +5,9 @@
 master branch - es2015  
 react branch - react js
 
-Для social auth используются аккаунты разработчика.
+Для social auth используются аккаунты rvlasenko.
 
-Для facebook плагина использовались client_id и client_secret разработчика, но они были зашиты при установке следующим образом `--variable APP_ID="**" --variable APP_NAME="**"`, поэтому для смены этих переменных плагин надо скорее всего переустановить 😒
-
-Для vkontakte была зашита переменная `--variable VK_APP_ID=**` которая дублирована в app.js.
+При установке facebook плагина использовались client_id и client_secret разработчика `--variable APP_ID="**" --variable APP_NAME="**"`, а для vkontakte app_id `--variable VK_APP_ID=**`. Для смены этих переменных (в релизе) плагин надо скорее всего переустановить с новыми переменными.
 
 ## Деплой
 
@@ -23,8 +21,8 @@ nano src/config.json
 Информация будет дополняться.
 
 ## NPM комманды
-* `npm run build-cordova-android-dev && cd cordova && cordova run android` - билд .apk и запуск его на эмуляторе с помощью Android Studio AVD
-* `npm start` - запустить локальный сервер на localhost с live reload
+* `npm run build-cordova-android-dev && cd cordova && cordova run android` - создание .apk, установка и запуск в эмуляторе Android Studio AVD
+* `npm start` - запуск локального сервера localhost:8080
 * `npm run build-cordova-prod` - build cordova's `www` folder from and build cordova app
 * `npm run build-cordova-dev` - build cordova's `www` folder from and build cordova app using development mode (faster build without minification and optimization)
 * `npm run build-cordova-ios-prod` - build cordova's `www` folder from and build cordova iOS app

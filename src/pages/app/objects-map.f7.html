@@ -24,11 +24,6 @@
                 userLocation: null,
                 // map html object
                 map: null,
-                // options for gps locate
-                gpsOptions: {
-                    enableHighAccuracy: true,
-                    maximumAge: 300000
-                }
             }
         },
         methods: {
@@ -39,7 +34,8 @@
                 self.map.locate({
                     setView: true,
                     maxZoom: 16,
-                    locateOptions: self.gpsOptions
+                    enableHighAccuracy: true,
+                    maximumAge: 300000
                 });
 
                 self.map.on('locationfound', this.onLocationFound);
@@ -49,16 +45,25 @@
             onLocationFound: function (e) {
                 var self = this;
                 var radius = e.accuracy;
+                var divIcon = L.divIcon({
+                    className: "leaflet-data-marker",
+                    html: L.Util.template(self.$root.iconSettings.mapIconUrl, self.$root.iconSettings),
+                    iconAnchor  : [12, 12],
+                    iconSize    : [24, 24],
+                    popupAnchor : [0, -28]
+                });
 
                 self.userLocation = {
                     latitude: e.latitude,
                     longitude: e.longitude,
                 };
 
-                L.marker(e.latlng).addTo(self.map);
+                L.marker(e.latlng, {
+                    icon: divIcon,
+                }).addTo(self.map);
 
                 L.circle(e.latlng, radius, {
-                    weight: 1,
+                    weight: 0,
                     color: '#136AEC'
                 }).addTo(self.map);
             },
@@ -68,12 +73,6 @@
                 var msg = 'Определить локацию автоматически не удалось. Попробуйте включить GPS или проверьте права приложения. Ошибка: ' + e.message;
 
                 app.dialog.alert(msg);
-
-                // Попробовать получить локацию еще раз?
-                // self.gpsOptions.enableHighAccuracy = false;
-                // if (!self.userLocation && app.device.cordova) {
-                //     self.getMapLocation();
-                // }
             },
         },
         on: {
