@@ -148,7 +148,15 @@ var app = new Framework7({
 
             SocialVk.init(config.vkontakteClientId);
             SocialVk.login(['email'], function (result) {
-                var jsonObject = JSON.parse(result);
+                var jsonObject;
+
+                if (app.device.android) {
+                    jsonObject = JSON.parse(result);
+                }
+
+                if (app.device.ios) {
+                    jsonObject = result;
+                }
 
                 if (typeof jsonObject.token !== 'undefined') {
                     app.preloader.show();

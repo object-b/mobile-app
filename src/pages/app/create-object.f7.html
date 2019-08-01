@@ -398,14 +398,13 @@
                     mediaType: Camera.MediaType.PICTURE,
                     targetWidth: 600,
                     targetHeight: 600,
-                    correctOrientation: true, // Corrects Android orientation quirks
+                    correctOrientation: true,
                 };
             },
-            cameraSuccess: function (result) {
+            cameraSuccess: function (fileURL) {
                 var self = this;
                 var app = self.$app;
                 var $$ = self.$$;
-                var fileURL = JSON.parse(result).filename;
 
                 self.updateSliderAfterAdding(fileURL, false);
 
@@ -419,7 +418,7 @@
                 var app = self.$app;
 
                 // Сюда скорее всего прилетит ошибка, что юзер вышел из режима камеры
-                // this.$root.openNotification("Unable to obtain picture: " + message);
+                this.$root.openNotification("Unable to obtain picture: " + message);
 
                 // Получить локацию на мобилке если её еще нет
                 if (!self.userLocation && app.device.cordova) {
@@ -441,17 +440,14 @@
                 var app = self.$app;
                 var $$ = self.$$;
 
-                // Open camera on page init
                 if (app.device.cordova) {
                     self.launchCamera();
                 }
 
-                // Open photo browser on click
                 $$(document).on('click', '.uploaded-camera-image', function () {
                     self.myPhotoBrowserPopup.open();
                 });
 
-                // Delete photo in gallery
                 $$(document).on('click', '.object-delete-photo', function () {
                     app.dialog.confirm('Вы действительно хотите удалить это фото?', function () {
                         var index = self.myPhotoBrowserPopup.activeIndex;
@@ -475,7 +471,6 @@
                     L.Control.geocoder().addTo(self.map);
                 }
 
-                // Get current location after init for web
                 if (!app.device.cordova) {
                     self.getMapLocation();
                 }

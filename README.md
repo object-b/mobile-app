@@ -1,7 +1,15 @@
 # Mobile app
 
 ## Android
+
 ## iOS
+### Описание пермишенов
+
+Заполняются с инфой следующие из них:
+
+- **NSLocationWhenInUseUsageDescription**
+- **NSCameraUsageDescription**
+- **NSPhotoLibraryUsageDescription**
 
 # Social auth
 При установке facebook плагина были добавлены девелопмент значения **APP_ID** и **APP_NAME**, а для vkontakte **VK_APP_ID**. Надо придумать смену этих переменных для релиза.
@@ -30,8 +38,10 @@ nano src/config.json
 ```
 
 ## NPM команды
-* `npm run build-cordova-android-dev && cd cordova && cordova run android` - создание .apk, установка и запуск в эмуляторе Android Studio AVD
+* `npm run build-cordova-android-dev && cd cordova && cordova run android` - билд, установка и запуск в эмуляторе Android Studio AVD
+* `npm run build-cordova-ios-dev && cd cordova && cordova run ios` - билд, установка и запуск в эмуляторе XCode Simulator
 * `npm start` - запуск локального сервера localhost:8080
+---
 * `npm run build-cordova-prod` - build cordova's `www` folder from and build cordova app
 * `npm run build-cordova-dev` - build cordova's `www` folder from and build cordova app using development mode (faster build without minification and optimization)
 * `npm run build-cordova-ios-prod` - build cordova's `www` folder from and build cordova iOS app
