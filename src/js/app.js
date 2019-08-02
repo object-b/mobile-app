@@ -38,12 +38,17 @@ import { GestureHandling } from "leaflet-gesture-handling";
 L.Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
 
 // Import leaflet JS icon on global map
-// import "leaflet.locatecontrol/dist/L.Control.Locate.min.js";
-// import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
+import "leaflet.locatecontrol/dist/L.Control.Locate.min.js";
+import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
 
 // Import leaflet JS geocoding
 import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 import "leaflet-control-geocoder/dist/Control.Geocoder.min.js";
+
+// Import leaflet JS markercluster
+import "leaflet.markercluster/dist/leaflet.markercluster.js";
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 
 // Simple app config
 import * as config from '../config';

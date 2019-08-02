@@ -17,6 +17,8 @@
     </div>
 </template>
 <script>
+    import * as config from '../../config';
+    
     export default {
         data: function () {
             return {
@@ -27,16 +29,35 @@
             }
         },
         methods: {
-            // Get geo coordinates
-            getMapLocation: function () {
+            handleMapLocateControl: function () {
                 var self = this;
 
-                self.map.locate({
-                    setView: true,
-                    maxZoom: 16,
-                    enableHighAccuracy: true,
-                    maximumAge: 300000
-                });
+                // self.map.locate({
+                //     setView: true,
+                //     maxZoom: 16,
+                //     enableHighAccuracy: true,
+                //     maximumAge: 0,
+                //     timeout: 5000
+                // });
+
+                var locatecontrol = L.control.locate({
+                    icon: 'fas fa-map-marker',
+                    iconLoading: 'fas fa-spinner fa-spin',
+                    strings: {
+                        title: '',
+                        popup: 'Вы в радиусе {distance} м. от этой точки',
+                    },
+                    locateOptions: {
+                        maxZoom: 16,
+                        enableHighAccuracy: true,
+                        maximumAge: 0,
+                        timeout: 5000,
+                        watch: false,
+                    }
+                }).addTo(self.map);
+                
+                // Автоматическое определение при переходе?
+                locatecontrol.start();
 
                 self.map.on('locationfound', this.onLocationFound);
                 self.map.on('locationerror', this.onLocationError);
@@ -44,33 +65,37 @@
             // Success callback
             onLocationFound: function (e) {
                 var self = this;
-                var radius = e.accuracy;
-                var divIcon = L.divIcon({
-                    className: "leaflet-data-marker",
-                    html: L.Util.template(self.$root.iconSettings.mapIconUrl, self.$root.iconSettings),
-                    iconAnchor  : [12, 12],
-                    iconSize    : [24, 24],
-                    popupAnchor : [0, -28]
-                });
 
                 self.userLocation = {
                     latitude: e.latitude,
                     longitude: e.longitude,
                 };
+                
+                config.debug && console.log(self.userLocation);
 
-                L.marker(e.latlng, {
-                    icon: divIcon,
-                }).addTo(self.map);
+                // Показать маркер и иконку
+                // var radius = e.accuracy;
+                // var divIcon = L.divIcon({
+                //     className: "leaflet-data-marker",
+                //     html: L.Util.template(self.$root.iconSettings.mapIconUrl, self.$root.iconSettings),
+                //     iconAnchor  : [12, 12],
+                //     iconSize    : [24, 24],
+                //     popupAnchor : [0, -28]
+                // });
+                
+                // L.marker(e.latlng, {
+                //     icon: divIcon,
+                // }).addTo(self.map);
 
-                L.circle(e.latlng, radius, {
-                    weight: 0,
-                    color: '#136AEC'
-                }).addTo(self.map);
+                // L.circle(e.latlng, radius, {
+                //     weight: 0,
+                //     color: '#136AEC'
+                // }).addTo(self.map);
             },
             onLocationError: function (e) {
                 var self = this;
                 var app = self.$app;
-                var msg = 'Определить локацию автоматически не удалось. Попробуйте включить GPS или проверьте права приложения. Ошибка: ' + e.message;
+                var msg = 'Определить локацию автоматически не удалось. Ошибка: ' + e.message;
 
                 app.dialog.alert(msg);
             },
@@ -84,25 +109,60 @@
                 if (!self.map) {
                     self.map = L.map('global-map', {
                         loadingControl: true,
-                        gestureHandling: false
-                    }).fitWorld();
+                        gestureHandling: false,
+                    }).setView([54.3185, 48.3978], 12);
 
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    // }).addTo(self.map);
+
+                    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+                        maxZoom: 18,
+                        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+                            '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                            'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                        id: 'mapbox.streets'
                     }).addTo(self.map);
 
-                    // Иконка на карте для определения локации
-                    // L.control.locate({
-                    //     icon: 'fas fa-map-marker',
-                    //     drawCircle: false,
-                    //     drawMarker: false,
-                    //     strings: {
-                    //         title: ''
-                    //     }
-                    // }).addTo(self.map);
+                    var addressPoints = [
+[54.34889159, 48.53146605, 'svalka 1'],
+[54.34789159, 48.52146605, 'svalka 2'],
+[54.34689159, 48.51546605, 'svalka 3'],
+[54.34843159, 48.50146605, 'svalka 4'],
+[54.34821159, 48.49326605, 'svalka 5'],
+[54.34349159, 48.48146605, 'svalka 6'],
+[54.34659159, 48.47146605, 'svalka 7'],
+[54.34949159, 48.48346605, 'svalka 8'],
+[54.3049, 48.4832, 'svalka 9'],
+[54.3032, 48.3816, 'svalka 10'],
+[54.3017, 48.3865, 'svalka 11'],
+[54.3046, 48.3864, 'svalka 12'],
+[54.3056, 48.3844, 'svalka 13'],
+[54.3096, 48.3814, 'svalka 14'],
+];
+                    var markers = L.markerClusterGroup({
+                        chunkedLoading: true,
+                        spiderfyOnMaxZoom: false
+                    });
+
+                    for (var i = 0; i < addressPoints.length; i++) {
+                        var a = addressPoints[i];
+                        var title = a[2];
+                        var marker = L.marker(new L.LatLng(a[0], a[1]), { title: title });
+                        marker.bindPopup(title);
+                        markers.addLayer(marker);
+                    }
+
+                    self.map.addLayer(markers);
+
+                    L.polygon([
+                        [54.3057, 48.3662],
+                        [54.2954, 48.3904],
+                        [54.3002, 48.3773]
+                    ], {opacity: '.5'}).addTo(self.map);
                 }
 
-                self.getMapLocation();
+                self.handleMapLocateControl();
             },
         }
     };

@@ -40,7 +40,7 @@ nano src/config.json
 ## NPM команды
 * `npm run build-cordova-android-dev && cd cordova && cordova run android` - билд, установка и запуск в эмуляторе Android Studio AVD
 * `npm run build-cordova-ios-dev && cd cordova && cordova run ios` - билд, установка и запуск в эмуляторе XCode Simulator
-* `npm start` - запуск локального сервера localhost:8080
+* `npm start` - запуск локального сервера на localhost:8080
 ---
 * `npm run build-cordova-prod` - build cordova's `www` folder from and build cordova app
 * `npm run build-cordova-dev` - build cordova's `www` folder from and build cordova app using development mode (faster build without minification and optimization)
