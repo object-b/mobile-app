@@ -24,7 +24,7 @@
                     <div class="swiper-wrapper">
                         {{#each photoUrls}}
                             <div class="swiper-slide">
-                                <img src="{{this}}" class="uploaded-camera-image" width="1000" height="200">
+                                <img src="{{this}}" class="uploaded-camera-image" width="1000" height="200" @click="openPhotoBrowser">
                             </div>
                         {{/each}}
                     </div>
@@ -37,6 +37,12 @@
                     </div>
                 </div>
 
+                <div class="fab object-delete-photo" @click="deleteVisiblePhoto" hidden>
+                    <a href="#">
+                        <i class="f7-icons if-not-md">trash_fill</i>
+                        <i class="material-icons md-only">delete</i>
+                    </a>
+                </div>
                 <div class="fab object-add-photo" @click="launchCamera">
                     <a href="#">
                         <i class="f7-icons if-not-md">camera_fill</i>
@@ -52,7 +58,7 @@
             </div>
 
             <div class="block-title block-title-medium object-header header-address">
-                <span @click="updateSliderAfterAdding('https://placekitten.com/500/500', false)">Адрес</span>
+                <span>Адрес</span>
                 <a class="link size-16" href="#" @click="changeMapPosition">
                     <span>Изменить точку на карте</span>
                 </a>
@@ -181,7 +187,7 @@
 </template>
 <script>
     import * as config from '../../config';
-
+    
     export default {
         data: function () {
             return {
@@ -201,26 +207,6 @@
                     type: 'popup',
                     navbarOfText: 'из',
                     backLinkText: 'Закрыть',
-                    renderToolbar: function () {
-                        const toolbarHtml = `
-                            <div class="toolbar toolbar-bottom tabbar">
-                                <div class="toolbar-inner">
-                                    <a class="link photo-browser-prev">
-                                        <i class="icon icon-back"></i>
-                                    </a>
-                                    <a tabindex="0" role="button" class="link object-delete-photo">
-                                        <i class="f7-icons if-not-md">trash_fill</i>
-                                        <i class="material-icons md-only">delete_forever</i>
-                                    </a>
-                                    <a class="link photo-browser-next">
-                                        <i class="icon icon-forward"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        `.trim();
-
-                        return toolbarHtml;
-                    }
                 }
             }
         },
@@ -232,6 +218,7 @@
                 var router = app.views.main.router;
                 var formData = app.form.convertToData('#object-create-form');
                 var objectData = {};
+                var photoUrls = self.photoUrls;
 
                 if (!formData.trash_type.length) {
                     self.$root.openNotification('Укажите как минимум один тип мусора.');
@@ -245,7 +232,7 @@
                     },
                     "address": self.userLocation
                 };
-                console.log(objectData, self.photoUrls, self.userLocation);
+                config.debug && console.log(objectData, formData);
 
                 if (self.$root.deviceIsOffline()) {
                     // Положить в очередь?
@@ -254,6 +241,7 @@
 
                     app.request.postJSON(config.slimApiUrl + '/api/objects', objectData, function (success, status) {
                         app.preloader.hide();
+                        config.debug && console.log(success, status);
 
                         if (status === 201) {
                             app.dialog.alert('Красаучег', function() {
@@ -262,6 +250,7 @@
                         }
                     }, function (error, status) {
                         app.preloader.hide();
+                        config.debug && console.log(error, status);
                         
                         self.$root.openNotification('Create object error. Code ' + status);
                     });
@@ -283,6 +272,8 @@
                     return;
                 }
 
+                config.debug && console.log(currentPhotos, deleteByIndex);
+
                 // Добавить или удалить?
                 if (isAdding) {
                     currentPhotos.push(photoLink);
@@ -298,14 +289,17 @@
                 // Добавить фото в слайдер
                 self.photoBrowserSettings.photos = currentPhotos;
                 self.myPhotoBrowserPopup = app.photoBrowser.create(self.photoBrowserSettings);
+                config.debug && console.log(self);
 
                 // Показать скрытый слайдер после добавления
                 if (currentPhotos.length > 0) {
                     $$('.object-photo-slider').removeClass('object-create-slider-hidden');
                     $$('.object-photo-slider-empty').hide();
+                    $$('.object-delete-photo').show();
                 } else {
                     $$('.object-photo-slider').addClass('object-create-slider-hidden');
                     $$('.object-photo-slider-empty').show();
+                    $$('.object-delete-photo').hide();
                 }
             },
             getMapLocation: function () {
@@ -336,9 +330,12 @@
                     popupAnchor : [0, -24]
                 });
 
+                config.debug && console.log(e);
+
                 // Запросим название локации с помощью open street map
                 app.request.json(nominatimUrl, (response) => {
-                    console.log(response);
+                    config.debug && console.log(response);
+
                     var formattedLatLng = e.latitude.toFixed(8) + ', ' + e.longitude.toFixed(8);
                     var addressString = [
                         // От высшего
@@ -363,7 +360,8 @@
                         "latitude": e.latitude,
                         "longitude": e.longitude
                     };
-
+                    config.debug && console.log(self);
+                    
                     $$('#user-location-display-name').text(displayName);
                     $$('.object-coordinates').css('display', 'flex');
                     $$('#user-location-coordinates').text(formattedLatLng);
@@ -386,7 +384,8 @@
                 var self = this;
                 var app = self.$app;
                 var msg = 'Определить локацию автоматически не удалось. Попробуйте включить GPS, проверить права приложения или укажите вручную. Ошибка: ' + e.message;
-
+                
+                config.debug && console.log(e);
                 app.dialog.alert(msg);
             },
             getOptions: function (srcType) {
@@ -406,8 +405,9 @@
                 var app = self.$app;
                 var $$ = self.$$;
 
+                config.debug && console.log(fileURL);
                 self.updateSliderAfterAdding(fileURL, false);
-
+                
                 // Получить локацию на мобилке если её еще нет
                 if (!self.userLocation && app.device.cordova) {
                     self.getMapLocation();
@@ -418,7 +418,8 @@
                 var app = self.$app;
 
                 // Сюда скорее всего прилетит ошибка, что юзер вышел из режима камеры
-                this.$root.openNotification("Unable to obtain picture: " + message);
+                // this.$root.openNotification("Unable to obtain picture: " + message);
+                config.debug && console.log(message);
 
                 // Получить локацию на мобилке если её еще нет
                 if (!self.userLocation && app.device.cordova) {
@@ -426,16 +427,42 @@
                 }
             },
             launchCamera: function () {
-                var cameraOptions = this.getOptions(Camera.PictureSourceType.CAMERA);
-                navigator.camera.getPicture(this.cameraSuccess, this.cameraError, cameraOptions);
+                if (this.$app.device.cordova) {
+                    var cameraOptions = this.getOptions(Camera.PictureSourceType.CAMERA);
+                    navigator.camera.getPicture(this.cameraSuccess, this.cameraError, cameraOptions);
+                } else {
+                    var randomnumber = Math.floor(Math.random() * (500 - 300 + 1)) + 300;
+                    this.updateSliderAfterAdding('https://placekitten.com/500/'+randomnumber, false);
+                }
             },
             selectFromGallery: function () {
-                var cameraOptions = this.getOptions(Camera.PictureSourceType.SAVEDPHOTOALBUM);
-                navigator.camera.getPicture(this.cameraSuccess, this.cameraError, cameraOptions);
+                if (this.$app.device.cordova) {
+                    var cameraOptions = this.getOptions(Camera.PictureSourceType.SAVEDPHOTOALBUM);
+                    navigator.camera.getPicture(this.cameraSuccess, this.cameraError, cameraOptions);
+                } else {
+                    var randomnumber = Math.floor(Math.random() * (500 - 300 + 1)) + 300;
+                    this.updateSliderAfterAdding('https://placekitten.com/500/'+randomnumber, false);
+                }
             },
+            openPhotoBrowser: function () {
+                if (this.myPhotoBrowserPopup) {
+                    this.myPhotoBrowserPopup.open();
+                }
+            },
+            deleteVisiblePhoto: function () {
+                var self = this;
+                var app = self.$app;
+                var $$ = self.$$;
+                var index = $$('.object-photo-slider')[0].swiper.realIndex;
+                config.debug && console.log(index);
+
+                app.dialog.confirm('Вы действительно хотите удалить это фото?', function () {
+                    self.updateSliderAfterAdding('', index);
+                });
+            }
         },
         on: {
-            pageInit: function () {
+            pageInit: function (e, page) {
                 var self = this;
                 var app = self.$app;
                 var $$ = self.$$;
@@ -443,19 +470,6 @@
                 if (app.device.cordova) {
                     self.launchCamera();
                 }
-
-                $$(document).on('click', '.uploaded-camera-image', function () {
-                    self.myPhotoBrowserPopup.open();
-                });
-
-                $$(document).on('click', '.object-delete-photo', function () {
-                    app.dialog.confirm('Вы действительно хотите удалить это фото?', function () {
-                        var index = self.myPhotoBrowserPopup.activeIndex;
-                        
-                        self.myPhotoBrowserPopup.close();
-                        self.updateSliderAfterAdding('', index);
-                    });
-                });
 
                 if (!self.map) {
                     self.map = L.map('user-location', {

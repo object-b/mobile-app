@@ -61,9 +61,6 @@
                 objects: null,
             }
         },
-        methods: {
-            
-        },
         on: {
             pageInit: function(e, page) {
                 var self = this;
@@ -79,16 +76,14 @@
                     self.$setState({
                         objects: objects,
                     });
-
-                    // Android FAB hiding.
-                    // if (self.objects.length > 3) {
-                    //     $$('.page-content').on('scroll', handleScroll);
-                    // } else {
-                    //     $$('.fab').removeClass('fab-hidden');
-                    // }
-
-                    $$('.fab').removeClass('fab-hidden');
                 }, self.$root.errorRequestHandler);
+
+                // Android FAB hiding.
+                // if (self.objects.length > 3) {
+                //     $$('.page-content').on('scroll', handleScroll);
+                // } else {
+                //     $$('.fab').removeClass('fab-hidden');
+                // }
 
                 var previousScrollTop;
                 var currentScrollTop;

@@ -4,7 +4,7 @@ import ObjectsMapPage from '../pages/app/objects-map.f7.html';
 import RegisterPage from '../pages/app/register.f7.html';
 import LoginPage from '../pages/app/login.f7.html';
 import ObjectPage from '../pages/app/object.f7.html';
-import ObjectFiltersPage from '../pages/app/object-filters.f7.html';
+import ObjectsFiltersPage from '../pages/app/objects-filters.f7.html';
 import CreateObjectPage from '../pages/app/create-object.f7.html';
 import UserProfile from '../pages/app/profile.f7.html';
 import NotFoundPage from '../pages/404.f7.html';
@@ -19,13 +19,18 @@ var routes = [
     {
         path: '/objects-list',
         async(routeTo, routeFrom, resolve, reject) {
+            // проверка на авторизацию пользователя
             get('AUTH_TOKEN').then(value => {
                 if (typeof value !== 'undefined') {
                     this.view.app.methods.setApiKeyAsRequestHeader(value);
 
-                    resolve({ component: ObjectsListPage });
+                    resolve({
+                        component: ObjectsListPage
+                    });
                 } else {
-                    resolve({ component: IntroPage });
+                    resolve({
+                        component: IntroPage
+                    });
                 }
             });
         }
@@ -36,7 +41,7 @@ var routes = [
     },
     {
         path: '/objects-filters',
-        component: ObjectFiltersPage,
+        component: ObjectsFiltersPage,
     },
     {
         path: '/create-object',

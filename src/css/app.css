@@ -5,6 +5,9 @@
 }
 
 /* Your app custom styles here */
+html {
+    -webkit-user-select: none;
+}
 
 .size-16 {
     font-size: 16px;
@@ -194,7 +197,9 @@
     height: 0;
 }
 
-.fab.object-add-photo, .fab.object-attach-photo {
+.fab.object-add-photo,
+.fab.object-attach-photo,
+.fab.object-delete-photo {
     position: absolute;
     bottom: -25px;
 }
@@ -207,7 +212,14 @@
     right: 21px;
 }
 
-.fab.object-add-photo>a, .fab.object-attach-photo>a {
+.fab.object-delete-photo {
+    left: 21px;
+    display: none;
+}
+
+.fab.object-add-photo>a,
+.fab.object-attach-photo>a,
+.fab.object-delete-photo>a {
     width: 50px;
     height: 50px;
 }

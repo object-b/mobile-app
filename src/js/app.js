@@ -87,7 +87,7 @@ var app = new Framework7({
         errorRequestHandler: function (xhr, status) {
             var message = JSON.parse(xhr.response).error || 'Что-то пошло не так :(';
 
-            console.log(status);
+            config.debug && console.log(xhr, status);
 
             app.preloader.hide();
             app.dialog.alert(message, function () {
@@ -116,11 +116,11 @@ var app = new Framework7({
                         provider: 'facebook',
                         access_token: result.authResponse.accessToken
                     }, function (success, status) {
-                        console.log(status, success.api_key);
+                        config.debug && console.log(success, status);
 
                         set('AUTH_TOKEN', success.api_key).then(function () {
                             app.methods.setApiKeyAsRequestHeader(success.api_key);
-                            
+
                             router.navigate('/objects-list');
                         }).catch(function (error) {
                             app.toast.create({
@@ -134,12 +134,12 @@ var app = new Framework7({
                             closeTimeout: 4500,
                         }).open();
 
+                        config.debug && console.log(error, status);
                         app.preloader.hide();
                     });
                 }
             }, function (error) {
-                // Authenication error callback
-                // alert(JSON.stringify(error));
+                config.debug && console.log(error);
             });
         },
         socialLoginVkontakte: function () {
@@ -166,11 +166,11 @@ var app = new Framework7({
                         access_token: jsonObject.token,
                         email: jsonObject.email
                     }, function (success, status) {
-                        console.log(status, success.api_key);
+                        config.debug && console.log(success, status);
 
                         set('AUTH_TOKEN', success.api_key).then(function () {
                             app.methods.setApiKeyAsRequestHeader(success.api_key);
-                            
+
                             router.navigate('/objects-list');
                         }).catch(function (error) {
                             app.toast.create({
@@ -184,12 +184,12 @@ var app = new Framework7({
                             closeTimeout: 4500,
                         }).open();
 
+                        config.debug && console.log(error, status);
                         app.preloader.hide();
                     });
                 }
             }, function (error) {
-                // Authenication error callback
-                // alert(JSON.stringify(error));
+                config.debug && console.log(error);
             });
         },
         onBackKeyDown: function () {
@@ -223,7 +223,6 @@ var app = new Framework7({
         }
     },
 
-    // Global settings
     // Input settings
     input: {
         scrollIntoViewOnFocus: Framework7.device.cordova && !Framework7.device.electron,
@@ -231,9 +230,9 @@ var app = new Framework7({
     },
     // Cordova Statusbar settings
     statusbar: {
-        overlay: Framework7.device.cordova && Framework7.device.ios || 'auto',
+        overlay: true,
         iosOverlaysWebView: true,
-        androidOverlaysWebView: false,
+        androidOverlaysWebView: true,
     },
     dialog: {
         buttonOk: 'Ок',
@@ -244,20 +243,21 @@ var app = new Framework7({
     },
 });
 
-$$('.tab').on('tab:show', function () {
-    var $tabEl = $$(this);
-    var tabId = $tabEl.attr('id');
-
-    if (tabId === 'view-map') {
-        var viewEl = $$('#view-map');
-        var viewParams = $$(viewEl).dataset();
-
-        app.views.create(viewEl, viewParams);
-    }
+$$(document).on('deviceready', function () {
+    app.methods.onBackKeyDown();
 });
 
-function onDeviceReady() {
-    document.addEventListener("backbutton", app.methods.onBackKeyDown, false);
-}
+// События
+$$(document).on('click', '.open-object-map-page', function () {
+    var viewEl = $$('#view-map');
+    var viewParams = $$(viewEl).dataset();
 
-document.addEventListener('deviceready', onDeviceReady, false);
+    app.views.create(viewEl, viewParams);
+});
+
+// $$(document).on('click', '.open-create-object-page', function () {
+//     var viewEl = $$('#view-create-object');
+//     var viewParams = $$(viewEl).dataset();
+
+//     app.views.create(viewEl, viewParams);
+// });

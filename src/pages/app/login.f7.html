@@ -91,6 +91,7 @@
                     app.preloader.show();
 
                     var formData = app.form.convertToData('#login-form');
+                    config.debug && console.log(formData);
 
                     // Проверка на наличие интернета
                     if (self.$root.deviceIsOffline()) {
@@ -100,7 +101,7 @@
                     }
 
                     app.request.postJSON(url, formData, function(success, status) {
-                        // console.log(status, success.api_key);
+                        config.debug && console.log(success, status);
 
                         set('AUTH_TOKEN', success.api_key)
                             .then(function() {
@@ -112,6 +113,8 @@
                                 self.$root.openNotification(error);
                             });
                     }, function(error, status) {
+                        config.debug && console.log(error, status);
+                        
                         if (status === 401) {
                             var msg = JSON.parse(error.response).message;
                             self.$root.openNotification(msg);
