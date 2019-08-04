@@ -375,7 +375,7 @@
                         "city_district": response.address.city_district || '',
                         "county": response.address.county || '',
                         "state": response.address.state || '',
-                        "country": response.address.country || '',
+                        "country": 'Россия', // :)
                         "latitude": e.latitude,
                         "longitude": e.longitude
                     };
@@ -451,7 +451,7 @@
                     navigator.camera.getPicture(this.cameraSuccess, this.cameraError, cameraOptions);
                 } else {
                     var randomnumber = Math.floor(Math.random() * (500 - 300 + 1)) + 300;
-                    this.updateSliderAfterAdding('https://placekitten.com/500/'+randomnumber, false);
+                    this.updateSliderAfterAdding('https://via.placeholder.com/500x'+randomnumber, false);
                 }
             },
             selectFromGallery: function () {
@@ -460,7 +460,7 @@
                     navigator.camera.getPicture(this.cameraSuccess, this.cameraError, cameraOptions);
                 } else {
                     var randomnumber = Math.floor(Math.random() * (500 - 300 + 1)) + 300;
-                    this.updateSliderAfterAdding('https://placekitten.com/500/'+randomnumber, false);
+                    this.updateSliderAfterAdding('https://via.placeholder.com/500x'+randomnumber, false);
                 }
             },
             openPhotoBrowser: function () {
@@ -494,9 +494,11 @@
                     self.map = L.map('user-location', {
                         loadingControl: true,
                         gestureHandling: true,
-                    }).setView([54.3185, 48.3978], 12);
+                        minZoom: 8
+                    }).setView(self.$root.defaultMapCenter, 12);
 
                     // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    //     maxZoom: 18,
                     //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     // }).addTo(self.map);
 

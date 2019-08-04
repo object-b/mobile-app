@@ -28,13 +28,18 @@ keytool -exportcert -alias androiddebugkey -keystore ~/.android/debug.keystore |
 keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey
 ```
 
-# Деплой
+# Локальный деплой
 
 ```
 cd mobile-app
 npm i
 cp src/config.json.example src/config.json
 nano src/config.json
+cd cordova
+cordova platform add android
+cordova platform add ios
+Установить Android Studio + XCode
+brew install gradle
 ```
 
 ## NPM команды

@@ -57,21 +57,22 @@ var app = new Framework7({
     root: '#app', // App root element
     id: 'io.mobile.trash', // App bundle ID
     name: 'Object b', // App name
-    theme: 'auto', // Automatic theme detection
+    theme: 'auto',
 
-    // App routes
+    // Маршруты (урлы)
     routes: routes,
 
-    // App root data, can be used for global variables
+    // Глобальные переменные, ну или константы, как удобнее
     data: function () {
         return {
             iconSettings: {
                 mapIconUrl: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" version="1.1" viewBox="-12 -12 24 24"><circle r="9" style="stroke:#fff;stroke-width:3;fill:#2A93EE;fill-opacity:1;opacity:1;"></circle></svg>',
-            }
+            },
+            defaultMapCenter: [54.3185, 48.3978],
         };
     },
 
-    // App root methods
+    // Глобальные методы, которые могут быть вызваны на страницах
     methods: {
         // https://github.com/apache/cordova-plugin-network-information
         deviceIsOffline: function () {
@@ -214,7 +215,7 @@ var app = new Framework7({
         },
     },
 
-    // Global events
+    // Глобальные события
     on: {
         init: function () {
             var f7 = this;
@@ -228,12 +229,10 @@ var app = new Framework7({
         }
     },
 
-    // Input settings
     input: {
         scrollIntoViewOnFocus: Framework7.device.cordova && !Framework7.device.electron,
         scrollIntoViewCentered: Framework7.device.cordova && !Framework7.device.electron,
     },
-    // Cordova Statusbar settings
     statusbar: {
         overlay: true,
         iosOverlaysWebView: true,
@@ -252,7 +251,6 @@ $$(document).on('deviceready', function () {
     app.methods.onBackKeyDown();
 });
 
-// События
 $$(document).on('click', '.open-object-map-page', function () {
     var viewEl = $$('#view-map');
     var viewParams = $$(viewEl).dataset();

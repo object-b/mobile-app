@@ -9,7 +9,7 @@ import CreateObjectPage from '../pages/app/create-object.f7.html';
 import UserProfile from '../pages/app/profile.f7.html';
 import NotFoundPage from '../pages/404.f7.html';
 
-import { get, set } from 'idb-keyval';
+import { get } from 'idb-keyval';
 
 var routes = [
     {

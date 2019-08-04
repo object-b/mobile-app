@@ -51,6 +51,14 @@ html {
     display: flex;
     justify-content: space-between;
     box-sizing: border-box;
+    flex-direction: column;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-size: var(--f7-list-item-after-font-size);
+    font-weight: 400;
+    font-weight: var(--f7-list-item-after-font-weight);
+    line-height: var(--f7-list-item-after-line-height);
+    color: var(--f7-list-item-text-text-color);
 }
 
 .chip.trash-transport {
@@ -324,4 +332,12 @@ html {
 
 .create-object-map {
     border-radius: var(--f7-card-border-radius) var(--f7-card-border-radius) 0 0;
+}
+
+.trash-card .item-text {
+    color: rgb(33, 33, 33);
+}
+
+.trash-card .item-subtitle {
+    white-space: inherit;
 }

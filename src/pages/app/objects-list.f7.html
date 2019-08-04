@@ -12,34 +12,33 @@
                 </div>
             </div>
         </div>
-        <div class="page-content">
+        <div class="page-content infinite-scroll-content">
             {{#if objects}}
-            <div class="list media-list">
-                <ul>
-                    {{#each objects}}
-                        <li>
-                            <a href="/object/{{id}}" class="item-link item-content">
-                                <div class="item-media">
-                                    <img src="{{firstImage}}" width="120" />
-                                </div>
-                                <div class="item-inner">
-                                    <div class="item-title-row">
-                                        <div class="item-title trash-status-header">{{status}}</div>
+                <div class="list media-list trash-list">
+                    <ul>
+                        {{#each objects}}
+                            <li class="trash-card">
+                                <a href="/object/{{id}}" class="item-link item-content">
+                                    <div class="item-media">
+                                        <img src="{{firstImage}}" width="120" />
                                     </div>
-                                    <div class="item-subtitle">{{author}}</div>
-                                    <div class="item-text">{{type}}</div>
-                                    <div class="trash-card-footer">
-                                        <div class="chip chip-outline trash-transport">
-                                            <div class="chip-label">{{size}}</div>
+                                    <div class="item-inner">
+                                        <div class="item-title-row">
+                                            <div class="item-title trash-status-header">{{status}}</div>
                                         </div>
-                                        <div class="item-after">{{date}}</div>
+                                        <div class="item-subtitle">{{type}}</div>
+                                        <div class="item-text">{{size}}</div>
+                                        <div class="trash-card-footer">
+                                            <div>{{author}}</div>
+                                            <div>{{date}}</div>
+                                        </div>
                                     </div>
-                                </div>
-                            </a>
-                        </li>
-                    {{/each}}
-                </ul>
-            </div>
+                                </a>
+                            </li>
+                        {{/each}}
+                    </ul>
+                </div>
+                <div class="preloader infinite-scroll-preloader"></div>
             {{/if}}
         </div>
 
@@ -62,19 +61,57 @@
             }
         },
         on: {
-            pageInit: function(e, page) {
+            pageInit: function (e, page) {
                 var self = this;
                 var app = self.$app;
                 var $$ = self.$$;
+                var pageNumber = 1;
+                var objectsGetUrl = config.slimApiUrl + '/api/objects?page=' + pageNumber;
+                var allowInfinite = true;
+                var mergedObjects = [];
+                var currentObjects = [];
 
+                $$('.infinite-scroll-content').on('infinite', function () {
+                    // Выход, если загрузка в процессе
+                    if (!allowInfinite) return;
+
+                    allowInfinite = false;
+                    
+                    // Запросить следующую страницу
+                    pageNumber++;
+                    objectsGetUrl = config.slimApiUrl + '/api/objects?page=' + pageNumber;
+                    
+                    app.request.json(objectsGetUrl, (response) => {
+                        app.preloader.hide();
+                        // Загрузка завершена, разрешаем скроллинг
+                        allowInfinite = true;
+
+                        // Склеиваем текущие объекты и новые и присваиваем их в virtual DOM
+                        currentObjects = self.objects;
+                        mergedObjects = currentObjects.concat(response.data);
+
+                        self.$setState({
+                            objects: mergedObjects,
+                        });
+
+                        if (!response.hasMorePages) {
+                            // Больше нечего загружать, уничтожить обработчик
+                            app.infiniteScroll.destroy('.infinite-scroll-content');
+                            // Удалить прелоадер внизу страницы
+                            $$('.infinite-scroll-preloader').remove();
+                            return;
+                        }
+                    }, self.$root.errorRequestHandler);
+                });
+
+                // Запросить первую страницу объектов при инициализации страницы
                 app.preloader.show();
 
-                // Запросить список объектов при инициализации страницы
-                app.request.json(config.slimApiUrl + '/api/objects', (objects) => {
+                app.request.json(objectsGetUrl, (response) => {
                     app.preloader.hide();
 
                     self.$setState({
-                        objects: objects,
+                        objects: response.data,
                     });
                 }, self.$root.errorRequestHandler);
 
