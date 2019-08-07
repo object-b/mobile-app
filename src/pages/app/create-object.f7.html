@@ -186,8 +186,6 @@
     </div>
 </template>
 <script>
-    import * as config from '../../config';
-    
     export default {
         data: function () {
             return {
@@ -232,16 +230,18 @@
                     },
                     "address": self.userLocation
                 };
-                config.debug && console.log(objectData, formData);
+                app.data.config.debug && console.log(objectData, formData);
+
+                // Настроить создание через доп слой
 
                 if (self.$root.deviceIsOffline()) {
                     // Положить в очередь?
                 } else {
                     app.preloader.show();
 
-                    app.request.postJSON(config.slimApiUrl + '/api/objects', objectData, function (success, status) {
+                    app.request.postJSON(app.data.config.slimApiUrl + '/api/objects', objectData, function (success, status) {
                         app.preloader.hide();
-                        config.debug && console.log(success, status);
+                        app.data.config.debug && console.log(success, status);
 
                         if (status === 201) {
                             app.dialog.alert('Красаучег', function() {
@@ -250,7 +250,7 @@
                         }
                     }, function (error, status) {
                         app.preloader.hide();
-                        config.debug && console.log(error, status);
+                        app.data.config.debug && console.log(error, status);
                         
                         self.$root.openNotification('Create object error. Code ' + status);
                     });
@@ -259,7 +259,7 @@
             changeMapPosition: function () {
                 alert()
             },
-            updateSliderAfterAdding: function (photoLink, deleteByIndex) {
+            updateObjectGallery: function (photoLink, deleteByIndex) {
                 var self = this;
                 var app = self.$app;
                 var $$ = self.$$;
@@ -272,7 +272,7 @@
                     return;
                 }
 
-                config.debug && console.log(currentPhotos, deleteByIndex);
+                app.data.config.debug && console.log(currentPhotos, deleteByIndex);
 
                 // Добавить или удалить?
                 if (isAdding) {
@@ -289,7 +289,7 @@
                 // Добавить фото в слайдер
                 self.photoBrowserSettings.photos = currentPhotos;
                 self.myPhotoBrowserPopup = app.photoBrowser.create(self.photoBrowserSettings);
-                config.debug && console.log(self);
+                app.data.config.debug && console.log(self);
 
                 // Показать скрытый слайдер после добавления
                 if (currentPhotos.length > 0) {
@@ -349,11 +349,11 @@
                 //     popupAnchor : [0, -24]
                 // });
 
-                config.debug && console.log(e);
+                app.data.config.debug && console.log(e);
 
                 // Запросим название локации с помощью open street map
                 app.request.json(nominatimUrl, (response) => {
-                    config.debug && console.log(response);
+                    app.data.config.debug && console.log(response);
 
                     var formattedLatLng = e.latitude.toFixed(8) + ', ' + e.longitude.toFixed(8);
                     var addressString = [
@@ -365,7 +365,7 @@
                         response.address.road,
                         // До низшего
                         response.address.house_number,
-                    ]
+                    ];
                     var displayName = addressString.filter(function(n) { return n; }).join(', ');
 
                     // Записать локацию для отправки на сервер
@@ -379,7 +379,7 @@
                         "latitude": e.latitude,
                         "longitude": e.longitude
                     };
-                    config.debug && console.log(self);
+                    app.data.config.debug && console.log(self);
                     
                     $$('#user-location-display-name').text(displayName);
                     $$('.object-coordinates').css('display', 'flex');
@@ -402,9 +402,9 @@
             onLocationError: function (e) {
                 var self = this;
                 var app = self.$app;
-                var msg = 'Определить локацию автоматически не удалось. Попробуйте включить GPS, проверить права приложения или укажите вручную. Ошибка: ' + e.message;
+                var msg = 'Определить локацию автоматически не удалось. Ошибка: ' + e.message;
                 
-                config.debug && console.log(e);
+                app.data.config.debug && console.log(e);
                 app.dialog.alert(msg);
             },
             getOptions: function (srcType) {
@@ -422,10 +422,9 @@
             cameraSuccess: function (fileURL) {
                 var self = this;
                 var app = self.$app;
-                var $$ = self.$$;
 
-                config.debug && console.log(fileURL);
-                self.updateSliderAfterAdding(fileURL, false);
+                app.data.config.debug && console.log(fileURL);
+                self.updateObjectGallery(fileURL, false);
                 
                 // Получить локацию на мобилке если её еще нет
                 if (!self.userLocation && app.device.cordova) {
@@ -438,7 +437,7 @@
 
                 // Сюда скорее всего прилетит ошибка, что юзер вышел из режима камеры
                 // this.$root.openNotification("Unable to obtain picture: " + message);
-                config.debug && console.log(message);
+                app.data.config.debug && console.log(message);
 
                 // Получить локацию на мобилке если её еще нет
                 if (!self.userLocation && app.device.cordova) {
@@ -446,21 +445,23 @@
                 }
             },
             launchCamera: function () {
+                var cameraOptions = this.getOptions(Camera.PictureSourceType.CAMERA);
+                var randomnumber = Math.floor(Math.random() * (500 - 300 + 1)) + 300;
+
                 if (this.$app.device.cordova) {
-                    var cameraOptions = this.getOptions(Camera.PictureSourceType.CAMERA);
                     navigator.camera.getPicture(this.cameraSuccess, this.cameraError, cameraOptions);
                 } else {
-                    var randomnumber = Math.floor(Math.random() * (500 - 300 + 1)) + 300;
-                    this.updateSliderAfterAdding('https://via.placeholder.com/500x'+randomnumber, false);
+                    this.updateObjectGallery('https://via.placeholder.com/500x'+randomnumber, false);
                 }
             },
             selectFromGallery: function () {
+                var cameraOptions = this.getOptions(Camera.PictureSourceType.PHOTOLIBRARY);
+                var randomnumber = Math.floor(Math.random() * (500 - 300 + 1)) + 300;
+
                 if (this.$app.device.cordova) {
-                    var cameraOptions = this.getOptions(Camera.PictureSourceType.SAVEDPHOTOALBUM);
                     navigator.camera.getPicture(this.cameraSuccess, this.cameraError, cameraOptions);
                 } else {
-                    var randomnumber = Math.floor(Math.random() * (500 - 300 + 1)) + 300;
-                    this.updateSliderAfterAdding('https://via.placeholder.com/500x'+randomnumber, false);
+                    this.updateObjectGallery('https://via.placeholder.com/500x'+randomnumber, false);
                 }
             },
             openPhotoBrowser: function () {
@@ -473,10 +474,11 @@
                 var app = self.$app;
                 var $$ = self.$$;
                 var index = $$('.object-photo-slider')[0].swiper.realIndex;
-                config.debug && console.log(index);
+                
+                app.data.config.debug && console.log(index);
 
                 app.dialog.confirm('Вы действительно хотите удалить это фото?', function () {
-                    self.updateSliderAfterAdding('', index);
+                    self.updateObjectGallery('', index);
                 });
             }
         },

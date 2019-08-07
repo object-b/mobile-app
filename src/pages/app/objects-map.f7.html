@@ -17,8 +17,6 @@
     </div>
 </template>
 <script>
-    import * as config from '../../config';
-    
     export default {
         data: function () {
             return {
@@ -65,13 +63,14 @@
             // Success callback
             onLocationFound: function (e) {
                 var self = this;
+                var app = self.$app;
 
                 self.userLocation = {
                     latitude: e.latitude,
                     longitude: e.longitude,
                 };
                 
-                config.debug && console.log(self.userLocation);
+                app.data.config.debug && console.log(self.userLocation);
 
                 // Показать маркер и иконку
                 // var radius = e.accuracy;

@@ -43,6 +43,9 @@ brew install gradle
 ```
 
 ## NPM команды
+
+Первые две команды содержат в себе алиас `cordova`, который должен быть настроен глобально.
+
 * `npm run build-cordova-android-dev && cd cordova && cordova run android` - билд, установка и запуск в эмуляторе Android Studio AVD
 * `npm run build-cordova-ios-dev && cd cordova && cordova run ios` - билд, установка и запуск в эмуляторе XCode Simulator
 * `npm start` - запуск локального сервера на localhost:8080

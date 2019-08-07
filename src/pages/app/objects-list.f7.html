@@ -51,7 +51,7 @@
 </template>
 <script>
     import { get, set } from 'idb-keyval';
-    import * as config from '../../config';
+    import helpers from '../../js/helpers';
 
     export default {
         data: function () {
@@ -62,15 +62,23 @@
         },
         on: {
             pageInit: function (e, page) {
+                var previousScrollTop;
+                var currentScrollTop;
+                var scrollHeight;
+                var offsetHeight;
+                var reachEnd;
+                var action;
                 var self = this;
                 var app = self.$app;
                 var $$ = self.$$;
+                
                 var pageNumber = 1;
-                var objectsGetUrl = config.slimApiUrl + '/api/objects?page=' + pageNumber;
+                var objectsGetUrl = app.data.config.slimApiUrl + '/api/objects?page=' + pageNumber;
                 var allowInfinite = true;
                 var mergedObjects = [];
                 var currentObjects = [];
 
+                // Срабатывает при достижении 50px внизу экрана
                 $$('.infinite-scroll-content').on('infinite', function () {
                     // Выход, если загрузка в процессе
                     if (!allowInfinite) return;
@@ -79,7 +87,7 @@
                     
                     // Запросить следующую страницу
                     pageNumber++;
-                    objectsGetUrl = config.slimApiUrl + '/api/objects?page=' + pageNumber;
+                    objectsGetUrl = app.data.config.slimApiUrl + '/api/objects?page=' + pageNumber;
                     
                     app.request.json(objectsGetUrl, (response) => {
                         app.preloader.hide();
@@ -115,56 +123,15 @@
                     });
                 }, self.$root.errorRequestHandler);
 
-                // Android FAB hiding.
+                // Скрытие кнопки добавление как в обычном ведре
                 // if (self.objects.length > 3) {
-                //     $$('.page-content').on('scroll', handleScroll);
+                //     $$('.page-content').on('scroll', helpers.handleScroll);
                 // } else {
                 //     $$('.fab').removeClass('fab-hidden');
                 // }
-
-                var previousScrollTop;
-                var currentScrollTop;
-                var scrollHeight;
-                var offsetHeight;
-                var reachEnd;
-                var action;
-
-                function handleScroll() {
-                    const scrollContent = this;
-
-                    currentScrollTop = scrollContent.scrollTop;
-                    scrollHeight = scrollContent.scrollHeight;
-                    offsetHeight = scrollContent.offsetHeight;
-                    reachEnd = currentScrollTop + offsetHeight >= scrollHeight;
-
-                    if (reachEnd) {
-                        action = 'hide';
-                    } else if (previousScrollTop > currentScrollTop) {
-                        if (currentScrollTop <= 34) {
-                            action = 'hide';
-                        } else {
-                            action = 'show';
-                        }
-                    } else if (currentScrollTop > 34) {
-                        action = 'show';
-                    } else {
-                        action = 'hide';
-                    }
-
-                    if (action === 'show') {
-                        $$('.fab').removeClass('fab-hidden');
-                    } else if (action === 'hide') {
-                        $$('.fab').addClass('fab-hidden');
-                    }
-
-                    previousScrollTop = currentScrollTop;
-                }
             },
             pageBeforeIn: function (e, page) {
-                var self = this;
-                var $$ = self.$$;
-
-                $$('.toolbar').show();
+                this.$$('.toolbar').show();
             },
         }
     }

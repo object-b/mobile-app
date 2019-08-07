@@ -2,7 +2,7 @@
     <div class="page" data-name="intro">
         <div class="navbar">
             <div class="navbar-inner">
-                <div class="title">Object b</div>
+                <div class="title">Где мусорка</div>
             </div>
         </div>
 
@@ -32,7 +32,7 @@
     export default {
         on: {
             pageBeforeIn: function (e, page) {
-                this.$app.$('.toolbar').hide();
+                this.$$('.toolbar').hide();
             },
         }
     }

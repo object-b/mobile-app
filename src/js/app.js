@@ -18,14 +18,14 @@ import routes from './routes.js';
 
 // Import leaflet JS
 import * as L from "leaflet";
-delete L.Icon.Default.prototype._getIconUrl;
+// delete L.Icon.Default.prototype._getIconUrl;
 
-// Workaround for default marker icon
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-    iconUrl: require('leaflet/dist/images/marker-icon.png'),
-    shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-});
+// // Workaround for default marker icon
+// L.Icon.Default.mergeOptions({
+//     iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+//     iconUrl: require('leaflet/dist/images/marker-icon.png'),
+//     shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+// });
 
 // Import leaflet JS preloader
 import 'leaflet-loading/src/Control.Loading.js';
@@ -56,7 +56,7 @@ import * as config from '../config';
 var app = new Framework7({
     root: '#app', // App root element
     id: 'io.mobile.trash', // App bundle ID
-    name: 'Object b', // App name
+    name: 'Где мусорка', // App name
     theme: 'auto',
 
     // Маршруты (урлы)
@@ -65,14 +65,14 @@ var app = new Framework7({
     // Глобальные переменные, ну или константы, как удобнее
     data: function () {
         return {
-            iconSettings: {
-                mapIconUrl: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" version="1.1" viewBox="-12 -12 24 24"><circle r="9" style="stroke:#fff;stroke-width:3;fill:#2A93EE;fill-opacity:1;opacity:1;"></circle></svg>',
-            },
-            defaultMapCenter: [54.3185, 48.3978],
+            iconSettings: {mapIconUrl: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" version="1.1" viewBox="-12 -12 24 24"><circle r="9" style="stroke:#fff;stroke-width:3;fill:#2A93EE;fill-opacity:1;opacity:1;"></circle></svg>'},
+            defaultMapCenter: [54.3185, 48.3978], // Ульяновск
+            config: config.default,
         };
     },
 
-    // Глобальные методы, которые могут быть вызваны на страницах
+    // Глобальные методы, которые могут быть вызваны на страницах через app.methods
+    // Могут быть использованы как хелперы
     methods: {
         // https://github.com/apache/cordova-plugin-network-information
         deviceIsOffline: function () {
@@ -229,6 +229,7 @@ var app = new Framework7({
         }
     },
 
+    // Глобальные настройки для компонентов
     input: {
         scrollIntoViewOnFocus: Framework7.device.cordova && !Framework7.device.electron,
         scrollIntoViewCentered: Framework7.device.cordova && !Framework7.device.electron,

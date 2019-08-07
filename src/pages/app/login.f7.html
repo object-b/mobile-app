@@ -66,7 +66,6 @@
 </template>
 <script>
     import { get, set } from 'idb-keyval';
-    import * as config from '../../config';
 
     export default {
         methods: {
@@ -75,7 +74,7 @@
                 var router = this.$f7router;
                 var $$ = this.$$;
                 var self = this;
-                var url = config.backendPublicUrl + '/api/login';
+                var url = app.data.config.backendPublicUrl + '/api/login';
 
                 // Тест
                 // var temp = {
@@ -91,7 +90,7 @@
                     app.preloader.show();
 
                     var formData = app.form.convertToData('#login-form');
-                    config.debug && console.log(formData);
+                    app.data.config.debug && console.log(formData);
 
                     // Проверка на наличие интернета
                     if (self.$root.deviceIsOffline()) {
@@ -101,7 +100,7 @@
                     }
 
                     app.request.postJSON(url, formData, function(success, status) {
-                        config.debug && console.log(success, status);
+                        app.data.config.debug && console.log(success, status);
 
                         set('AUTH_TOKEN', success.api_key)
                             .then(function() {
@@ -113,7 +112,7 @@
                                 self.$root.openNotification(error);
                             });
                     }, function(error, status) {
-                        config.debug && console.log(error, status);
+                        app.data.config.debug && console.log(error, status);
                         
                         if (status === 401) {
                             var msg = JSON.parse(error.response).message;

@@ -2,7 +2,7 @@
   "name": "object-b",
   "private": true,
   "version": "1.0.0",
-  "description": "Object b",
+  "description": "Где мусорка",
   "repository": "",
   "license": "UNLICENSED",
   "framework7": {
@@ -11,7 +11,7 @@
       "web",
       "cordova"
     ],
-    "name": "Object b",
+    "name": "Где мусорка",
     "pkg": "io.mobile.trash",
     "framework": "core",
     "template": "tabs",
