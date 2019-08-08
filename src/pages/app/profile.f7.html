@@ -15,31 +15,52 @@
 
         <!-- Scrollable page content-->
         <div class="page-content">
-            <div class="block block-strong">
-                <p>This is an example of tabs-layout application. The main point of such tabbed layout is that each tab
-                    contains independent view with its own routing and navigation.</p>
-
-                <p>Each tab/view may have different layout, different navbar type (dynamic, fixed or static) or without
-                    navbar like this tab.</p>
-            </div>
+            {{#if user}}
+                <div class="list simple-list">
+                    <ul>
+                        <li>Name: {{user.name}}</li>
+                        <li>API Key: {{user.api_key}}</li>
+                    </ul>
+                </div>
+            {{/if}}
         </div>
     </div>
 </template>
 <script>
-    import { del } from 'idb-keyval';
+    import auth from '../../js/auth';
 
     export default {
+        data() {
+            return {
+                // empty initial user data
+                user: null,
+            }
+        },
         methods: {
             logout: function () {
                 var router = this.$f7router;
                 var app = this.$f7;
-                
+
                 app.dialog.confirm('Вы действительно хотите выйти из учетной записи?', function () {
-                    del('AUTH_TOKEN').then(function () {
+                    auth.logoutUser().then(function () {
                         location.reload();
                     });
                 });
             },
         },
+        on: {
+            pageInit: function (e, page) {
+                var self = this;
+                var app = self.$app;
+
+                auth.getUserProfileInfo().then(function (user) {
+                    self.$setState({
+                        user: user,
+                    });
+                }).catch(function() {
+                    console.error('Данные потерялись');
+                });
+            },
+        }
     }
 </script>

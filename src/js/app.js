@@ -1,5 +1,4 @@
 import $$ from 'dom7';
-import { get, set, del } from 'idb-keyval';
 import Framework7 from 'framework7/framework7.esm.bundle.js';
 
 // Import F7 Styles
@@ -52,6 +51,7 @@ import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 
 // Simple app config
 import * as config from '../config';
+import auth from '../js/auth';
 
 var app = new Framework7({
     root: '#app', // App root element
@@ -97,7 +97,7 @@ var app = new Framework7({
 
             app.preloader.hide();
             app.dialog.alert(message, function () {
-                del('AUTH_TOKEN').then(function () {
+                auth.logoutUser().then(function () {
                     location.reload();
                 });
             });
@@ -124,15 +124,10 @@ var app = new Framework7({
                     }, function (success, status) {
                         config.debug && console.log(success, status);
 
-                        set('AUTH_TOKEN', success.api_key).then(function () {
+                        auth.authenticateUser(success).then(function () {
                             app.methods.setApiKeyAsRequestHeader(success.api_key);
 
                             router.navigate('/objects-list');
-                        }).catch(function (error) {
-                            app.toast.create({
-                                text: error,
-                                closeTimeout: 4500,
-                            }).open();
                         });
                     }, function (error, status) {
                         app.toast.create({
@@ -174,15 +169,10 @@ var app = new Framework7({
                     }, function (success, status) {
                         config.debug && console.log(success, status);
 
-                        set('AUTH_TOKEN', success.api_key).then(function () {
+                        auth.authenticateUser(success).then(function () {
                             app.methods.setApiKeyAsRequestHeader(success.api_key);
 
                             router.navigate('/objects-list');
-                        }).catch(function (error) {
-                            app.toast.create({
-                                text: error,
-                                closeTimeout: 4500,
-                            }).open();
                         });
                     }, function (error, status) {
                         app.toast.create({

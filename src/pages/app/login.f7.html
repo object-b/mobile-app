@@ -65,7 +65,7 @@
     </div>
 </template>
 <script>
-    import { get, set } from 'idb-keyval';
+    import auth from '../../js/auth';
 
     export default {
         methods: {
@@ -102,15 +102,11 @@
                     app.request.postJSON(url, formData, function(success, status) {
                         app.data.config.debug && console.log(success, status);
 
-                        set('AUTH_TOKEN', success.api_key)
-                            .then(function() {
-                                self.$root.setApiKeyAsRequestHeader(success.api_key);
-                                
-                                router.navigate('/objects-list');
-                            })
-                            .catch(function(error) {
-                                self.$root.openNotification(error);
-                            });
+                        auth.authenticateUser(success).then(function() {
+                            self.$root.setApiKeyAsRequestHeader(success.api_key);
+                            
+                            router.navigate('/objects-list');
+                        });
                     }, function(error, status) {
                         app.data.config.debug && console.log(error, status);
                         

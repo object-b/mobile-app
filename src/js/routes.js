@@ -9,7 +9,7 @@ import CreateObjectPage from '../pages/app/create-object.f7.html';
 import UserProfile from '../pages/app/profile.f7.html';
 import NotFoundPage from '../pages/404.f7.html';
 
-import { get } from 'idb-keyval';
+import auth from '../js/auth';
 
 var routes = [
     {
@@ -19,19 +19,14 @@ var routes = [
     {
         path: '/objects-list',
         async(routeTo, routeFrom, resolve, reject) {
-            // проверка на авторизацию пользователя
-            get('AUTH_TOKEN').then(value => {
-                if (typeof value !== 'undefined') {
-                    this.view.app.methods.setApiKeyAsRequestHeader(value);
+            var self = this;
 
-                    resolve({
-                        component: ObjectsListPage
-                    });
-                } else {
-                    resolve({
-                        component: IntroPage
-                    });
-                }
+            auth.isAuthenticated().then(function(token) {
+                self.view.app.methods.setApiKeyAsRequestHeader(token);
+
+                resolve({component: ObjectsListPage});
+            }).catch(function() {
+                resolve({component: IntroPage});
             });
         }
     },
