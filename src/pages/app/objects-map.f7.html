@@ -89,60 +89,63 @@
                 var self = this;
                 var app = self.$app;
                 var $$ = self.$$;
+                var objectsGetMarkers = app.data.config.slimApiUrl + '/api/markers';
+                var allMarkers = [];
 
                 //if (!self.map) {
-                    var tiles = self.$root.createMapTiles();
+                var tiles = self.$root.createMapTiles();
 
-                    // Создание экземпляра объекта карты с использованием идентификатора DOM элемента <div> и, необязательно, литерала объекта с параметрами карты.
-                    self.map = L.map('global-map', {
-                        zoomControl: true,
-                        loadingControl: true,
-                        gestureHandling: false,
-                        minZoom: 8,
-                        layers: [tiles]
-                    }).setView(self.$root.defaultMapCenter, 12);
+                // Создание экземпляра объекта карты с использованием идентификатора DOM элемента <div> и, необязательно, литерала объекта с параметрами карты.
+                self.map = L.map('global-map', {
+                    zoomControl: true,
+                    loadingControl: true,
+                    gestureHandling: false,
+                    minZoom: 8,
+                    maxZoom: 17,
+                    layers: [tiles]
+                }).setView(self.$root.defaultMapCenter, 12);
 
-                    // Срабатывает, когда карта перестает меняться (например, пользователь перестал перетаскивать карту).
-                    self.map.on('moveend', function (e) {
-                        var data = {
-                            radius: self.getRadiusFromMapCenter('km'),
-                            center: self.map.getCenter()
-                        };
-                        
-                        app.data.config.debug && console.log(data);
+                var markerCluster = L.markerClusterGroup({
+                    chunkedLoading: true,
+                    spiderfyOnMaxZoom: false,
+                    removeOutsideVisibleBounds: false,
+                });
 
-                        // config.debug && L.marker(self.map.getCenter()).addTo(self.map);
-                        // config.debug && L.circle(
-                        //     self.map.getCenter(), 
-                        //     parseInt(self.getRadiusFromMapCenter('m'))
-                        // ).addTo(self.map);
-                    });
+                // Срабатывает, когда карта перестает меняться (например, пользователь перестал перетаскивать карту).
+                self.map.on('moveend', function (e) {
+                    var latLngRaduisCenter = {
+                        radius: self.getRadiusFromMapCenter('km'),
+                        lat: self.map.getCenter().lat,
+                        lng: self.map.getCenter().lng,
+                    };
+                    
+                    app.data.config.debug && console.log(latLngRaduisCenter);
+                    // config.debug && L.marker(self.map.getCenter()).addTo(self.map);
+                    // config.debug && L.circle(
+                    //     self.map.getCenter(), 
+                    //     parseInt(self.getRadiusFromMapCenter('m'))
+                    // ).addTo(self.map);
 
                     // Нужно получить точки только на видимой области карты
-                    var addressPoints = [];
-                    var markers = L.markerClusterGroup({
-                        chunkedLoading: true,
-                        spiderfyOnMaxZoom: false,
-                        removeOutsideVisibleBounds: true
-                    });
-                    
-                    // for (var i = 0; i < addressPoints.length; i++) {
-                    //     var a = addressPoints[i];
-                    //     var title = a[2];
-                    //     var marker = L.marker(new L.LatLng(a[0], a[1]), { title: title });
-                    //     marker.bindPopup(title);
-                    //     markers.addLayer(marker);
-                    // }
+                    app.request.json(objectsGetMarkers, latLngRaduisCenter, (addressPoints) => {
+                        markerCluster.clearLayers(allMarkers);
 
-                    // self.map.addLayer(markers);
+                        for (var i = 0; i < addressPoints.length; i++) {
+                            var current = addressPoints[i];
+                            var title = current[2];
+                            var marker = L.marker(new L.LatLng(current[0], current[1]), {
+                                title: title
+                            });
+                            
+                            allMarkers.push(marker);
+                            marker.bindPopup(title);
+                            
+                            markerCluster.addLayer(marker);
+                        }
 
-
-                    // L.polygon([
-                    //     [54.3057, 48.3662],
-                    //     [54.2954, 48.3904],
-                    //     [54.3002, 48.3773]
-                    // ], {opacity: '.5'}).addTo(self.map);
-                //}
+                        self.map.addLayer(markerCluster);
+                    }, self.$root.errorRequestHandler);
+                });
 
                 // Кастомная кнопка геолокации
                 app.data.locateControlOptions.createButtonCallback = function (container, options) {

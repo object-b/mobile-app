@@ -72,7 +72,7 @@
                 var $$ = self.$$;
                 
                 var pageNumber = 1;
-                var objectsGetUrl = app.data.config.slimApiUrl + '/api/objects?page=' + pageNumber;
+                var objectsGetUrl = app.data.config.slimApiUrl + '/api/objects';
                 var allowInfinite = true;
                 var mergedObjects = [];
                 var currentObjects = [];
@@ -88,7 +88,7 @@
                     pageNumber++;
                     objectsGetUrl = app.data.config.slimApiUrl + '/api/objects?page=' + pageNumber;
                     
-                    app.request.json(objectsGetUrl, (response) => {
+                    app.request.json(objectsGetUrl, {page: pageNumber}, (response) => {
                         app.preloader.hide();
                         // Загрузка завершена, разрешаем скроллинг
                         allowInfinite = true;
@@ -114,7 +114,7 @@
                 // Запросить первую страницу объектов при инициализации страницы
                 app.preloader.show();
 
-                app.request.json(objectsGetUrl, (response) => {
+                app.request.json(objectsGetUrl, {page: pageNumber}, (response) => {
                     app.preloader.hide();
 
                     self.$setState({

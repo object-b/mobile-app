@@ -41,14 +41,14 @@ import cordovaApp from './cordova-app.js';
 import routes from './routes.js';
 import * as locationPermissions from './location-permissions';
 
-// delete L.Icon.Default.prototype._getIconUrl;
+delete L.Icon.Default.prototype._getIconUrl;
 
-// // Workaround for default marker icon
-// L.Icon.Default.mergeOptions({
-//     iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-//     iconUrl: require('leaflet/dist/images/marker-icon.png'),
-//     shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-// });
+// Workaround for default marker icon
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+    iconUrl: require('leaflet/dist/images/marker-icon.png'),
+    shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+});
 
 var app = new Framework7({
     root: '#app', // App root element
@@ -105,14 +105,14 @@ var app = new Framework7({
         createMapTiles: function() {
             // return L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             //     maxZoom: 18,
-            //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" class="external">OpenStreetMap</a> contributors'
             // }).addTo(self.map);
             
             return L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
                 maxZoom: 18,
-                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-                    '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-                    'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/" class="external">OpenStreetMap</a> contributors, ' +
+                    '<a href="https://creativecommons.org/licenses/by-sa/2.0/" class="external">CC-BY-SA</a>, ' +
+                    'Imagery © <a href="https://www.mapbox.com/" class="external">Mapbox</a>',
                 id: 'mapbox.streets'
             });
         },
