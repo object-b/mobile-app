@@ -1,22 +1,46 @@
+/*
+ * Сторонние зависимости
+ */
 import $$ from 'dom7';
 import Framework7 from 'framework7/framework7.esm.bundle.js';
-
-// Import F7 Styles
 import 'framework7/css/framework7.bundle.css';
+import * as L from "leaflet";
 
-// Import Icons and App Custom Styles
+// Leaflet JS preloader
+import 'leaflet-loading/src/Control.Loading.js';
+import 'leaflet-loading/src/Control.Loading.css';
+
+// Leaflet JS gestures
+import "leaflet/dist/leaflet.css";
+import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
+import { GestureHandling } from "leaflet-gesture-handling";
+L.Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
+
+// Leaflet JS locate control
+import "leaflet.locatecontrol/dist/L.Control.Locate.min.js";
+import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
+
+// Leaflet JS geocoding
+import "leaflet-control-geocoder/dist/Control.Geocoder.css";
+import "leaflet-control-geocoder/dist/Control.Geocoder.min.js";
+
+// Leaflet JS markers on map
+import "leaflet.markercluster/dist/leaflet.markercluster.js";
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
+
+/*
+ * Файлы приложения
+ */
 import '../css/icons.css';
 import '../css/fontawesome.min.css';
 import '../css/app.css';
-
-// Import Cordova APIs
+import * as config from '../config';
+import auth from './auth';
 import cordovaApp from './cordova-app.js';
-
-// Import Routes
 import routes from './routes.js';
+import * as locationPermissions from './location-permissions';
 
-// Import leaflet JS
-import * as L from "leaflet";
 // delete L.Icon.Default.prototype._getIconUrl;
 
 // // Workaround for default marker icon
@@ -25,33 +49,6 @@ import * as L from "leaflet";
 //     iconUrl: require('leaflet/dist/images/marker-icon.png'),
 //     shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 // });
-
-// Import leaflet JS preloader
-import 'leaflet-loading/src/Control.Loading.js';
-import 'leaflet-loading/src/Control.Loading.css';
-
-// Import leaflet JS gestures for scrolling on object create
-import "leaflet/dist/leaflet.css";
-import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
-import { GestureHandling } from "leaflet-gesture-handling";
-L.Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
-
-// Import leaflet JS icon on global map
-import "leaflet.locatecontrol/dist/L.Control.Locate.min.js";
-import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
-
-// Import leaflet JS geocoding
-import "leaflet-control-geocoder/dist/Control.Geocoder.css";
-import "leaflet-control-geocoder/dist/Control.Geocoder.min.js";
-
-// Import leaflet JS markercluster
-import "leaflet.markercluster/dist/leaflet.markercluster.js";
-import "leaflet.markercluster/dist/MarkerCluster.css";
-import "leaflet.markercluster/dist/MarkerCluster.Default.css";
-
-// Simple app config
-import * as config from '../config';
-import auth from '../js/auth';
 
 var app = new Framework7({
     root: '#app', // App root element
@@ -62,27 +59,62 @@ var app = new Framework7({
     // Маршруты (урлы)
     routes: routes,
 
-    // Глобальные переменные, ну или константы, как удобнее
+    // Глобальные кастомные переменные, ну или константы, как удобнее
+    // Можно получать доступ из страниц так self.$root.config или app.data.config
     data: function () {
         return {
-            iconSettings: {mapIconUrl: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" version="1.1" viewBox="-12 -12 24 24"><circle r="9" style="stroke:#fff;stroke-width:3;fill:#2A93EE;fill-opacity:1;opacity:1;"></circle></svg>'},
-            defaultMapCenter: [54.3185, 48.3978], // Ульяновск
             config: config.default,
+            iconSettings: {mapIconUrl: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" version="1.1" viewBox="-12 -12 24 24"><circle r="9" style="stroke:#fff;stroke-width:3;fill:#2A93EE;fill-opacity:1;opacity:1;"></circle></svg>'},
+            defaultMapCenter: [54.318584, 48.397823], // Ульяновск
+            isOnline: true,
+            locateControlOptions: {
+                icon: Framework7.device.ios ? 'f7-icons' : 'material-icons',
+                iconLoading: 'fas fa-spinner fa-spin',
+                onLocationError: function() {},
+                showCompass: false,
+                strings: {
+                    title: '',
+                    popup: 'Вы в радиусе {distance} м. от этой точки',
+                },
+                locateOptions: {
+                    maxZoom: 16,
+                    enableHighAccuracy: true,
+                    maximumAge: 0,
+                    timeout: 20000,
+                    watch: false,
+                }
+            },
         };
     },
 
-    // Глобальные методы, которые могут быть вызваны на страницах через app.methods
-    // Могут быть использованы как хелперы
+    // Глобальные кастомные методы, могут быть использованы как хелперы
+    // Можно получать доступ из страниц так self.$root.openNotification или app.methods.openNotification
     methods: {
-        // https://github.com/apache/cordova-plugin-network-information
         deviceIsOffline: function () {
+            // https://github.com/apache/cordova-plugin-network-information
             // if (app.device.cordova) {
             //     var networkState = navigator.connection.type;
 
             //     return networkState === Connection.NONE;
             // }
 
-            return !navigator.onLine;
+            return !app.data.isOnline;
+        },
+        // Используется для загрузки и отображения слоев листов на карте.
+        // https://leafletjs.com/reference-1.5.0.html#tilelayer
+        createMapTiles: function() {
+            // return L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            //     maxZoom: 18,
+            //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            // }).addTo(self.map);
+            
+            return L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+                maxZoom: 18,
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+                    '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                    'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                id: 'mapbox.streets'
+            });
         },
         setApiKeyAsRequestHeader: function (token) {
             app.request.setup({
@@ -189,8 +221,14 @@ var app = new Framework7({
             });
         },
         onBackKeyDown: function () {
-            if (typeof app.popup.get('.popup') === 'undefined' && typeof app.dialog.get() === 'undefined') {
-                app.views.current.router.back();
+            config.debug && console.log(app.views);
+
+            if (
+                typeof app.popup.get('.popup') === 'undefined' && 
+                typeof app.dialog.get() === 'undefined' &&
+                typeof app.views.main !== 'undefined'
+            ) {
+                app.views.main.router.back();
             } else {
                 if (typeof app.popup.get('.popup') !== 'undefined') {
                     app.popup.get('.popup').close();
@@ -205,12 +243,12 @@ var app = new Framework7({
         },
     },
 
-    // Глобальные события
+    // Глобальные события F7
     on: {
         init: function () {
             var f7 = this;
             if (f7.device.cordova) {
-                // Init cordova APIs (see cordova-app.js)
+                // cordova-app.js
                 cordovaApp.init(f7);
             }
         },
@@ -219,27 +257,30 @@ var app = new Framework7({
         }
     },
 
-    // Глобальные настройки для компонентов
+    // Глобальные настройки для компонентов F7
     input: {
         scrollIntoViewOnFocus: Framework7.device.cordova && !Framework7.device.electron,
         scrollIntoViewCentered: Framework7.device.cordova && !Framework7.device.electron,
     },
     statusbar: {
-        overlay: true,
+        overlay: Framework7.device.cordova && Framework7.device.ios || 'auto',
         iosOverlaysWebView: true,
-        androidOverlaysWebView: true,
+        androidOverlaysWebView: false,
     },
     dialog: {
         buttonOk: 'Ок',
         buttonCancel: 'Отмена',
     },
     navbar: {
-        iosCenterTitle: false
+        // iosCenterTitle: false,
     },
+    view: {
+        iosDynamicNavbar: false,
+    }
 });
 
 $$(document).on('deviceready', function () {
-    app.methods.onBackKeyDown();
+    // app.methods.onBackKeyDown();
 });
 
 $$(document).on('click', '.open-object-map-page', function () {
@@ -249,9 +290,28 @@ $$(document).on('click', '.open-object-map-page', function () {
     app.views.create(viewEl, viewParams);
 });
 
-// $$(document).on('click', '.open-create-object-page', function () {
-//     var viewEl = $$('#view-create-object');
-//     var viewParams = $$(viewEl).dataset();
+$$(document).on('click', '.open-profile-page', function () {
+    var viewEl = $$('#view-profile');
+    var viewParams = $$(viewEl).dataset();
 
-//     app.views.create(viewEl, viewParams);
-// });
+    app.views.create(viewEl, viewParams);
+
+    // Проверить состояние пермишенов
+    // locationPermissions.checkState($$);
+});
+
+$$(document).on('offline', function() {
+    if (!app.data.isOnline) return;
+
+    app.data.isOnline = false;
+
+    alert('я офлайн');
+}, false);
+
+$$(document).on('online', function() {
+    if (app.data.isOnline) return;
+
+    app.data.isOnline = true;
+
+    alert('я онлайн');
+}, false);

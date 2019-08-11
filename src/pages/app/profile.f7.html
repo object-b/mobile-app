@@ -16,18 +16,51 @@
         <!-- Scrollable page content-->
         <div class="page-content">
             {{#if user}}
-                <div class="list simple-list">
-                    <ul>
-                        <li>Name: {{user.name}}</li>
-                        <li>API Key: {{user.api_key}}</li>
-                    </ul>
+            <div class="card">
+                <div class="card-header">Общая информация</div>
+                <div class="card-content card-content-padding">
+                    <b>Ваше имя:</b>
+                    <p>{{user.name}}</p>
                 </div>
+            </div>
+            <div class="card">
+                <div class="card-header">API информация</div>
+                <div class="card-content card-content-padding">
+                    <b>Ваш ключ:</b>
+                    <pre class="user-api-key">{{user.api_key}}</pre>
+                </div>
+            </div>
             {{/if}}
+
+            <div class="card">
+                <div class="card-header">Geo информация</div>
+                <div class="card-content card-content-padding">
+                    <div class="geo-location-info">
+                        <!-- <div class="geo-location-android" style="display: none;">
+                            <b>Метод определения локации:</b>
+                            <p id="location-mode"></p>
+                        </div>
+                        <div class="geo-location-ios" style="display: none;">
+                            <b>Доступ к определению локации:</b>
+                            <p id="location-available"></p>
+                            <b>Сервис локации:</b>
+                            <p id="location-enabled"></p>
+                        </div>
+                        <div style="display: none;">
+                            <b>Доступ к определению локации:</b>
+                            <p id="location-authorized"></p>
+                        </div> -->
+
+                        <button class="col button button-fill open-geo-settings">Открыть настройки локации</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 <script>
     import auth from '../../js/auth';
+    import * as locationPermissions from '../../js/location-permissions';
 
     export default {
         data() {
@@ -52,13 +85,40 @@
             pageInit: function (e, page) {
                 var self = this;
                 var app = self.$app;
+                var $$ = self.$$;
+                var user = auth.getUserProfileInfo();
 
-                auth.getUserProfileInfo().then(function (user) {
-                    self.$setState({
-                        user: user,
-                    });
-                }).catch(function() {
-                    console.error('Данные потерялись');
+                if (user) {
+                    self.$setState({ user: user });
+                } else {
+                    self.$root.openNotification('Данные профиля потерялись');
+                }
+
+                if (!app.device.cordova) {
+                    $$('.geo-location-info').html('Только кордова');
+                }
+
+                // if (app.device.ios) {
+                //     $$('.geo-location-ios').show();
+                // }
+
+                // if (app.device.android) {
+                //     $$('.geo-location-android').show();
+                // }
+
+                // $$(document).on('resume', function() {
+                //     // Проверить состояние пермишенов
+                //     if (app.device.cordova) {
+                //         locationPermissions.checkState($$);
+                //     }
+                // });
+
+                page.$el.on('click', '.open-geo-settings', function() {
+                    if (app.device.android) {
+                        cordova.plugins.diagnostic.switchToLocationSettings();
+                    } else {
+                        cordova.plugins.diagnostic.switchToSettings();
+                    }
                 });
             },
         }

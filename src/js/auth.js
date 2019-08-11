@@ -26,15 +26,7 @@ const Auth = {
     },
 
     getUserProfileInfo() {
-        return new Promise(function (resolve, reject) {
-            var data = JSON.parse(localStorage.getItem('USER_DATA'));
-
-            if (data) {
-                resolve(data);
-            } else {
-                reject(data);
-            }
-        });
+        return JSON.parse(localStorage.getItem('USER_DATA'));
     },
 };
 

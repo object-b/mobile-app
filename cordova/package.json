@@ -22,16 +22,18 @@
     "cordova-plugin-geolocation": "4.0.2",
     "cordova-plugin-keyboard": "^1.2.0",
     "cordova-plugin-network-information": "^2.0.2",
+    "cordova-plugin-request-location-accuracy": "^2.3.0",
     "cordova-plugin-splashscreen": "^5.0.3",
     "cordova-plugin-statusbar": "^2.4.3",
+    "cordova-plugin-webview-checker": "^1.0.0",
     "cordova-plugin-wkwebview-engine": "^1.2.0",
     "cordova-plugin-wkwebview-file-xhr": "^2.1.1",
-    "cordova-vk-auth": "git+https://github.com/rvlasenko/cordova-vk-auth.git"
+    "cordova-vk-auth": "git+https://github.com/rvlasenko/cordova-vk-auth.git",
+    "cordova.plugins.diagnostic": "^5.0.0"
   },
   "cordova": {
     "plugins": {
       "cordova-plugin-statusbar": {},
-      "cordova-plugin-keyboard": {},
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-wkwebview-file-xhr": {},
       "cordova-plugin-whitelist": {},
@@ -49,7 +51,15 @@
       },
       "cordova-plugin-camera": {
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
-      }
+      },
+      "cordova-plugin-request-location-accuracy": {
+        "PLAY_SERVICES_LOCATION_VERSION": "16.+"
+      },
+      "cordova.plugins.diagnostic": {
+        "ANDROID_SUPPORT_VERSION": "28.+"
+      },
+      "cordova-plugin-keyboard": {},
+      "cordova-plugin-webview-checker": {}
     },
     "platforms": [
       "android",

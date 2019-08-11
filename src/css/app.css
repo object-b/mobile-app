@@ -341,3 +341,62 @@ html {
 .trash-card .item-subtitle {
     white-space: inherit;
 }
+
+.user-api-key {
+    white-space: initial;
+    word-break: break-all;
+    margin-bottom: 0;
+}
+
+.leaflet-control-locate a {
+    font-size: 18px;
+}
+
+.fab-right-bottom.locate-control-start {
+    bottom: 85px;
+    position: fixed;
+}
+
+.fab > span,
+.fab-buttons span {
+    background-color: var(--f7-theme-color);
+    background-color: var(--f7-fab-bg-color, var(--f7-theme-color));
+    width: var(--f7-fab-size);
+    height: var(--f7-fab-size);
+    box-shadow: var(--f7-fab-box-shadow);
+    border-radius: calc(var(--f7-fab-size) / 2);
+    position: relative;
+    transition-duration: 300ms;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    z-index: 1;
+    color: #fff;
+    color: var(--f7-fab-text-color);
+}
+
+.fab span {
+    --f7-touch-ripple-color: var(--f7-touch-ripple-white);
+}
+
+.fab > span i {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate3d(-50%, -50%, 0) rotate(0deg) scale(1);
+}
+
+.locate-control-start .fas.fa-spinner {
+    font-size: 24px;
+    position: initial;
+}
+
+.locate-control-start .fas.fa-spinner span,
+.create-object-map .fas.fa-spinner span {
+    display: none;
+}
+
+.create-object-map .leaflet-control-locate i {
+    line-height: 1.25;
+}

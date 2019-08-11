@@ -21,6 +21,7 @@ const isCordova = target === 'cordova';
 module.exports = {
   mode: env,
   entry: [
+    // '@babel/polyfill',
     './src/js/app.js',
   ],
   output: {
