@@ -89,7 +89,7 @@
                 var self = this;
                 var app = self.$app;
                 var $$ = self.$$;
-                var objectsGetMarkers = app.data.config.slimApiUrl + '/api/markers';
+                var objectsGetMarkers = app.data.config.apiMarkersUrl;
                 var allMarkers = [];
 
                 //if (!self.map) {
@@ -144,7 +144,7 @@
                         }
 
                         self.map.addLayer(markerCluster);
-                    }, self.$root.errorRequestHandler);
+                    });
                 });
 
                 // Кастомная кнопка геолокации

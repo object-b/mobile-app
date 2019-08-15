@@ -1,33 +1,29 @@
-const Auth = {
-    isAuthenticated() {
-        return new Promise(function (resolve, reject) {
-            var token = localStorage.getItem('AUTH_TOKEN');
+export function isAuthenticated() {
+    return new Promise(function (resolve, reject) {
+        var token = localStorage.getItem('AUTH_TOKEN');
 
-            if (token) {
-                resolve(token);
-            } else {
-                reject(token);
-            }
-        });
-    },
+        if (token) {
+            resolve(token);
+        } else {
+            reject();
+        }
+    });
+}
 
-    authenticateUser(data) {
-        return Promise.resolve().then(function () {
-            localStorage.setItem('AUTH_TOKEN', data.api_key);
-            localStorage.setItem('USER_DATA', JSON.stringify(data));
-        });
-    },
+export function authenticateUser(data) {
+    return Promise.resolve().then(function () {
+        localStorage.setItem('AUTH_TOKEN', data.api_key);
+        localStorage.setItem('USER_DATA', JSON.stringify(data));
+    });
+}
 
-    logoutUser() {
-        return Promise.resolve().then(function () {
-            localStorage.removeItem('AUTH_TOKEN');
-            localStorage.removeItem('USER_DATA');
-        });
-    },
+export function logoutUser() {
+    return Promise.resolve().then(function () {
+        localStorage.removeItem('AUTH_TOKEN');
+        localStorage.removeItem('USER_DATA');
+    });
+}
 
-    getUserProfileInfo() {
-        return JSON.parse(localStorage.getItem('USER_DATA'));
-    },
-};
-
-export default Auth;
+export function getUserProfileInfo() {
+    return JSON.parse(localStorage.getItem('USER_DATA'));
+}

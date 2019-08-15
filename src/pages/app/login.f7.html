@@ -65,7 +65,7 @@
     </div>
 </template>
 <script>
-    import auth from '../../js/auth';
+    import * as auth from '../../js/auth';
 
     export default {
         methods: {
@@ -74,7 +74,7 @@
                 var router = this.$f7router;
                 var $$ = this.$$;
                 var self = this;
-                var url = app.data.config.backendPublicUrl + '/api/login';
+                var url = app.data.config.loginUrl;
 
                 // Тест
                 // var temp = {
@@ -87,15 +87,12 @@
                 app.input.validateInputs($$('#login-form'));
 
                 if ($$('#login-form')[0].checkValidity()) {
-                    app.preloader.show();
-
                     var formData = app.form.convertToData('#login-form');
                     app.data.config.debug && console.log(formData);
 
                     // Проверка на наличие интернета
                     if (self.$root.deviceIsOffline()) {
                         self.$root.openNotification('Пожалуйста, подключитесь к интернету, чтобы продолжить');
-                        app.preloader.hide();
                         return;
                     }
 
@@ -116,8 +113,6 @@
                         } else {
                             self.$root.openNotification('Login error. Code ' + status);
                         }
-
-                        app.preloader.hide();
                     });
                 }
             },

@@ -38,7 +38,7 @@
                         {{/each}}
                     </ul>
                 </div>
-                <div class="preloader infinite-scroll-preloader"></div>
+                <!-- <div class="preloader infinite-scroll-preloader"></div> -->
             {{/if}}
         </div>
 
@@ -51,6 +51,7 @@
 </template>
 <script>
     import * as helpers from '../../js/helpers';
+    import * as database from '../../js/interface/objects';
 
     export default {
         data: function () {
@@ -61,18 +62,9 @@
         },
         on: {
             pageInit: function (e, page) {
-                var previousScrollTop;
-                var currentScrollTop;
-                var scrollHeight;
-                var offsetHeight;
-                var reachEnd;
-                var action;
                 var self = this;
                 var app = self.$app;
                 var $$ = self.$$;
-                
-                var pageNumber = 1;
-                var objectsGetUrl = app.data.config.slimApiUrl + '/api/objects';
                 var allowInfinite = true;
                 var mergedObjects = [];
                 var currentObjects = [];
@@ -83,51 +75,40 @@
                     if (!allowInfinite) return;
 
                     allowInfinite = false;
-                    
+
                     // Запросить следующую страницу
-                    pageNumber++;
-                    objectsGetUrl = app.data.config.slimApiUrl + '/api/objects?page=' + pageNumber;
-                    
-                    app.request.json(objectsGetUrl, {page: pageNumber}, (response) => {
-                        app.preloader.hide();
+                    database.getObjects(function(objects) {
                         // Загрузка завершена, разрешаем скроллинг
                         allowInfinite = true;
 
-                        // Склеиваем текущие объекты и новые и присваиваем их в virtual DOM
+                        // Склеиваем текущие объекты и новые для в virtual DOM
                         currentObjects = self.objects;
-                        mergedObjects = currentObjects.concat(response.data);
+                        mergedObjects = currentObjects.concat(objects);
 
                         self.$setState({
                             objects: mergedObjects,
                         });
 
-                        if (!response.hasMorePages) {
-                            // Больше нечего загружать, уничтожить обработчик
+                        // Больше нечего загружать, уничтожить обработчик
+                        if (!objects.length) {
                             app.infiniteScroll.destroy('.infinite-scroll-content');
                             // Удалить прелоадер внизу страницы
-                            $$('.infinite-scroll-preloader').remove();
+                            // $$('.infinite-scroll-preloader').remove();
                             return;
                         }
-                    }, self.$root.errorRequestHandler);
+                    }, function(status) {
+                        app.data.config.debug && console.log(status);
+                    });
                 });
 
                 // Запросить первую страницу объектов при инициализации страницы
-                app.preloader.show();
-
-                app.request.json(objectsGetUrl, {page: pageNumber}, (response) => {
-                    app.preloader.hide();
-
+                database.getObjects(function(objects) {
                     self.$setState({
-                        objects: response.data,
+                        objects: objects,
                     });
-                }, self.$root.errorRequestHandler);
-
-                // Скрытие кнопки добавление как в обычном ведре
-                // if (self.objects.length > 3) {
-                //     $$('.page-content').on('scroll', helpers.handleScroll);
-                // } else {
-                //     $$('.fab').removeClass('fab-hidden');
-                // }
+                }, function(status) {
+                    app.data.config.debug && console.log(status);
+                });
             },
             pageBeforeIn: function (e, page) {
                 this.$$('.toolbar').show();

@@ -76,7 +76,7 @@
     </div>
 </template>
 <script>
-    import auth from '../../js/auth';
+    import * as auth from '../../js/auth';
 
     export default {
         methods: {
@@ -85,7 +85,7 @@
                 var router = this.$f7router;
                 var $$ = this.$$;
                 var self = this;
-                var url = app.data.config.backendPublicUrl + '/api/register';
+                var url = app.data.config.registerUrl;
 
                 // Test
                 // var temp = {
@@ -99,8 +99,6 @@
                 app.input.validateInputs($$('#register-form'));
 
                 if ($$('#register-form')[0].checkValidity()) {
-                    app.preloader.show();
-
                     var formData = app.form.convertToData('#register-form');
                     // formData['user_role_id'] = 2;
 
@@ -109,7 +107,6 @@
                     // Проверка на наличие интернета
                     if (self.$root.deviceIsOffline()) {
                         self.$root.openNotification('Пожалуйста, подключитесь к интернету, чтобы продолжить');
-                        app.preloader.hide();
                         return;
                     }
 
@@ -130,8 +127,6 @@
                         } else {
                             self.$root.openNotification('Register error. Code ' + status);
                         }
-
-                        app.preloader.hide();
                     });
                 }
             },

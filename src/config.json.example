@@ -1,6 +1,9 @@
 {
     "debug": false,
-    "backendPublicUrl": "",
-    "slimApiUrl": "",
-    "vkontakteClientId": ""
+    "loginUrl": "",
+    "registerUrl": "",
+    "socialiteUrl": "",
+    "vkontakteClientId": "",
+    "apiObjectsUrl": "",
+    "apiMarkersUrl": ""
 }

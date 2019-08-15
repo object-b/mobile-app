@@ -53,8 +53,6 @@
                 var $$ = self.$$;
                 var id = self.$route.params.objectId;
 
-                app.preloader.show();
-
                 // request data on page init
                 // app.request.json(app.data.config.slimApiUrl + '/api/object/' + id, (objects) => {
                     // Test
@@ -66,8 +64,6 @@
                         size: 'Машина',
                         humanDate: '7 сентября 2019',
                     };
-
-                    app.preloader.hide();
 
                     self.$setState({
                         object: object,

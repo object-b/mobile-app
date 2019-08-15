@@ -36,7 +36,7 @@ import '../css/icons.css';
 import '../css/fontawesome.min.css';
 import '../css/app.css';
 import * as config from '../config';
-import auth from './auth';
+import * as auth from './auth';
 import cordovaApp from './cordova-app.js';
 import routes from './routes.js';
 import * as locationPermissions from './location-permissions';
@@ -122,8 +122,8 @@ var app = new Framework7({
                 headers: { 'X-Authorization': token }
             });
         },
-        errorRequestHandler: function (xhr, status) {
-            var message = JSON.parse(xhr.response).error || 'Что-то пошло не так :(';
+        handleRequestError: function (xhr, status) {
+            var message = JSON.parse(xhr.response).error;
 
             config.debug && console.log(xhr, status);
 
@@ -143,12 +143,10 @@ var app = new Framework7({
         },
         socialLoginFacebook: function () {
             var router = app.views.main.router;
-            var url = config.backendPublicUrl + '/api/social';
+            var url = config.socialiteUrl;
 
             facebookConnectPlugin.login(['public_profile', 'email'], function (result) {
                 if (typeof result.authResponse.accessToken !== 'undefined') {
-                    app.preloader.show();
-
                     // Добавляем токен, полученный от провайдера
                     app.request.postJSON(url, {
                         provider: 'facebook',
@@ -168,7 +166,6 @@ var app = new Framework7({
                         }).open();
 
                         config.debug && console.log(error, status);
-                        app.preloader.hide();
                     });
                 }
             }, function (error) {
@@ -177,7 +174,7 @@ var app = new Framework7({
         },
         socialLoginVkontakte: function () {
             var router = app.views.main.router;
-            var url = config.backendPublicUrl + '/api/social';
+            var url = config.socialiteUrl;
 
             SocialVk.init(config.vkontakteClientId);
             SocialVk.login(['email'], function (result) {
@@ -192,8 +189,6 @@ var app = new Framework7({
                 }
 
                 if (typeof jsonObject.token !== 'undefined') {
-                    app.preloader.show();
-
                     app.request.postJSON(url, {
                         provider: 'vkontakte',
                         access_token: jsonObject.token,
@@ -213,7 +208,6 @@ var app = new Framework7({
                         }).open();
 
                         config.debug && console.log(error, status);
-                        app.preloader.hide();
                     });
                 }
             }, function (error) {
@@ -279,6 +273,28 @@ var app = new Framework7({
     }
 });
 
+app.request.setup({
+    beforeSend: function (xhr) {
+        app.preloader.show();
+    },
+    complete: function(xhr, status) {
+        app.preloader.hide();
+
+        // Апи может вернуть невалидный ключ например
+        if (status === 401) {
+            var message = JSON.parse(xhr.response).error;
+
+            config.debug && console.log(xhr, status);
+
+            app.dialog.alert(message, function () {
+                auth.logoutUser().then(function () {
+                    location.reload();
+                });
+            });
+        }
+    }
+});
+
 $$(document).on('deviceready', function () {
     // app.methods.onBackKeyDown();
 });
@@ -295,9 +311,6 @@ $$(document).on('click', '.open-profile-page', function () {
     var viewParams = $$(viewEl).dataset();
 
     app.views.create(viewEl, viewParams);
-
-    // Проверить состояние пермишенов
-    // locationPermissions.checkState($$);
 });
 
 $$(document).on('offline', function() {

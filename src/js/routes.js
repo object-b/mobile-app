@@ -9,26 +9,29 @@ import CreateObjectPage from '../pages/app/create-object.f7.html';
 import UserProfile from '../pages/app/profile.f7.html';
 import NotFoundPage from '../pages/404.f7.html';
 
-import auth from '../js/auth';
+import * as auth from '../js/auth';
+
+var authMiddleware = function (routeTo, routeFrom, resolve, reject) {
+    var self = this;
+
+    auth.isAuthenticated().then(function(key) {
+        self.view.app.methods.setApiKeyAsRequestHeader(key);
+
+        resolve({component: ObjectsListPage});
+    }).catch(function() {
+        resolve({component: IntroPage});
+    });
+};
 
 var routes = [
     {
         path: '/intro',
         component: IntroPage,
     },
+    // Главная страница всегда
     {
         path: '/objects-list',
-        async(routeTo, routeFrom, resolve, reject) {
-            var self = this;
-
-            auth.isAuthenticated().then(function(token) {
-                self.view.app.methods.setApiKeyAsRequestHeader(token);
-
-                resolve({component: ObjectsListPage});
-            }).catch(function() {
-                resolve({component: IntroPage});
-            });
-        }
+        async: authMiddleware
     },
     {
         path: '/object/:objectId',

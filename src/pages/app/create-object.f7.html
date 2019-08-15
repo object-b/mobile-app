@@ -240,10 +240,7 @@
                 if (self.$root.deviceIsOffline()) {
                     // Положить в очередь?
                 } else {
-                    app.preloader.show();
-
-                    app.request.postJSON(app.data.config.slimApiUrl + '/api/objects', objectData, function (success, status) {
-                        app.preloader.hide();
+                    app.request.postJSON(app.data.config.apiObjectsUrl, objectData, function (success, status) {
                         app.data.config.debug && console.log(success, status);
 
                         if (status === 201) {
@@ -252,7 +249,6 @@
                             });
                         }
                     }, function (error, status) {
-                        app.preloader.hide();
                         app.data.config.debug && console.log(error, status);
                         
                         self.$root.openNotification('Create object error. Code ' + status);
