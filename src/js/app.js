@@ -275,13 +275,27 @@ var app = new Framework7({
 
 app.request.setup({
     beforeSend: function (xhr) {
-        app.preloader.show();
+
+        if (
+            (xhr.requestParameters.data &&
+            xhr.requestParameters.data.page &&
+            xhr.requestParameters.data.page > 1) ||
+            (xhr.requestUrl.indexOf('nominatim') !== -1)
+        ) {
+            // В каких условиях не отображаем крутилку
+        } else {
+            app.preloader.show();
+        }
     },
     complete: function(xhr, status) {
         app.preloader.hide();
 
-        // Апи может вернуть невалидный ключ например
-        if (status === 401) {
+        // Обработчик ошибок только для апи
+        // Для реквестов на логин или регистрацию есть свои обработчики в pages/app
+        if (
+            status === 401 &&
+            typeof xhr.requestParameters.headers['X-Authorization'] !== 'undefined'
+        ) {
             var message = JSON.parse(xhr.response).error;
 
             config.debug && console.log(xhr, status);

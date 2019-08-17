@@ -38,7 +38,7 @@
                         {{/each}}
                     </ul>
                 </div>
-                <!-- <div class="preloader infinite-scroll-preloader"></div> -->
+                <div class="preloader infinite-scroll-preloader"></div>
             {{/if}}
         </div>
 
@@ -93,7 +93,7 @@
                         if (!objects.length) {
                             app.infiniteScroll.destroy('.infinite-scroll-content');
                             // Удалить прелоадер внизу страницы
-                            // $$('.infinite-scroll-preloader').remove();
+                            $$('.infinite-scroll-preloader').remove();
                             return;
                         }
                     }, function(status) {
