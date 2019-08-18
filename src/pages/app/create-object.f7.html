@@ -63,7 +63,7 @@
                     <span>Изменить точку на карте</span>
                 </a>
             </div>
-            
+
             <div class="card">
                 <div id="user-location" class="create-object-map"></div>
                 <div class="card-content card-content-padding">
@@ -237,22 +237,23 @@
 
                 // Настроить создание через доп слой
 
-                if (self.$root.deviceIsOffline()) {
-                    // Положить в очередь?
-                } else {
+                if (window.isOnline) {
+                    app.preloader.show();
                     app.request.postJSON(app.data.config.apiObjectsUrl, objectData, function (success, status) {
                         app.data.config.debug && console.log(success, status);
 
                         if (status === 201) {
                             app.dialog.alert('Красаучег', function() {
-                                // router.navigate('/objects-list');
+                                router.navigate('/objects-list');
                             });
                         }
                     }, function (error, status) {
                         app.data.config.debug && console.log(error, status);
-                        
+
                         self.$root.openNotification('Create object error. Code ' + status);
                     });
+                } else {
+                    // Положить в очередь?
                 }
             },
             changeMapPosition: function () {
@@ -356,7 +357,7 @@
                         "longitude": e.longitude
                     };
                     app.data.config.debug && console.log(self);
-                    
+
                     $$('#user-location-display-name').text(displayName);
                     $$('.object-coordinates').css('display', 'flex');
                     $$('#user-location-coordinates').text(formattedLatLng);
@@ -388,7 +389,7 @@
 
                 app.data.config.debug && console.log(fileURL);
                 self.updateObjectGallery(fileURL, false);
-                
+
                 // Получить локацию на мобилке если её еще нет
                 if (!self.userLocation && app.device.cordova) {
                     self.checkPermissionAndLocate();
@@ -408,20 +409,20 @@
                 }
             },
             launchCamera: function () {
-                var cameraOptions = this.getOptions(Camera.PictureSourceType.CAMERA);
                 var randomnumber = Math.floor(Math.random() * (500 - 300 + 1)) + 300;
 
                 if (this.$app.device.cordova) {
+                    var cameraOptions = this.getOptions(Camera.PictureSourceType.CAMERA);
                     navigator.camera.getPicture(this.cameraSuccess, this.cameraError, cameraOptions);
                 } else {
                     this.updateObjectGallery('https://via.placeholder.com/500x'+randomnumber, false);
                 }
             },
             selectFromGallery: function () {
-                var cameraOptions = this.getOptions(Camera.PictureSourceType.PHOTOLIBRARY);
                 var randomnumber = Math.floor(Math.random() * (500 - 300 + 1)) + 300;
 
                 if (this.$app.device.cordova) {
+                    var cameraOptions = this.getOptions(Camera.PictureSourceType.PHOTOLIBRARY);
                     navigator.camera.getPicture(this.cameraSuccess, this.cameraError, cameraOptions);
                 } else {
                     this.updateObjectGallery('https://via.placeholder.com/500x'+randomnumber, false);
@@ -437,7 +438,7 @@
                 var app = self.$app;
                 var $$ = self.$$;
                 var index = $$('.object-photo-slider')[0].swiper.realIndex;
-                
+
                 app.data.config.debug && console.log(index);
 
                 app.dialog.confirm('Вы действительно хотите удалить это фото?', function () {

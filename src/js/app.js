@@ -39,7 +39,6 @@ import * as config from '../config';
 import * as auth from './auth';
 import cordovaApp from './cordova-app.js';
 import routes from './routes.js';
-import * as locationPermissions from './location-permissions';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -49,6 +48,9 @@ L.Icon.Default.mergeOptions({
     iconUrl: require('leaflet/dist/images/marker-icon.png'),
     shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
+
+// refactor me
+window.isOnline = true;
 
 var app = new Framework7({
     root: '#app', // App root element
@@ -64,13 +66,12 @@ var app = new Framework7({
     data: function () {
         return {
             config: config.default,
-            iconSettings: {mapIconUrl: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" version="1.1" viewBox="-12 -12 24 24"><circle r="9" style="stroke:#fff;stroke-width:3;fill:#2A93EE;fill-opacity:1;opacity:1;"></circle></svg>'},
+            iconSettings: { mapIconUrl: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" version="1.1" viewBox="-12 -12 24 24"><circle r="9" style="stroke:#fff;stroke-width:3;fill:#2A93EE;fill-opacity:1;opacity:1;"></circle></svg>' },
             defaultMapCenter: [54.318584, 48.397823], // Ульяновск
-            isOnline: true,
             locateControlOptions: {
                 icon: Framework7.device.ios ? 'f7-icons' : 'material-icons',
                 iconLoading: 'fas fa-spinner fa-spin',
-                onLocationError: function() {},
+                onLocationError: function () { },
                 showCompass: false,
                 strings: {
                     title: '',
@@ -90,31 +91,21 @@ var app = new Framework7({
     // Глобальные кастомные методы, могут быть использованы как хелперы
     // Можно получать доступ из страниц так self.$root.openNotification или app.methods.openNotification
     methods: {
-        deviceIsOffline: function () {
-            // https://github.com/apache/cordova-plugin-network-information
-            // if (app.device.cordova) {
-            //     var networkState = navigator.connection.type;
-
-            //     return networkState === Connection.NONE;
-            // }
-
-            return !app.data.isOnline;
-        },
         // Используется для загрузки и отображения слоев листов на карте.
         // https://leafletjs.com/reference-1.5.0.html#tilelayer
-        createMapTiles: function() {
-            // return L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            //     maxZoom: 18,
-            //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" class="external">OpenStreetMap</a> contributors'
-            // }).addTo(self.map);
-            
-            return L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+        createMapTiles: function () {
+            return L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 18,
-                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/" class="external">OpenStreetMap</a> contributors, ' +
-                    '<a href="https://creativecommons.org/licenses/by-sa/2.0/" class="external">CC-BY-SA</a>, ' +
-                    'Imagery © <a href="https://www.mapbox.com/" class="external">Mapbox</a>',
-                id: 'mapbox.streets'
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" class="external">OpenStreetMap</a> contributors'
             });
+
+            // return L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+            //     maxZoom: 18,
+            //     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/" class="external">OpenStreetMap</a> contributors, ' +
+            //         '<a href="https://creativecommons.org/licenses/by-sa/2.0/" class="external">CC-BY-SA</a>, ' +
+            //         'Imagery © <a href="https://www.mapbox.com/" class="external">Mapbox</a>',
+            //     id: 'mapbox.streets'
+            // });
         },
         setApiKeyAsRequestHeader: function (token) {
             app.request.setup({
@@ -148,6 +139,7 @@ var app = new Framework7({
             facebookConnectPlugin.login(['public_profile', 'email'], function (result) {
                 if (typeof result.authResponse.accessToken !== 'undefined') {
                     // Добавляем токен, полученный от провайдера
+                    app.preloader.show();
                     app.request.postJSON(url, {
                         provider: 'facebook',
                         access_token: result.authResponse.accessToken
@@ -189,6 +181,7 @@ var app = new Framework7({
                 }
 
                 if (typeof jsonObject.token !== 'undefined') {
+                    app.preloader.show();
                     app.request.postJSON(url, {
                         provider: 'vkontakte',
                         access_token: jsonObject.token,
@@ -217,23 +210,20 @@ var app = new Framework7({
         onBackKeyDown: function () {
             config.debug && console.log(app.views);
 
-            if (
-                typeof app.popup.get('.popup') === 'undefined' && 
-                typeof app.dialog.get() === 'undefined' &&
-                typeof app.views.main !== 'undefined'
-            ) {
-                app.views.main.router.back();
-            } else {
-                if (typeof app.popup.get('.popup') !== 'undefined') {
-                    app.popup.get('.popup').close();
-                }
+            var f7 = this;
+            var $ = this.$;
 
-                if (typeof app.dialog.get() !== 'undefined') {
-                    app.dialog.close();
-                }
+            if ($('.modal-in').length && $('.modal-in')[0].f7Modal) {
+                $('.modal-in')[0].f7Modal.close();
+                return;
             }
 
-            return false;
+            if ($('.panel-active').length) {
+                f7.panel.close();
+                return;
+            }
+
+            f7.views.main.router.back();
         },
     },
 
@@ -242,13 +232,9 @@ var app = new Framework7({
         init: function () {
             var f7 = this;
             if (f7.device.cordova) {
-                // cordova-app.js
                 cordovaApp.init(f7);
             }
         },
-        pageMounted: function (page) {
-            page.app.$('#app').show();
-        }
     },
 
     // Глобальные настройки для компонентов F7
@@ -265,29 +251,15 @@ var app = new Framework7({
         buttonOk: 'Ок',
         buttonCancel: 'Отмена',
     },
-    navbar: {
-        // iosCenterTitle: false,
-    },
     view: {
         iosDynamicNavbar: false,
-    }
+    },
 });
 
 app.request.setup({
-    beforeSend: function (xhr) {
-
-        if (
-            (xhr.requestParameters.data &&
-            xhr.requestParameters.data.page &&
-            xhr.requestParameters.data.page > 1) ||
-            (xhr.requestUrl.indexOf('nominatim') !== -1)
-        ) {
-            // В каких условиях не отображаем крутилку
-        } else {
-            app.preloader.show();
-        }
-    },
-    complete: function(xhr, status) {
+    // beforeSend: function (xhr) {
+    // },
+    complete: function (xhr, status) {
         app.preloader.hide();
 
         // Обработчик ошибок только для апи
@@ -309,36 +281,41 @@ app.request.setup({
     }
 });
 
-$$(document).on('deviceready', function () {
-    // app.methods.onBackKeyDown();
+$$(document).on('click', '.title', function () {
+// $$(document).on('deviceready', function () {
+    app.methods.onBackKeyDown();
 });
 
-$$(document).on('click', '.open-object-map-page', function () {
+$$(document).on('click', '[href="#view-map"]', function () {
     var viewEl = $$('#view-map');
     var viewParams = $$(viewEl).dataset();
 
-    app.views.create(viewEl, viewParams);
+    if (typeof app.views.get(viewEl) === 'undefined') {
+        app.views.create(viewEl, viewParams);
+    }
 });
 
-$$(document).on('click', '.open-profile-page', function () {
+$$(document).on('click', '[href="#view-profile"]', function () {
     var viewEl = $$('#view-profile');
     var viewParams = $$(viewEl).dataset();
 
-    app.views.create(viewEl, viewParams);
+    if (typeof app.views.get(viewEl) === 'undefined') {
+        app.views.create(viewEl, viewParams);
+    }
 });
 
-$$(document).on('offline', function() {
-    if (!app.data.isOnline) return;
+$$(document).on('offline', function () {
+    if (!window.isOnline) return;
 
-    app.data.isOnline = false;
+    window.isOnline = false;
 
     alert('я офлайн');
 }, false);
 
-$$(document).on('online', function() {
-    if (app.data.isOnline) return;
+$$(document).on('online', function () {
+    if (window.isOnline) return;
 
-    app.data.isOnline = true;
+    window.isOnline = true;
 
     alert('я онлайн');
 }, false);

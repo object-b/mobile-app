@@ -32,26 +32,84 @@
 </head>
 
 <body>
-    <div id="app" style="display: none;">
+    <div id="app">
         <!-- Status bar overlay for fullscreen mode-->
         <div class="statusbar"></div>
 
-        <!-- Views/Tabs container -->
+        <!-- Left panel with cover effect-->
+        <div class="panel panel-left panel-cover">
+            <div class="view">
+                <div class="page">
+                    <div class="navbar">
+                        <div class="navbar-inner">
+                            <div class="left">
+                                <a href="#" class="link icon-only panel-close">
+                                    <i class="icon f7-icons ios-only">close</i>
+                                    <i class="icon material-icons md-only">close</i>
+                                </a>
+                            </div>
+                            <div class="title">Где мусорка</div>
+                        </div>
+                    </div>
+                    <div class="page-content">
+                        <div class="list">
+                            <ul>
+                                <li>
+                                    <a href="/objects-list" class="item-link item-content panel-close">
+                                        <div class="item-media">
+                                            <i class="icon f7-icons if-not-md">list</i>
+                                            <i class="icon material-icons if-md">list</i>
+                                        </div>
+                                        <div class="item-inner">
+                                            <div class="item-title">Список объектов</div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/objects-map" class="item-link item-content panel-close">
+                                        <div class="item-media">
+                                            <i class="icon f7-icons if-not-md">world</i>
+                                            <i class="icon material-icons if-md">language</i>
+                                        </div>
+                                        <div class="item-inner">
+                                            <div class="item-title">Карта объектов</div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/profile" class="item-link item-content panel-close">
+                                        <div class="item-media">
+                                            <i class="icon f7-icons if-not-md">person</i>
+                                            <i class="icon material-icons if-md">person</i>
+                                        </div>
+                                        <div class="item-inner">
+                                            <div class="item-title">Профиль</div>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- <div class="view view-init view-main" data-url="/"></div> -->
+
         <div class="views tabs safe-areas">
-            <!-- Tabbar for switching views-tabs -->
             <div class="toolbar tabbar toolbar-bottom tabbar-labels">
                 <div class="toolbar-inner">
-                    <a href="#view-list" class="tab-link tab-link-active">
+                    <a href="#view-main" class="tab-link tab-link-active">
                         <i class="icon f7-icons if-not-md">list</i>
                         <i class="icon material-icons if-md">list</i>
                         <span class="tabbar-label">Список</span>
                     </a>
-                    <a href="#view-map" class="tab-link open-object-map-page">
+                    <a href="#view-map" class="tab-link">
                         <i class="icon f7-icons if-not-md">world</i>
                         <i class="icon material-icons if-md">language</i>
                         <span class="tabbar-label">Карта</span>
                     </a>
-                    <a href="#view-profile" class="tab-link open-profile-page">
+                    <a href="#view-profile" class="tab-link">
                         <i class="icon f7-icons if-not-md">person</i>
                         <i class="icon material-icons if-md">person</i>
                         <span class="tabbar-label">Профиль</span>
@@ -59,14 +117,9 @@
                 </div>
             </div>
 
-            <!-- Your main view/tab, should have "view-main" class. It also has "tab-active" class -->
-            <div id="view-list" class="view view-main view-init tab tab-active" data-url="/objects-list">
-                <!-- Home page will be loaded here dynamically from / route -->
-            </div>
-
+            <div id="view-main" class="view view-main view-init tab tab-active" data-url="/"></div>
             <div id="view-map" class="view tab" data-url="/objects-map"></div>
-            <div id="view-profile" class="view tab" data-url="/profile"></div>
-            <!-- <div id="view-create-object" class="view" data-url="/create-object"></div> -->
+            <div id="view-profile" class="view tab" data-url="/profile" data-name="profile"></div>
         </div>
     </div>
     <% if (process.env.TARGET === 'cordova') { %>

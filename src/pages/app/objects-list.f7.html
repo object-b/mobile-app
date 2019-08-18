@@ -2,7 +2,13 @@
     <div class="page" data-name="objects-list">
         <div class="navbar">
             <div class="navbar-inner sliding">
-                <div class="title">Список объектов</div>
+                <div class="left">
+                    <a href="#" class="link icon-only panel-open" data-panel="left">
+                        <i class="icon f7-icons ios-only">menu</i>
+                        <i class="icon material-icons md-only">menu</i>
+                    </a>
+                </div>
+                <div class="title">Список</div>
                 <div class="right">
                     <a href="/objects-filters" class="link">
                         <i class="f7-icons if-not-md">filter</i>
@@ -69,10 +75,16 @@
                 var mergedObjects = [];
                 var currentObjects = [];
 
+                app.views.main.router.clearPreviousHistory();
+
                 // Срабатывает при достижении 50px внизу экрана
                 $$('.infinite-scroll-content').on('infinite', function () {
                     // Выход, если загрузка в процессе
                     if (!allowInfinite) return;
+
+                    if (window.isOnline) {
+                        $$('.infinite-scroll-preloader').show();
+                    }
 
                     allowInfinite = false;
 
@@ -89,17 +101,25 @@
                             objects: mergedObjects,
                         });
 
-                        // Больше нечего загружать, уничтожить обработчик
-                        if (!objects.length) {
+                        // Уничтожить обработчик только если объектов нет в онлайне
+                        // Дело в том что соединение может восстановиться и скроллинг продолжит работу
+                        if (!objects.length && window.isOnline) {
                             app.infiniteScroll.destroy('.infinite-scroll-content');
-                            // Удалить прелоадер внизу страницы
                             $$('.infinite-scroll-preloader').remove();
                             return;
+                        } 
+                        // Для оффлайна просто скрыть если объектов нет
+                        else if (!objects.length && !window.isOnline) {
+                            $$('.infinite-scroll-preloader').hide();
                         }
                     }, function(status) {
                         app.data.config.debug && console.log(status);
                     });
                 });
+
+                if (window.isOnline) {
+                    app.preloader.show();
+                }
 
                 // Запросить первую страницу объектов при инициализации страницы
                 database.getObjects(function(objects) {
@@ -109,9 +129,6 @@
                 }, function(status) {
                     app.data.config.debug && console.log(status);
                 });
-            },
-            pageBeforeIn: function (e, page) {
-                this.$$('.toolbar').show();
             },
         }
     }

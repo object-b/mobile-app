@@ -1,5 +1,5 @@
 <template>
-    <div class="page" data-name="login">
+    <div class="page no-toolbar no-swipeback" data-name="login">
         <div class="navbar">
             <div class="navbar-inner sliding">
                 <div class="left">
@@ -35,25 +35,23 @@
                 </form>
             </div>
             <div class="list">
-                <div class="row" style="margin-bottom: 24px; justify-content: center;">
+                <!-- <div class="row" style="margin-bottom: 24px; justify-content: center;">
                     <div class="col-50">
                         <button class="button button-fill login-button" @click="signIn">Войти</button>
                     </div>
-                </div>
-                <div class="block-footer">или через социальные сети</div>
+                </div> -->
+                <ul>
+                    <li><a class="item-link list-button" href="#" @click="signIn">Войти</a></li>
+                </ul>
+                <div class="block-footer">Вход через социальные сети</div>
                 <div class="block">
                     <div class="row">
-                        <div class="col-33">
+                        <div class="col-50">
                             <button @click="$root.socialLoginVkontakte()" class="button button-fill icon-inside" style="background-color: #4c75a3;">
                                 <i class="fab fa-vk size-22"></i>
                             </button>
                         </div>
-                        <!-- <div class="col-33">
-                            <button class="button button-fill icon-inside" style="background-color: #ed812b;">
-                                <i class="fab fa-odnoklassniki size-22"></i>
-                            </button>
-                        </div> -->
-                        <div class="col-33">
+                        <div class="col-50">
                             <button @click="$root.socialLoginFacebook()" class="button button-fill icon-inside" style="background-color: #3b5999;">
                                 <i class="fab fa-facebook size-22"></i>
                             </button>
@@ -78,7 +76,7 @@
 
                 // Тест
                 // var temp = {
-                //     'email': '1@1.com',
+                //     'email': 'r@m.com',
                 //     'password': 'qwerty',
                 // }
                 // app.form.fillFromData('#login-form', temp);
@@ -91,22 +89,23 @@
                     app.data.config.debug && console.log(formData);
 
                     // Проверка на наличие интернета
-                    if (self.$root.deviceIsOffline()) {
+                    if (!window.isOnline) {
                         self.$root.openNotification('Пожалуйста, подключитесь к интернету, чтобы продолжить');
                         return;
                     }
 
+                    app.preloader.show();
                     app.request.postJSON(url, formData, function(success, status) {
                         app.data.config.debug && console.log(success, status);
 
                         auth.authenticateUser(success).then(function() {
                             self.$root.setApiKeyAsRequestHeader(success.api_key);
-                            
+
                             router.navigate('/objects-list');
                         });
                     }, function(error, status) {
                         app.data.config.debug && console.log(error, status);
-                        
+
                         if (status === 401) {
                             var msg = JSON.parse(error.response).message;
                             self.$root.openNotification(msg);

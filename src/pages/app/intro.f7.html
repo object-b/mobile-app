@@ -1,5 +1,5 @@
 <template>
-    <div class="page" data-name="intro">
+    <div class="page no-toolbar no-swipeback" data-name="welcome">
         <div class="navbar">
             <div class="navbar-inner">
                 <div class="title">Где мусорка</div>
@@ -25,15 +25,25 @@
                     </div>
                 </div>
             </div>
+            <div class="block">
+                <div class="row">
+                    <div class="col-50">
+                        <button @click="$root.socialLoginVkontakte()" class="button button-fill icon-inside"
+                            style="background-color: #4c75a3;">
+                            <i class="fab fa-vk size-22"></i>
+                        </button>
+                    </div>
+                    <div class="col-50">
+                        <button @click="$root.socialLoginFacebook()" class="button button-fill icon-inside"
+                            style="background-color: #3b5999;">
+                            <i class="fab fa-facebook size-22"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 <script>
-    export default {
-        on: {
-            pageBeforeIn: function (e, page) {
-                this.$$('.toolbar').hide();
-            },
-        }
-    }
+    export default {}
 </script>

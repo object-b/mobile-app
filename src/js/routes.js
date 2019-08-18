@@ -1,4 +1,4 @@
-import IntroPage from '../pages/app/intro.f7.html';
+import WelcomePage from '../pages/app/intro.f7.html';
 import ObjectsListPage from '../pages/app/objects-list.f7.html';
 import ObjectsMapPage from '../pages/app/objects-map.f7.html';
 import RegisterPage from '../pages/app/register.f7.html';
@@ -11,27 +11,30 @@ import NotFoundPage from '../pages/404.f7.html';
 
 import * as auth from '../js/auth';
 
-var authMiddleware = function (routeTo, routeFrom, resolve, reject) {
+var authCheck = function (routeTo, routeFrom, resolve, reject) {
     var self = this;
 
-    auth.isAuthenticated().then(function(key) {
+    auth.isAuthenticated().then(function (key) {
         self.view.app.methods.setApiKeyAsRequestHeader(key);
 
-        resolve({component: ObjectsListPage});
-    }).catch(function() {
-        resolve({component: IntroPage});
+        resolve({ component: ObjectsListPage });
+    }).catch(function () {
+        resolve({ component: WelcomePage });
     });
 };
 
 var routes = [
     {
-        path: '/intro',
-        component: IntroPage,
+        path: '/',
+        async: authCheck
     },
-    // Главная страница всегда
+    {
+        path: '/welcome',
+        component: WelcomePage,
+    },
     {
         path: '/objects-list',
-        async: authMiddleware
+        component: ObjectsListPage
     },
     {
         path: '/object/:objectId',
