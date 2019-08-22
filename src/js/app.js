@@ -151,13 +151,13 @@ var app = new Framework7({
 
                             router.navigate('/objects-list');
                         });
-                    }, function (error, status) {
+                    }, function (xhr, status) {
                         app.toast.create({
                             text: 'Register error. Code ' + status,
                             closeTimeout: 4500,
                         }).open();
 
-                        config.debug && console.log(error, status);
+                        config.debug && console.log(xhr, status);
                     });
                 }
             }, function (error) {
@@ -194,13 +194,13 @@ var app = new Framework7({
 
                             router.navigate('/objects-list');
                         });
-                    }, function (error, status) {
+                    }, function (xhr, status) {
                         app.toast.create({
                             text: 'Register error. Code ' + status,
                             closeTimeout: 4500,
                         }).open();
 
-                        config.debug && console.log(error, status);
+                        config.debug && console.log(xhr, status);
                     });
                 }
             }, function (error) {
@@ -281,8 +281,12 @@ app.request.setup({
     }
 });
 
-$$(document).on('click', '.title', function () {
-// $$(document).on('deviceready', function () {
+// $$(document).on('click', '.title', function () {
+$$(document).on('deviceready', function () {
+    //
+});
+
+$$(document).on('backbutton', function () {
     app.methods.onBackKeyDown();
 });
 

@@ -107,7 +107,7 @@
                             app.infiniteScroll.destroy('.infinite-scroll-content');
                             $$('.infinite-scroll-preloader').remove();
                             return;
-                        } 
+                        }
                         // Для оффлайна просто скрыть если объектов нет
                         else if (!objects.length && !window.isOnline) {
                             $$('.infinite-scroll-preloader').hide();
@@ -126,6 +126,11 @@
                     self.$setState({
                         objects: objects,
                     });
+
+                    // Скрыть лоадер если объектов меньше 10
+                    if (objects.length < 10) {
+                        $$('.infinite-scroll-preloader').hide();
+                    }
                 }, function(status) {
                     app.data.config.debug && console.log(status);
                 });

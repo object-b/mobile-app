@@ -116,11 +116,11 @@
 
                             router.navigate('/objects-list');
                         });
-                    }, function (error, status) {
-                        app.data.config.debug && console.log(error, status);
+                    }, function (xhr, status) {
+                        app.data.config.debug && console.log(xhr, status);
 
                         if (status === 401) {
-                            var msg = JSON.parse(error.response).message;
+                            var msg = JSON.parse(xhr.response).message;
                             self.$root.openNotification(msg);
                         } else {
                             self.$root.openNotification('Register error. Code ' + status);
