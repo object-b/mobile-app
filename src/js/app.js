@@ -70,7 +70,7 @@ var app = new Framework7({
             defaultMapCenter: [54.318584, 48.397823], // Ульяновск
             locateControlOptions: {
                 icon: Framework7.device.ios ? 'f7-icons' : 'material-icons',
-                iconLoading: 'fas fa-spinner fa-spin',
+                iconLoading: Framework7.device.ios ? 'f7-icons' : 'material-icons',
                 onLocationError: function () { },
                 showCompass: false,
                 strings: {
@@ -94,18 +94,18 @@ var app = new Framework7({
         // Используется для загрузки и отображения слоев листов на карте.
         // https://leafletjs.com/reference-1.5.0.html#tilelayer
         createMapTiles: function () {
-            return L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 18,
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" class="external">OpenStreetMap</a> contributors'
-            });
-
-            // return L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+            // return L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             //     maxZoom: 18,
-            //     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/" class="external">OpenStreetMap</a> contributors, ' +
-            //         '<a href="https://creativecommons.org/licenses/by-sa/2.0/" class="external">CC-BY-SA</a>, ' +
-            //         'Imagery © <a href="https://www.mapbox.com/" class="external">Mapbox</a>',
-            //     id: 'mapbox.streets'
+            //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" class="external">OpenStreetMap</a> contributors'
             // });
+
+            return L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+                maxZoom: 18,
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/" class="external">OpenStreetMap</a> contributors, ' +
+                    '<a href="https://creativecommons.org/licenses/by-sa/2.0/" class="external">CC-BY-SA</a>, ' +
+                    'Imagery © <a href="https://www.mapbox.com/" class="external">Mapbox</a>',
+                id: 'mapbox.streets'
+            });
         },
         setApiKeyAsRequestHeader: function (token) {
             app.request.setup({
@@ -246,6 +246,10 @@ var app = new Framework7({
         overlay: Framework7.device.cordova && Framework7.device.ios || 'auto',
         iosOverlaysWebView: true,
         androidOverlaysWebView: false,
+        iosTextColor: 'white',
+        androidTextColor: 'white',
+        androidBackgroundColor: '#208c2c',
+        iosBackgroundColor: '#208c2c',
     },
     dialog: {
         buttonOk: 'Ок',
@@ -281,30 +285,28 @@ app.request.setup({
     }
 });
 
-// $$(document).on('click', '.title', function () {
 $$(document).on('deviceready', function () {
     //
 });
 
-$$(document).on('backbutton', function () {
+$$(document).on('click', '.title', function () {
+// $$(document).on('backbutton', function () {
     app.methods.onBackKeyDown();
 });
 
 $$(document).on('click', '[href="#view-map"]', function () {
     var viewEl = $$('#view-map');
-    var viewParams = $$(viewEl).dataset();
 
     if (typeof app.views.get(viewEl) === 'undefined') {
-        app.views.create(viewEl, viewParams);
+        app.views.create(viewEl, viewEl.dataset());
     }
 });
 
 $$(document).on('click', '[href="#view-profile"]', function () {
     var viewEl = $$('#view-profile');
-    var viewParams = $$(viewEl).dataset();
 
     if (typeof app.views.get(viewEl) === 'undefined') {
-        app.views.create(viewEl, viewParams);
+        app.views.create(viewEl, viewEl.dataset());
     }
 });
 

@@ -25,16 +25,28 @@ var authCheck = function (routeTo, routeFrom, resolve, reject) {
 
 var routes = [
     {
-        path: '/',
-        async: authCheck
+        path: '/welcome',
+        async: authCheck,
     },
     {
-        path: '/welcome',
-        component: WelcomePage,
+        path: '/login',
+        component: LoginPage,
+    },
+    {
+        path: '/register',
+        component: RegisterPage,
     },
     {
         path: '/objects-list',
-        component: ObjectsListPage
+        async: authCheck
+    },
+    {
+        path: '/objects-map',
+        component: ObjectsMapPage,
+    },
+    {
+        path: '/profile',
+        component: UserProfile,
     },
     {
         path: '/object/:objectId',
@@ -47,22 +59,6 @@ var routes = [
     {
         path: '/create-object',
         component: CreateObjectPage,
-    },
-    {
-        path: '/objects-map',
-        component: ObjectsMapPage,
-    },
-    {
-        path: '/profile',
-        component: UserProfile,
-    },
-    {
-        path: '/login',
-        component: LoginPage,
-    },
-    {
-        path: '/register',
-        component: RegisterPage,
     },
     // Default route (404 page). MUST BE THE LAST
     {

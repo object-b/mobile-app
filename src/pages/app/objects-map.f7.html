@@ -11,7 +11,8 @@
 
         <div class="fab fab-right-bottom">
             <a href="/create-object">
-                <i class="icon f7-icons">add</i>
+                <i class="icon f7-icons if-not-md">add</i>
+                <i class="icon material-icons if-md size-26">add_location</i>
             </a>
         </div>
     </div>
@@ -55,7 +56,7 @@
                     latitude: e.latitude,
                     longitude: e.longitude,
                 };
-                
+
                 app.data.config.debug && console.log(self.userLocation);
             },
             onLocationError: function (e) {
@@ -118,11 +119,11 @@
                         lat: self.map.getCenter().lat,
                         lng: self.map.getCenter().lng,
                     };
-                    
+
                     app.data.config.debug && console.log(latLngRaduisCenter);
                     // config.debug && L.marker(self.map.getCenter()).addTo(self.map);
                     // config.debug && L.circle(
-                    //     self.map.getCenter(), 
+                    //     self.map.getCenter(),
                     //     parseInt(self.getRadiusFromMapCenter('m'))
                     // ).addTo(self.map);
 
@@ -136,10 +137,10 @@
                             var marker = L.marker(new L.LatLng(current[0], current[1]), {
                                 title: title
                             });
-                            
+
                             allMarkers.push(marker);
                             marker.bindPopup(title);
-                            
+
                             markerCluster.addLayer(marker);
                         }
 

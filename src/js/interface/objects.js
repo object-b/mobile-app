@@ -12,7 +12,11 @@ db.version(1).stores({
 });
 
 // Достать страницу из хранилища или API
-export function getObjects(success, failure) {
+export function getObjects(success, failure, num) {
+    if (num) {
+        pageNumber = num;
+    }
+
     if (window.isOnline) {
         updateObjectsFromServer(function (response) {
             config.debug && console.log(response.data)
