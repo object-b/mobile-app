@@ -12,7 +12,10 @@
 :root.theme-light,
 :root .theme-light {
   --f7-navbar-bg-color: #2dbb3d;
+  --f7-photobrowser-bars-bg-color: #2dbb3d;
   --f7-navbar-text-color: #fff;
+  --f7-photobrowser-bars-text-color: #fff;
+  --f7-photobrowser-bars-link-color: #fff;
   --f7-navbar-link-color: #fff;
   --f7-navbar-subtitle-text-color: rgba(255,255,255,0.85);
   --f7-navbar-border-color: transparent;
@@ -22,6 +25,7 @@
 
 .appbar,
 .navbar,
+.photo-browser-page .navbar,
 .toolbar,
 .subnavbar,
 .calendar-header,
@@ -395,9 +399,12 @@ html {
     font-size: 18px;
 }
 
-.fab-right-bottom.locate-control-start {
+.global-object-map .leaflet-left .leaflet-control.leaflet-control-locate {
+    display: none;
+}
+
+.fab-right-bottom.start-locate {
     bottom: 85px;
-    position: fixed;
 }
 
 .fab > span,
@@ -423,25 +430,20 @@ html {
     --f7-touch-ripple-color: var(--f7-touch-ripple-white);
 }
 
-.fab > span i {
+.fab > span i:not(.loading-anim) {
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate3d(-50%, -50%, 0) rotate(0deg) scale(1);
 }
 
-.locate-control-start .fas.fa-spinner {
-    font-size: 24px;
-    position: initial;
-}
-
-.locate-control-start .fas.fa-spinner span,
-.create-object-map .fas.fa-spinner span {
-    display: none;
+.leaflet-control-locate-location circle {
+    animation: none;
 }
 
 .create-object-map .leaflet-control-locate i {
-    line-height: 1.25;
+    line-height: inherit;
+    font-size: 20px;
 }
 
 .social-login-icon {
@@ -457,4 +459,19 @@ html {
     height: 45px;
     border-radius: 50%;
     margin: 5px;
+}
+
+.loading-anim {
+    -webkit-animation: loading .800s ease-in infinite;
+    animation: loading .800s linear infinite;
+}
+
+@keyframes loading {
+    0% {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }

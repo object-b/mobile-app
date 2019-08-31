@@ -32,7 +32,7 @@
                 <div class="demo-swiper object-photo-slider-empty" style="position: relative;">
                     <div class="swiper-wrapper">
                         <div class="swiper-slide hairline-bottom">
-                            Вы должны добавить<br>как минимум одну фотографию
+                            Добавьте хотя бы<br>как минимум одну фотографию
                         </div>
                     </div>
                 </div>
@@ -204,6 +204,7 @@
                 // photo browser gallery
                 photoBrowserSettings: {
                     photos: null,
+                    exposition: false,
                     type: 'popup',
                     navbarOfText: 'из',
                     backLinkText: 'Закрыть',
@@ -303,20 +304,27 @@
                     $$('.object-delete-photo').hide();
                 }
             },
-            checkPermissionAndLocate: function () {
+            runLocateControl: function() {
+                var self = this;
+                var app = self.$app;
+
+                self.locatecontrol.stop();
+                self.locatecontrol.start();
+
+                self.map.on('locationfound', self.onLocationFound);
+                self.map.on('locationerror', self.onLocationError);
+            },
+            checkLocationPermissions: function () {
                 var self = this;
                 var app = self.$app;
 
                 if (app.device.cordova) {
-                    locationPermissions.init(function() {
-                        // Автоматическое определение при успехе
-                        self.locatecontrol.start();
-                    }, function(error) {
-                        app.dialog.confirm(error, locationPermissions.openSettings);
-                        self.locatecontrol.stop();
+                    locationPermissions.init(self.runLocateControl, function(error) {
+                        console.log(error);
+                        self.$root.openNotification('Ошибка получения прав на определение локации.');
                     });
                 } else {
-                    self.locatecontrol.start();
+                    setTimeout(self.runLocateControl, 1000);
                 }
             },
             onLocationFound: function (e) {
@@ -325,7 +333,7 @@
                 var $$ = self.$$;
                 var radius = e.accuracy;
                 var msg = 'Приблизительное расположение в метрах - ' + radius.toFixed(1);
-                var nominatimUrl = 'https://nominatim.openstreetmap.org/reverse?lat='+e.latitude+'&lon='+e.longitude+'&format=json';
+                var nominatimUrl = 'https://nominatim.openstreetmap.org/reverse?lat='+e.latitude+'&lon='+e.longitude+'&format=json&accept-language=ru';
 
                 app.data.config.debug && console.log(e);
 
@@ -334,17 +342,16 @@
                     app.data.config.debug && console.log(response);
 
                     var formattedLatLng = e.latitude.toFixed(8) + ', ' + e.longitude.toFixed(8);
-                    var addressString = [
-                        // От высшего
+                    var fullAddressString = [
+                        // От высшего до низшего из единиц
                         response.address.state,
-                        response.address.county,
+                        // response.address.county,
                         response.address.city,
                         response.address.city_district,
                         response.address.road,
-                        // До низшего
                         response.address.house_number,
                     ];
-                    var displayName = addressString.filter(function(n) { return n; }).join(', ');
+                    var displayName = fullAddressString.filter(function(n) { return n; }).join(', ');
 
                     // Записать локацию для отправки на сервер
                     self.userLocation = {
@@ -393,7 +400,7 @@
 
                 // Получить локацию на мобилке если её еще нет
                 if (!self.userLocation && app.device.cordova) {
-                    self.checkPermissionAndLocate();
+                    self.checkLocationPermissions();
                 }
             },
             cameraError: function (message) {
@@ -406,27 +413,27 @@
 
                 // Получить локацию на мобилке если её еще нет
                 if (!self.userLocation && app.device.cordova) {
-                    self.checkPermissionAndLocate();
+                    self.checkLocationPermissions();
                 }
             },
             launchCamera: function () {
-                var randomnumber = Math.floor(Math.random() * (500 - 300 + 1)) + 300;
+                var randNum = Math.floor(Math.random() * (500 - 300 + 1)) + 300;
 
                 if (this.$app.device.cordova) {
                     var cameraOptions = this.getOptions(Camera.PictureSourceType.CAMERA);
                     navigator.camera.getPicture(this.cameraSuccess, this.cameraError, cameraOptions);
                 } else {
-                    this.updateObjectGallery('https://via.placeholder.com/500x'+randomnumber, false);
+                    this.updateObjectGallery('https://via.placeholder.com/500x'+randNum, false);
                 }
             },
             selectFromGallery: function () {
-                var randomnumber = Math.floor(Math.random() * (500 - 300 + 1)) + 300;
+                var randNum = Math.floor(Math.random() * (500 - 300 + 1)) + 300;
 
                 if (this.$app.device.cordova) {
                     var cameraOptions = this.getOptions(Camera.PictureSourceType.PHOTOLIBRARY);
                     navigator.camera.getPicture(this.cameraSuccess, this.cameraError, cameraOptions);
                 } else {
-                    this.updateObjectGallery('https://via.placeholder.com/500x'+randomnumber, false);
+                    this.updateObjectGallery('https://via.placeholder.com/500x'+randNum, false);
                 }
             },
             openPhotoBrowser: function () {
@@ -452,14 +459,13 @@
                 var self = this;
                 var app = self.$app;
                 var $$ = self.$$;
+                var tiles = self.$root.createMapTiles();
 
                 if (app.device.cordova) {
                     self.launchCamera();
                 }
 
-                if (!self.map) {
-                    var tiles = self.$root.createMapTiles();
-
+                // if (!self.map) {
                     self.map = L.map('user-location', {
                         zoomControl: true,
                         loadingControl: true,
@@ -483,14 +489,17 @@
                         return { link: link, icon: icon };
                     };
 
+                    // Плагин для определения локации
                     self.locatecontrol = L.control.locate(app.data.locateControlOptions).addTo(self.map);
-                    self.map.on('locationfound', self.onLocationFound);
-                    self.map.on('locationerror', self.onLocationError);
+                    // self.map.on('locationfound', self.onLocationFound);
+                    // self.map.on('locationerror', self.onLocationError);
 
-                    self.locatecontrol._link.onclick = self.checkPermissionAndLocate;
+                    // self.locatecontrol._link.onclick = self.checkLocationPermissions;
+                // }
+
+                if (!app.device.cordova) {
+                    self.checkLocationPermissions();
                 }
-
-                self.checkPermissionAndLocate();
 
                 // page.$el.on("click", ".link", function (e) {});
             },

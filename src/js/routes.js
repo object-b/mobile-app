@@ -43,6 +43,17 @@ var routes = [
     {
         path: '/objects-map',
         component: ObjectsMapPage,
+        /*async: function (routeTo, routeFrom, resolve, reject) {
+            if (this.view.app.data.locationAllowed) {
+                resolve({ component: ObjectsMapPage });
+            } else {
+                this.view.app.methods.checkLocationPermissions(function() {
+                    resolve({ component: ObjectsMapPage });
+                }, function() {
+                    resolve({ component: ObjectsMapPage });
+                });
+            }
+        }*/
     },
     {
         path: '/profile',

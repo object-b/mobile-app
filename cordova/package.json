@@ -19,7 +19,7 @@
     "cordova-plugin-facebook4": "5.0.0",
     "cordova-plugin-file": "^6.0.2",
     "cordova-plugin-file-transfer": "^1.7.1",
-    "cordova-plugin-geolocation": "4.0.2",
+    "cordova-plugin-geolocation": "^4.0.2",
     "cordova-plugin-keyboard": "^1.2.0",
     "cordova-plugin-network-information": "^2.0.2",
     "cordova-plugin-request-location-accuracy": "^2.3.0",
@@ -44,7 +44,6 @@
         "FACEBOOK_ANDROID_SDK_VERSION": "5.0.2"
       },
       "cordova-plugin-network-information": {},
-      "cordova-plugin-geolocation": {},
       "cordova-plugin-file-transfer": {},
       "cordova-vk-auth": {
         "VK_APP_ID": "7064627"
@@ -59,7 +58,8 @@
         "ANDROID_SUPPORT_VERSION": "28.+"
       },
       "cordova-plugin-keyboard": {},
-      "cordova-plugin-webview-checker": {}
+      "cordova-plugin-webview-checker": {},
+      "cordova-plugin-geolocation": {}
     },
     "platforms": [
       "android",

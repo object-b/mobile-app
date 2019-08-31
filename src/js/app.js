@@ -39,6 +39,7 @@ import * as config from '../config';
 import * as auth from './auth';
 import cordovaApp from './cordova-app.js';
 import routes from './routes.js';
+import * as locationPermissions from './location-permissions';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -65,12 +66,14 @@ var app = new Framework7({
     // Можно получать доступ из страниц так self.$root.config или app.data.config
     data: function () {
         return {
+            userInitialCoordinates: [],
+            locationAllowed: false,
             config: config.default,
-            iconSettings: { mapIconUrl: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" version="1.1" viewBox="-12 -12 24 24"><circle r="9" style="stroke:#fff;stroke-width:3;fill:#2A93EE;fill-opacity:1;opacity:1;"></circle></svg>' },
+            // iconSettings: { mapIconUrl: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" version="1.1" viewBox="-12 -12 24 24"><circle r="9" style="stroke:#fff;stroke-width:3;fill:#2A93EE;fill-opacity:1;opacity:1;"></circle></svg>' },
             defaultMapCenter: [54.318584, 48.397823], // Ульяновск
             locateControlOptions: {
                 icon: Framework7.device.ios ? 'f7-icons' : 'material-icons',
-                iconLoading: Framework7.device.ios ? 'f7-icons' : 'material-icons',
+                iconLoading: Framework7.device.ios ? 'f7-icons loading-anim' : 'material-icons loading-anim',
                 onLocationError: function () { },
                 showCompass: false,
                 strings: {
@@ -101,12 +104,57 @@ var app = new Framework7({
 
             return L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
                 maxZoom: 18,
-                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/" class="external">OpenStreetMap</a> contributors, ' +
-                    '<a href="https://creativecommons.org/licenses/by-sa/2.0/" class="external">CC-BY-SA</a>, ' +
-                    'Imagery © <a href="https://www.mapbox.com/" class="external">Mapbox</a>',
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/" class="external">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/" class="external">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/" class="external">Mapbox</a>',
                 id: 'mapbox.streets'
             });
         },
+        /*determineUserLocation: function() {
+            app.data.locationAllowed = true;
+
+            var onSuccess = function(position) {
+                app.data.userInitialCoordinates = [
+                    position.coords.latitude,
+                    position.coords.longitude
+                ];
+                console.log(app.data.userInitialCoordinates);
+            };
+
+            function onError(error) {
+                app.methods.openNotification('Ошибка определения. ' + error.message);
+            }
+
+            navigator.geolocation.getCurrentPosition(onSuccess, onError, { timeout: 20000 });
+        },
+        checkLocationPermissions: function(success, failure) {
+            if (app.device.cordova) {
+                locationPermissions.init(function() {
+                    if (success) {
+                        success();
+                    }
+
+                    app.methods.determineUserLocation();
+                }, function(error) {
+                    if (failure) {
+                        failure();
+                    }
+
+                    console.log(error);
+                    app.methods.openNotification('Ошибка получения прав на определение локации. Необходимые функции не будут работать.');
+                });
+            } else if (true) {
+                if (success) {
+                    success();
+                }
+
+                app.methods.determineUserLocation();
+            } else {
+                if (failure) {
+                    failure();
+                }
+
+                app.methods.openNotification('Ошибка получения прав на определение локации. Необходимые функции не будут работать.');
+            }
+        },*/
         setApiKeyAsRequestHeader: function (token) {
             app.request.setup({
                 // Кастомный заголовок https://github.com/slimphp/Slim/issues/831
@@ -118,7 +166,6 @@ var app = new Framework7({
 
             config.debug && console.log(xhr, status);
 
-            app.preloader.hide();
             app.dialog.alert(message, function () {
                 auth.logoutUser().then(function () {
                     location.reload();
@@ -248,8 +295,8 @@ var app = new Framework7({
         androidOverlaysWebView: false,
         iosTextColor: 'white',
         androidTextColor: 'white',
-        androidBackgroundColor: '#208c2c',
-        iosBackgroundColor: '#208c2c',
+        androidBackgroundColor: '#22932e',
+        iosBackgroundColor: '#22932e',
     },
     dialog: {
         buttonOk: 'Ок',
@@ -272,15 +319,7 @@ app.request.setup({
             status === 401 &&
             typeof xhr.requestParameters.headers['X-Authorization'] !== 'undefined'
         ) {
-            var message = JSON.parse(xhr.response).error;
-
-            config.debug && console.log(xhr, status);
-
-            app.dialog.alert(message, function () {
-                auth.logoutUser().then(function () {
-                    location.reload();
-                });
-            });
+            app.methods.handleRequestError(xhr, status);
         }
     }
 });
@@ -289,8 +328,8 @@ $$(document).on('deviceready', function () {
     //
 });
 
-$$(document).on('click', '.title', function () {
-// $$(document).on('backbutton', function () {
+// $$(document).on('click', '.title', function () {
+$$(document).on('backbutton', function () {
     app.methods.onBackKeyDown();
 });
 

@@ -9,6 +9,13 @@
             <div id="global-map" class="global-object-map"></div>
         </div>
 
+        <div class="fab fab-right-bottom start-locate">
+            <a href="#">
+                <i class="icon f7-icons if-not-md">placemark_fill</i>
+                <i class="icon material-icons if-md size-26">my_location</i>
+            </a>
+        </div>
+
         <div class="fab fab-right-bottom">
             <a href="/create-object">
                 <i class="icon f7-icons if-not-md">add</i>
@@ -23,29 +30,46 @@
     export default {
         data: function () {
             return {
-                // user geolocation here
                 userLocation: null,
-                // map html object
                 map: null,
-                // leaflet plugin object
                 locatecontrol: null,
+                markerCluster: null,
             }
         },
         methods: {
-            checkPermissionAndLocate: function() {
+            updateButtonState: function(state) {
+                var $$ = this.$$;
+
+                if (state == 'loading') {
+                    $$('.start-locate i').addClass('loading-anim');
+                } else if (state == 'stop') {
+                    $$('.start-locate i').removeClass('loading-anim');
+                }
+            },
+            runLocateControl: function() {
                 var self = this;
                 var app = self.$app;
 
+                self.locatecontrol.stop();
+                self.locatecontrol.start();
+
+                self.map.on('locationfound', self.onLocationFound);
+                self.map.on('locationerror', self.onLocationError);
+            },
+            checkLocationPermissions: function() {
+                var self = this;
+                var app = self.$app;
+
+                self.updateButtonState('loading');
+
                 if (app.device.cordova) {
-                    locationPermissions.init(function() {
-                        // Автоматическое определение при успехе
-                        self.locatecontrol.start();
-                    }, function(error) {
-                        app.dialog.confirm(error, locationPermissions.openSettings);
-                        self.locatecontrol.stop();
+                    locationPermissions.init(self.runLocateControl, function(error) {
+                        console.log(error);
+                        self.updateButtonState('stop');
+                        self.$root.openNotification('Ошибка получения прав на определение локации.');
                     });
                 } else {
-                    self.locatecontrol.start();
+                    setTimeout(self.runLocateControl, 2000);
                 }
             },
             onLocationFound: function (e) {
@@ -57,6 +81,8 @@
                     longitude: e.longitude,
                 };
 
+                self.updateButtonState('stop');
+
                 app.data.config.debug && console.log(self.userLocation);
             },
             onLocationError: function (e) {
@@ -65,15 +91,12 @@
 
                 app.data.config.debug && console.log(e);
 
-                self.$root.openNotification('Определить локацию не удалось.');
+                self.updateButtonState('stop');
 
-                // Проверить состояние пермишенов еще раз
-                // locationPermissions.init(cordova, function() {
-                //     // Автоматическое определение при успехе
-                //     self.locatecontrol.start();
-                // }, function(error) {
-                //     self.$root.openNotification(error);
-                // });
+                // Geolocation error: Illegal Access.
+                if (e.code !== 1) {
+                    self.$root.openNotification('Определить локацию не удалось.');
+                }
             },
             getRadiusFromMapCenter: function(unit) {
                 var self = this;
@@ -84,19 +107,53 @@
 
                 return unit === 'km' ? kilometers : unit === 'm' ? meters : '';
             },
+            getMarkersInRadius: function() {
+                var self = this;
+                var app = self.$app;
+                var latLngRaduisCenter = {
+                    radius: self.getRadiusFromMapCenter('km'),
+                    lat: self.map.getCenter().lat,
+                    lng: self.map.getCenter().lng,
+                };
+                var objectsGetMarkers = app.data.config.apiMarkersUrl;
+                var allMarkers = [];
+
+                app.data.config.debug && console.log(latLngRaduisCenter);
+                // config.debug && L.marker(self.map.getCenter()).addTo(self.map);
+                // config.debug && L.circle(
+                //     self.map.getCenter(),
+                //     parseInt(self.getRadiusFromMapCenter('m'))
+                // ).addTo(self.map);
+
+                // Нужно получить точки только на видимой области карты
+                app.request.json(objectsGetMarkers, latLngRaduisCenter, (addressPoints) => {
+                    self.markerCluster.clearLayers(allMarkers);
+
+                    for (var i = 0; i < addressPoints.length; i++) {
+                        var current = addressPoints[i];
+                        var title = current[2];
+                        var marker = L.marker(new L.LatLng(current[0], current[1]), {
+                            title: title
+                        });
+
+                        allMarkers.push(marker);
+                        marker.bindPopup(title);
+
+                        self.markerCluster.addLayer(marker);
+                    }
+
+                    self.map.addLayer(self.markerCluster);
+                });
+            },
         },
         on: {
             pageInit: function (e, page) {
                 var self = this;
                 var app = self.$app;
                 var $$ = self.$$;
-                var objectsGetMarkers = app.data.config.apiMarkersUrl;
-                var allMarkers = [];
-
-                //if (!self.map) {
                 var tiles = self.$root.createMapTiles();
 
-                // Создание экземпляра объекта карты с использованием идентификатора DOM элемента <div> и, необязательно, литерала объекта с параметрами карты.
+                // Создание экземпляра объекта карты с использованием id DOM элемента
                 self.map = L.map('global-map', {
                     zoomControl: true,
                     loadingControl: true,
@@ -106,71 +163,25 @@
                     layers: [tiles]
                 }).setView(self.$root.defaultMapCenter, 12);
 
-                var markerCluster = L.markerClusterGroup({
+                self.markerCluster = L.markerClusterGroup({
                     chunkedLoading: true,
                     spiderfyOnMaxZoom: false,
                     removeOutsideVisibleBounds: false,
                 });
 
-                // Срабатывает, когда карта перестает меняться (например, пользователь перестал перетаскивать карту).
-                self.map.on('moveend', function (e) {
-                    var latLngRaduisCenter = {
-                        radius: self.getRadiusFromMapCenter('km'),
-                        lat: self.map.getCenter().lat,
-                        lng: self.map.getCenter().lng,
-                    };
+                // Карта перестает меняться (например, пользователь перестал перетаскивать карту).
+                self.map.on('moveend', self.getMarkersInRadius);
 
-                    app.data.config.debug && console.log(latLngRaduisCenter);
-                    // config.debug && L.marker(self.map.getCenter()).addTo(self.map);
-                    // config.debug && L.circle(
-                    //     self.map.getCenter(),
-                    //     parseInt(self.getRadiusFromMapCenter('m'))
-                    // ).addTo(self.map);
-
-                    // Нужно получить точки только на видимой области карты
-                    app.request.json(objectsGetMarkers, latLngRaduisCenter, (addressPoints) => {
-                        markerCluster.clearLayers(allMarkers);
-
-                        for (var i = 0; i < addressPoints.length; i++) {
-                            var current = addressPoints[i];
-                            var title = current[2];
-                            var marker = L.marker(new L.LatLng(current[0], current[1]), {
-                                title: title
-                            });
-
-                            allMarkers.push(marker);
-                            marker.bindPopup(title);
-
-                            markerCluster.addLayer(marker);
-                        }
-
-                        self.map.addLayer(markerCluster);
-                    });
-                });
-
-                // Кастомная кнопка геолокации
-                app.data.locateControlOptions.createButtonCallback = function (container, options) {
-                    var fab = L.DomUtil.create('div', 'fab fab-right-bottom locate-control-start', container);
-                    var href = L.DomUtil.create('span', '', fab);
-                    var icon = L.DomUtil.create('i', '', href);
-
-                    if (app.device.ios) {
-                        L.DomUtil.get(icon).innerHTML = '<span>navigation_fill</span>';
-                    } else {
-                        L.DomUtil.get(icon).innerHTML = '<span>my_location</span>';
-                    }
-
-                    return { link: fab, icon: icon };
-                };
-
+                // Плагин для определения локации
                 self.locatecontrol = L.control.locate(app.data.locateControlOptions).addTo(self.map);
-                self.map.on('locationfound', self.onLocationFound);
-                self.map.on('locationerror', self.onLocationError);
+
+                page.$el.on('click', '.start-locate', self.checkLocationPermissions);
+
+                // В радиусе дефолтной карты можно получить маркеры сразу
+                self.getMarkersInRadius();
 
                 // Проверить состояние пермишенов при переходе
-                self.checkPermissionAndLocate();
-
-                self.locatecontrol._link.onclick = self.checkPermissionAndLocate;
+                // self.checkLocationPermissions();
             },
         }
     };
