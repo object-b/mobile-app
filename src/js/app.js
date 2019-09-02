@@ -161,16 +161,25 @@ var app = new Framework7({
                 headers: { 'X-Authorization': token }
             });
         },
+        logoutToWelcomePage: function() {
+            auth.logoutUser().then(function () {
+                app.views.main.router.navigate('/welcome', {
+                    reloadCurrent: true,
+                    clearPreviousHistory: true,
+                });
+
+                app.tab.show({
+                    tabEl: '#view-main',
+                    tabLinkEl: '[href="#view-main"]',
+                });
+            });
+        },
         handleRequestError: function (xhr, status) {
             var message = JSON.parse(xhr.response).error;
 
             config.debug && console.log(xhr, status);
 
-            app.dialog.alert(message, function () {
-                auth.logoutUser().then(function () {
-                    location.reload();
-                });
-            });
+            app.dialog.alert(message, app.methods.logoutToWelcomePage);
         },
         openNotification: function (message) {
             app.toast.create({

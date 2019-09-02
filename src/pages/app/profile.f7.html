@@ -60,19 +60,7 @@
                 var app = this.$f7;
                 var $$ = this.$$;
 
-                app.dialog.confirm('Вы действительно хотите выйти из учетной записи?', function () {
-                    auth.logoutUser().then(function () {
-                        app.views.main.router.navigate('/welcome', {
-                            reloadCurrent: true,
-                            clearPreviousHistory: true,
-                        });
-
-                        app.tab.show({
-                            tabEl: '#view-main',
-                            tabLinkEl: '[href="#view-main"]',
-                        });
-                    });
-                });
+                app.dialog.confirm('Вы действительно хотите выйти из учетной записи?', self.$root.logoutToWelcomePage);
             },
         },
         on: {
